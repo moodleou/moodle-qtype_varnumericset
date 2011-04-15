@@ -123,6 +123,13 @@ class qtype_varnumeric extends question_type {
         }
     }
 
+    public function finished_edit_wizard($fromform) {
+        //keep browser from moving onto next page after saving question and
+        //recalculating variable values.
+        if (isset($fromform->recalculatevars)){
+            return false;
+        }
+    }
     protected function initialise_question_instance(question_definition $question, $questiondata) {
         parent::initialise_question_instance($question, $questiondata);
         $question->usecase = $questiondata->options->usecase;

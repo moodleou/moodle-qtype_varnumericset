@@ -44,6 +44,40 @@ class qtype_varnumeric_edit_form extends question_edit_form {
         $mform->addElement('select', 'usecase',
                 get_string('casesensitive', 'qtype_varnumeric'), $menu);
 
+
+        $noofvariants = optional_param('noofvariants', 0, PARAM_INT);
+        $addvariants = optional_param('addvariants', '', PARAM_TEXT);
+        if ($addvariants){
+            $noofvariants += 2;
+        }
+        $answersoption = '';
+
+        $repeated = array();
+        $repeated[] = $mform->createElement('header', 'varhdr', get_string('varheader', 'qtype_varnumeric'));
+        $repeated[] = $mform->createElement('text', 'varname',
+                get_string('varname', 'qtype_varnumeric'), array('size' => 40));
+
+        $mform->setType('varname', PARAM_RAW_TRIMMED);
+
+        $noofvariants = max($noofvariants, 5);
+        for ($i=0; $i < $noofvariants; $i++){
+            $repeated[] = $mform->createElement('text', "variant[$i]",
+                    get_string('variant', 'qtype_varnumeric', $i+1), array('size' => 40));
+        }
+        $mform->setType('variant', PARAM_RAW_TRIMMED);
+
+        $this->repeat_elements($repeated, $noofvariants, array(),
+                'novars', 'addvars', 2, get_string('addmorevars', 'qtype_varnumeric'));
+
+        $mform->registerNoSubmitButton('addvariants');
+        $addvariantel = $mform->createElement('submit', 'addvariants', get_string('addmorevariants', 'qtype_varnumeric', 2));
+        $mform->insertElementBefore($addvariantel, 'varhdr[1]');
+        $mform->addElement('hidden', 'noofvariants', $noofvariants);
+        $mform->setConstant('noofvariants', $noofvariants);
+        $mform->setType('noofvariants', PARAM_INT);
+
+        $mform->addElement('submit', 'recalculatevars', get_string('recalculatevars', 'qtype_varnumeric', 2));
+
         $mform->addElement('static', 'answersinstruct',
                 get_string('correctanswers', 'qtype_varnumeric'),
                 get_string('filloutoneanswer', 'qtype_varnumeric'));

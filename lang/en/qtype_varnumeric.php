@@ -24,6 +24,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+$string['addmorevariants'] = 'Add {$a} More Blanks for More Variants';
+$string['addmorevars'] = 'Add {no} More Blanks for Variables';
 $string['addingvarnumeric'] = 'Adding a Variable Numeric Question';
 $string['addmoreanswerblanks'] = 'Blanks for {no} More Answers';
 $string['answer'] = 'Answer: {$a}';
@@ -38,6 +40,10 @@ $string['editingvarnumeric'] = 'Editing a Variable Numeric Question';
 $string['filloutoneanswer'] = 'You must provide at least one possible answer. Answers left blank will not be used. \'*\' can be used as a wildcard to match any characters. The first matching answer will be used to determine the score and feedback.';
 $string['notenoughanswers'] = 'This type of question requires at least {$a} answers';
 $string['pleaseenterananswer'] = 'Please enter an answer.';
+$string['recalculatevars'] = 'Recalculate Resulting Values for Expressions';
+$string['varheader'] = 'Variable {no}';
+$string['variant'] = 'Variant {$a}';
+$string['varname'] = 'Name';
 $string['varnumeric'] = 'Variable Numeric';
 $string['varnumeric_help'] = 'In response to a question the respondent types a number. Numbers used in the question and used to calculate the answer are chosen from predefined sets or randomly generated on the fly.';
 $string['varnumeric_link'] = 'question/type/varnumeric';

@@ -37,13 +37,9 @@ defined('MOODLE_INTERNAL') || die();
 class qtype_varnumeric_edit_form extends question_edit_form {
 
     protected function definition_inner($mform) {
-        $menu = array(
-            get_string('caseno', 'qtype_varnumeric'),
-            get_string('caseyes', 'qtype_varnumeric')
-        );
-        $mform->addElement('select', 'usecase',
-                get_string('casesensitive', 'qtype_varnumeric'), $menu);
 
+        $mform->addElement('text', 'randomseed', get_string('randomseed', 'qtype_varnumeric'));
+        $mform->setType('randomseed', PARAM_RAW);
 
         $noofvariants = optional_param('noofvariants', 0, PARAM_INT);
         $addvariants = optional_param('addvariants', '', PARAM_TEXT);
@@ -77,6 +73,15 @@ class qtype_varnumeric_edit_form extends question_edit_form {
         $mform->setType('noofvariants', PARAM_INT);
 
         $mform->addElement('submit', 'recalculatevars', get_string('recalculatevars', 'qtype_varnumeric', 2));
+        //we are using a hook in questiontype to resdisplay the form and it expects a parameter wizard, which
+        //we won't actually use but we need to pass to avoid an error message.
+        $mform->addElement('hidden', 'wizard', '');
+
+        $menu = array(
+            get_string('recalculaterandno', 'qtype_varnumeric'),
+            get_string('recalculaterandyes', 'qtype_varnumeric')
+        );
+        $mform->addElement('select', 'recalculaterand', get_string('recalculaterand', 'qtype_varnumeric'), $menu);
 
         $mform->addElement('static', 'answersinstruct',
                 get_string('correctanswers', 'qtype_varnumeric'),
@@ -91,14 +96,32 @@ class qtype_varnumeric_edit_form extends question_edit_form {
     }
 
     protected function data_preprocessing($question) {
+        global $DB;
         $question = parent::data_preprocessing($question);
         $question = $this->data_preprocessing_answers($question);
         $question = $this->data_preprocessing_hints($question);
 
-        if (!empty($question->options)) {
-            $question->usecase = $question->options->usecase;
-        }
 
+        if (!empty($question->id)) {
+            $vars = $DB->get_records('qtype_varnumeric_vars', array('questionid' => $question->id), 'id ASC', 'id, nameorassignment, varno');
+            if ($vars) {
+                $varidtovarno = array();
+                $question->varname = array();
+                foreach ($vars as $varid => $var){
+                    $question->varname[$var->varno] = $var->nameorassignment;
+                    $varidtovarno[$varid] = $var->varno;
+                }
+                list($varidsql, $varids) = $DB->get_in_or_equal(array_keys($vars));
+                $variants = $DB->get_records_select('qtype_varnumeric_variants', 'varid '.$varidsql, $varids);
+                $question->variant = array();
+                foreach ($variants as $variant){
+                    if (!isset($question->variant[$variant->variantno])){
+                        $question->variant[$variant->variantno] = array();
+                    }
+                    $question->variant[$variant->variantno][$varidtovarno[$variant->varid]] = $variant->value;
+                }
+            }
+        }
         return $question;
     }
 

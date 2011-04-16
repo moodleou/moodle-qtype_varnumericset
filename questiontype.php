@@ -30,6 +30,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->libdir . '/questionlib.php');
 require_once($CFG->dirroot . '/question/engine/lib.php');
 require_once($CFG->dirroot . '/question/type/varnumeric/question.php');
+require_once($CFG->libdir . '/evalmath/evalmath.class.php');
 
 
 /**
@@ -40,11 +41,11 @@ require_once($CFG->dirroot . '/question/type/varnumeric/question.php');
  */
 class qtype_varnumeric extends question_type {
     public function extra_question_fields() {
-        return array('question_varnumeric', 'answers', 'usecase');
+        return array('qtype_varnumeric', 'randomseed', 'recalculaterand');
     }
 
     protected function questionid_column_name() {
-        return 'question';
+        return 'questionid';
     }
 
     public function move_files($questionid, $oldcontextid, $newcontextid) {
@@ -100,7 +101,9 @@ class qtype_varnumeric extends question_type {
             }
         }
 
-        $question->answers = implode(',', $answers);
+        list ($varschanged, $varnotovarid) = $this->save_vars($question->id, $question->varname);
+        $definedvariantschanged = $this->save_variants(false, $question->id, $question->variant, $varnotovarid);
+
         $parentresult = parent::save_question_options($question);
         if ($parentresult !== null) {
             // Parent function returns null if all is OK
@@ -114,6 +117,7 @@ class qtype_varnumeric extends question_type {
             $DB->delete_records('question_answers', array('id' => $oldanswer->id));
         }
 
+
         $this->save_hints($question);
 
         // Perform sanity checks on fractional grades
@@ -123,16 +127,130 @@ class qtype_varnumeric extends question_type {
         }
     }
 
+    /**
+     * Save variant values.
+     * @param boolean calculated if false save only non calculated values, if true save calculated values.
+     * @param integer questionid
+     * @param array variants data from form
+     * @param array varnotovarid index is varno and values are qtype_varnumeric_vars.id
+     */
+    protected function save_variants($calculated, $questionid, $variants, $varnotovarid) {
+        global $DB;
+        $changed = false;
+        list($varidsql, $varids) = $DB->get_in_or_equal(array_values($varnotovarid));
+        $oldvariants = $DB->get_records_select('qtype_varnumeric_variants', 'varid '.$varidsql, $varids);
+        //variants are indexed by variantno and then var no
+        foreach ($variants as $variantno => $variant) {
+            foreach ($variant as $varno => $value) {
+                if ($value == '') {
+                    continue;
+                }
+                $foundold = false;
+                foreach ($oldvariants as $oldvariantid => $oldvariant) {
+                    if ($oldvariant->varid == $varnotovarid[$varno]
+                             && $oldvariant->variantno == $variantno){
+                        $foundold = true;
+                        $variantrec = $oldvariant;
+                        unset($oldvariants[$oldvariantid]);
+                        break;
+                    }
+                }
+                if (!$foundold) {
+                    $variantrec = new stdClass();
+                    $variantrec->varid = $varnotovarid[$varno];
+                    $variantrec->variantno = $variantno;
+                    $variantrec->value = $value;
+                    $variantrec->id = $DB->insert_record('qtype_varnumeric_variants', $variantrec);
+                    $changed = true;
+                } else {
+                    if ($variantrec->value != $value) {
+                        $variantrec->value = $value;
+                        $DB->update_record('qtype_varnumeric_variants', $variantrec);
+                        $changed = true;
+                    }
+                }
+            }
+        }
+        //delete any remaining old variants
+        if (!empty($oldvariants)){
+            $changed = true;
+            list($oldvariantsidsql, $oldvariantsids) = $DB->get_in_or_equal(array_keys($oldvariants));
+            $DB->delete_records_select('qtype_varnumeric_variants', 'id '.$oldvariantsidsql, $oldvariantsids);
+        }
+        return $changed;
+
+    }
+
+    /**
+     * Save variables.
+     * @param integer questionid
+     * @param array varnames
+     */
+    protected function save_vars($questionid, $varnames) {
+        global $DB;
+        $changed = false;
+        $oldvars = $DB->get_records('qtype_varnumeric_vars', array('questionid' => $questionid), 'id ASC');
+        $varnotovarid = array();
+        $predefined = array();
+        foreach ($varnames as $varno => $varname){
+            if ($varname == '') {
+                continue;
+            }
+            $foundold = false;
+            // Update an existing var if possible.
+            foreach ($oldvars as $oldvarid => $var) {
+                if ($var->varno == $varno) {
+                    $foundold = true;
+                    $varfromdb = $var;
+                    unset($oldvars[$oldvarid]);
+                    break;
+                }
+            }
+            if (!$foundold) {
+                $var = new stdClass();
+                $var->questionid = $questionid;
+                $var->varno = $varno;
+                $var->nameorassignment = $varname;
+                $var->id = $DB->insert_record('qtype_varnumeric_vars', $var);
+                $varnotovarid[$varno] = $var->id;
+                $changed = true;
+            } else {
+                if ($varfromdb->nameorassignment != $varname){
+                    $varfromdb->nameorassignment = $varname;
+                    $DB->update_record('qtype_varnumeric_vars', $varfromdb);
+                    $changed = true;
+                }
+                $varnotovarid[$varno] = $varfromdb->id;
+            }
+
+        }
+        //delete any remaining old vars
+        if (!empty($oldvars)){
+            $oldvarids = array();
+            foreach ($oldvars as $oldvar) {
+                $oldvarids[] = $oldvar->id;
+            }
+            list($oldvaridsql, $oldvaridslist) = $DB->get_in_or_equal($oldvarids);
+            $DB->delete_records_select('qtype_varnumeric_vars', 'id '.$oldvaridsql, $oldvaridslist);
+            $changed = true;
+        }
+        return array($changed, $varnotovarid);
+    }
+
+
     public function finished_edit_wizard($fromform) {
         //keep browser from moving onto next page after saving question and
         //recalculating variable values.
-        if (isset($fromform->recalculatevars)){
+        if (!empty($fromform->recalculatevars)){
             return false;
+        } else {
+            return true;
         }
     }
     protected function initialise_question_instance(question_definition $question, $questiondata) {
         parent::initialise_question_instance($question, $questiondata);
-        $question->usecase = $questiondata->options->usecase;
+        $question->randomseed = $questiondata->options->randomseed;
+        $question->recalculaterand = $questiondata->options->recalculaterand;
         $this->initialise_question_answers($question, $questiondata);
     }
 

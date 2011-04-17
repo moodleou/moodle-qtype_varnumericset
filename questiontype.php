@@ -101,8 +101,8 @@ class qtype_varnumeric extends question_type {
             }
         }
 
-        list ($varschanged, $varnotovarid) = $this->save_vars($question->id, $question->varname);
-        $definedvariantschanged = $this->save_variants(false, $question->id, $question->variant, $varnotovarid);
+        list ($varschanged, $varnotovarid, $assignments, $predefined) = $this->save_vars($question->id, $question->varname);
+        $definedvariantschanged = $this->save_variants($predefined, $question->id, $question->variant, $varnotovarid);
 
         $parentresult = parent::save_question_options($question);
         if ($parentresult !== null) {
@@ -129,20 +129,22 @@ class qtype_varnumeric extends question_type {
 
     /**
      * Save variant values.
-     * @param boolean calculated if false save only non calculated values, if true save calculated values.
+     * @param array varidstoprocess only save variants for variables with these ids
      * @param integer questionid
      * @param array variants data from form
      * @param array varnotovarid index is varno and values are qtype_varnumeric_vars.id
      */
-    protected function save_variants($calculated, $questionid, $variants, $varnotovarid) {
+    protected function save_variants($varidstoprocess, $question, $varnotovarid) {
         global $DB;
         $changed = false;
-        list($varidsql, $varids) = $DB->get_in_or_equal(array_values($varnotovarid));
+        list($varidsql, $varids) = $DB->get_in_or_equal($varidstoprocess);
         $oldvariants = $DB->get_records_select('qtype_varnumeric_variants', 'varid '.$varidsql, $varids);
         //variants are indexed by variantno and then var no
-        foreach ($variants as $variantno => $variant) {
+        for ($variantno = 0; $variantno < $question->noofvariants; $variantno++){
+            $propname = 'variant'.$variantno;
+            $variant = $question->{$propname};
             foreach ($variant as $varno => $value) {
-                if ($value == '') {
+                if ($value == '' || !in_array($varnotovarid[$varno], $varidstoprocess)) {
                     continue;
                 }
                 $foundold = false;
@@ -192,6 +194,7 @@ class qtype_varnumeric extends question_type {
         $oldvars = $DB->get_records('qtype_varnumeric_vars', array('questionid' => $questionid), 'id ASC');
         $varnotovarid = array();
         $predefined = array();
+        $assignments = array();
         foreach ($varnames as $varno => $varname){
             if ($varname == '') {
                 continue;
@@ -212,7 +215,7 @@ class qtype_varnumeric extends question_type {
                 $var->varno = $varno;
                 $var->nameorassignment = $varname;
                 $var->id = $DB->insert_record('qtype_varnumeric_vars', $var);
-                $varnotovarid[$varno] = $var->id;
+                $varid = $var->id;
                 $changed = true;
             } else {
                 if ($varfromdb->nameorassignment != $varname){
@@ -220,7 +223,13 @@ class qtype_varnumeric extends question_type {
                     $DB->update_record('qtype_varnumeric_vars', $varfromdb);
                     $changed = true;
                 }
-                $varnotovarid[$varno] = $varfromdb->id;
+                $varid = $varfromdb->id;
+            }
+            $varnotovarid[$varno] = $varid;
+            if (self::is_assignment($varname)){
+                $assignments[] = $varid;
+            } else {
+                $predefined[] = $varid;
             }
 
         }
@@ -234,9 +243,16 @@ class qtype_varnumeric extends question_type {
             $DB->delete_records_select('qtype_varnumeric_vars', 'id '.$oldvaridsql, $oldvaridslist);
             $changed = true;
         }
-        return array($changed, $varnotovarid);
+        return array($changed, $varnotovarid, $assignments, $predefined);
     }
 
+    public static function is_assignment($string) {
+        $parts = explode('=', $string);
+        if (count($parts) != 2){
+            return false;
+        }
+        return EvalMath::is_valid_var_or_func_name(trim($parts[0]));
+    }
 
     public function finished_edit_wizard($fromform) {
         //keep browser from moving onto next page after saving question and

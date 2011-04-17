@@ -48,21 +48,26 @@ class qtype_varnumeric_edit_form extends question_edit_form {
         }
         $answersoption = '';
 
+        $typemenu = array(0 => get_string('vartypecalculated', 'qtype_varnumeric'),
+                            1 => get_string('vartypepredefined', 'qtype_varnumeric'));
+
         $repeated = array();
+        $repeatedoptions = array();
         $repeated[] = $mform->createElement('header', 'varhdr', get_string('varheader', 'qtype_varnumeric'));
-        $repeated[] = $mform->createElement('text', 'varname',
-                get_string('varname', 'qtype_varnumeric'), array('size' => 40));
+        $repeated[] = $mform->createElement('select', 'vartype', '', $typemenu);
+        $repeated[] = $mform->createElement('text', 'varname', get_string('varname', 'qtype_varnumeric'), array('size' => 40));
 
         $mform->setType('varname', PARAM_RAW_TRIMMED);
 
         $noofvariants = max($noofvariants, 5);
         for ($i=0; $i < $noofvariants; $i++){
-            $repeated[] = $mform->createElement('text', "variant[$i]",
+            $repeated[] = $mform->createElement('text', "variant$i",
                     get_string('variant', 'qtype_varnumeric', $i+1), array('size' => 40));
+            $repeatedoptions["variant$i"]['disabledif'] = array('vartype', 'eq', 0);
         }
         $mform->setType('variant', PARAM_RAW_TRIMMED);
 
-        $this->repeat_elements($repeated, $noofvariants, array(),
+        $this->repeat_elements($repeated, $noofvariants, $repeatedoptions,
                 'novars', 'addvars', 2, get_string('addmorevars', 'qtype_varnumeric'));
 
         $mform->registerNoSubmitButton('addvariants');
@@ -109,16 +114,22 @@ class qtype_varnumeric_edit_form extends question_edit_form {
                 $question->varname = array();
                 foreach ($vars as $varid => $var){
                     $question->varname[$var->varno] = $var->nameorassignment;
+                    if (qtype_varnumeric::is_assignment($var->nameorassignment)){
+                        $question->vartype[$var->varno] = 0;
+                    } else {
+                        $question->vartype[$var->varno] = 1;
+                    }
                     $varidtovarno[$varid] = $var->varno;
                 }
                 list($varidsql, $varids) = $DB->get_in_or_equal(array_keys($vars));
                 $variants = $DB->get_records_select('qtype_varnumeric_variants', 'varid '.$varidsql, $varids);
                 $question->variant = array();
                 foreach ($variants as $variant){
-                    if (!isset($question->variant[$variant->variantno])){
-                        $question->variant[$variant->variantno] = array();
+                    $propname = 'variant'.$variant->variantno;
+                    if (!isset($question->{$propname})){
+                        $question->{$propname} = array();
                     }
-                    $question->variant[$variant->variantno][$varidtovarno[$variant->varid]] = $variant->value;
+                    $question->{$propname}[$varidtovarno[$variant->varid]] = $variant->value;
                 }
             }
         }
@@ -141,6 +152,22 @@ class qtype_varnumeric_edit_form extends question_edit_form {
                     !html_is_blank($data['feedback'][$key]['text'])) {
                 $errors["answer[$key]"] = get_string('answermustbegiven', 'qtype_varnumeric');
                 $answercount++;
+            }
+        }
+        $ev = new EvalMath(true, true);
+        foreach ($data['varname'] as $varno => $varname){
+            if (!empty($varname)){
+                $isvalidvar =  EvalMath::is_valid_var_or_func_name($varname);
+                $isvalidassignment = qtype_varnumeric::is_assignment($varname);
+                if ($data['vartype'][$varno] == 1 &&  !$isvalidvar){
+                    $errors["varname[$varno]"] = get_string('expectingvariablename', 'qtype_varnumeric');
+                }
+                if ($data['vartype'][$varno] == 0 &&  !$isvalidassignment){
+                    $errors["varname[$varno]"] = get_string('expectingassignment', 'qtype_varnumeric');
+                }
+                if ($data['vartype'][$varno] == 1 && empty($data['variant0'][$varno])) {
+                    $errors["variant0[$varno]"] = get_string('youmustprovideavalueforfirstvariant', 'qtype_varnumeric');
+                }
             }
         }
         if ($answercount==0) {

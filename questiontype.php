@@ -31,6 +31,7 @@ require_once($CFG->libdir . '/questionlib.php');
 require_once($CFG->dirroot . '/question/engine/lib.php');
 require_once($CFG->dirroot . '/question/type/varnumeric/question.php');
 require_once($CFG->libdir . '/evalmath/evalmath.class.php');
+require_once($CFG->dirroot . '/question/type/varnumeric/calculator.php');
 
 
 /**
@@ -102,7 +103,7 @@ class qtype_varnumeric extends question_type {
         }
 
         list ($varschanged, $varnotovarid, $assignments, $predefined) = $this->save_vars($question->id, $question->varname);
-        $definedvariantschanged = $this->save_variants($predefined, $question->id, $question->variant, $varnotovarid);
+        $definedvariantschanged = $this->save_variants($predefined, $question, $varnotovarid);
 
         $parentresult = parent::save_question_options($question);
         if ($parentresult !== null) {
@@ -226,7 +227,7 @@ class qtype_varnumeric extends question_type {
                 $varid = $varfromdb->id;
             }
             $varnotovarid[$varno] = $varid;
-            if (self::is_assignment($varname)){
+            if (qtype_varnumeric_calculator::is_assignment($varname)){
                 $assignments[] = $varid;
             } else {
                 $predefined[] = $varid;
@@ -244,14 +245,6 @@ class qtype_varnumeric extends question_type {
             $changed = true;
         }
         return array($changed, $varnotovarid, $assignments, $predefined);
-    }
-
-    public static function is_assignment($string) {
-        $parts = explode('=', $string);
-        if (count($parts) != 2){
-            return false;
-        }
-        return EvalMath::is_valid_var_or_func_name(trim($parts[0]));
     }
 
     public function finished_edit_wizard($fromform) {

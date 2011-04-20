@@ -20,13 +20,14 @@
  *
  * @package    qtype
  * @subpackage varnumeric
- * @copyright  2007 Jamie Pratt
+ * @copyright  2011 Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->dirroot . '/question/type/varnumeric/calculator.php');
 
 /**
  * Short answer question editing form definition.
@@ -114,7 +115,7 @@ class qtype_varnumeric_edit_form extends question_edit_form {
                 $question->varname = array();
                 foreach ($vars as $varid => $var){
                     $question->varname[$var->varno] = $var->nameorassignment;
-                    if (qtype_varnumeric::is_assignment($var->nameorassignment)){
+                    if (qtype_varnumeric_calculator::is_assignment($var->nameorassignment)){
                         $question->vartype[$var->varno] = 0;
                     } else {
                         $question->vartype[$var->varno] = 1;
@@ -154,21 +155,46 @@ class qtype_varnumeric_edit_form extends question_edit_form {
                 $answercount++;
             }
         }
-        $ev = new EvalMath(true, true);
         foreach ($data['varname'] as $varno => $varname){
             if (!empty($varname)){
                 $isvalidvar =  EvalMath::is_valid_var_or_func_name($varname);
-                $isvalidassignment = qtype_varnumeric::is_assignment($varname);
+                $isvalidassignment = qtype_varnumeric_calculator::is_assignment($varname);
                 if ($data['vartype'][$varno] == 1 &&  !$isvalidvar){
                     $errors["varname[$varno]"] = get_string('expectingvariablename', 'qtype_varnumeric');
                 }
-                if ($data['vartype'][$varno] == 0 &&  !$isvalidassignment){
-                    $errors["varname[$varno]"] = get_string('expectingassignment', 'qtype_varnumeric');
+                if ($data['vartype'][$varno] == 0) {
+                    if (!$isvalidassignment){
+                        $errors["varname[$varno]"] = get_string('expectingassignment', 'qtype_varnumeric');
+                    }
                 }
                 if ($data['vartype'][$varno] == 1 && empty($data['variant0'][$varno])) {
                     $errors["variant0[$varno]"] = get_string('youmustprovideavalueforfirstvariant', 'qtype_varnumeric');
                 }
             }
+        }
+        error_log(print_r(array('before evaluating' => $data), true));
+        if (count($errors) == 0) {
+            error_log(print_r(array('starting evaluating' => $data), true));
+            $calculator = new qtype_varnumeric_calculator();
+            foreach ($data['varname'] as $varno => $varname){
+                $calculator->add_variable($varno, $varname);
+            }
+            for ($variantno = 0; $variantno < $data['noofvariants']; $variantno++) {
+                if (isset($data['variant'.$variantno])){
+                    $variants = $data['variant'.$variantno];
+                    foreach ($variants as $varno => $value){
+                        if ($data['vartype'][$varno] == 1) {
+                            $calculator->add_defined_variant($varno, $variantno, $value);
+                        }
+                    }
+                }
+            }
+            foreach ($answers as $answerno => $answer) {
+                $calculator->add_answer($answerno, $answer);
+            }
+            $calculator->evaluate_all();
+            $errors = $calculator->get_errors();
+            error_log(print_r(array('get_calculated_variants' => $calculator->get_calculated_variants()), true));
         }
         if ($answercount==0) {
             $errors['answer[0]'] = get_string('notenoughanswers', 'qtype_varnumeric', 1);

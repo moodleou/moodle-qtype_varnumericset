@@ -31,6 +31,7 @@ $string['addmoreanswerblanks'] = 'Blanks for {no} More Answers';
 $string['answer'] = 'Answer: {$a}';
 $string['answermustbegiven'] = 'You must enter an answer if there is a grade or feedback.';
 $string['answerno'] = 'Answer {$a}';
+$string['errorreportedbyexpressionevaluator'] = 'Expression Evaluation Error : {$a}';
 $string['randomseed'] = 'String To Act As a Seed For Randomisation';
 $string['recalculaterandno'] = 'only when random expression changes or when recalculate button is pressed';
 $string['recalculaterand'] = 'Recalculate random variant values';

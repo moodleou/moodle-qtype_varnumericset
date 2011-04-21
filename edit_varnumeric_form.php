@@ -156,7 +156,7 @@ class qtype_varnumeric_edit_form extends question_edit_form {
             }
         }
         foreach ($data['varname'] as $varno => $varname){
-            if (!empty($varname)){
+            if ($varname!==''){
                 $isvalidvar =  EvalMath::is_valid_var_or_func_name($varname);
                 $isvalidassignment = qtype_varnumeric_calculator::is_assignment($varname);
                 if ($data['vartype'][$varno] == 1 &&  !$isvalidvar){
@@ -172,29 +172,33 @@ class qtype_varnumeric_edit_form extends question_edit_form {
                 }
             }
         }
-        error_log(print_r(array('before evaluating' => $data), true));
         if (count($errors) == 0) {
-            error_log(print_r(array('starting evaluating' => $data), true));
             $calculator = new qtype_varnumeric_calculator();
             foreach ($data['varname'] as $varno => $varname){
-                $calculator->add_variable($varno, $varname);
+                if ($varname!==''){
+                    $calculator->add_variable($varno, $varname);
+                }
             }
             for ($variantno = 0; $variantno < $data['noofvariants']; $variantno++) {
                 if (isset($data['variant'.$variantno])){
                     $variants = $data['variant'.$variantno];
                     foreach ($variants as $varno => $value){
                         if ($data['vartype'][$varno] == 1) {
-                            $calculator->add_defined_variant($varno, $variantno, $value);
+                            if ($value!==''){
+                                $calculator->add_defined_variant($varno, $variantno, $value);
+                            }
                         }
+
                     }
                 }
             }
             foreach ($answers as $answerno => $answer) {
-                $calculator->add_answer($answerno, $answer);
+                if (!empty($answer)){
+                    $calculator->add_answer($answerno, $answer);
+                }
             }
             $calculator->evaluate_all();
             $errors = $calculator->get_errors();
-            error_log(print_r(array('get_calculated_variants' => $calculator->get_calculated_variants()), true));
         }
         if ($answercount==0) {
             $errors['answer[0]'] = get_string('notenoughanswers', 'qtype_varnumeric', 1);

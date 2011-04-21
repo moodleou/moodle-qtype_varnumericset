@@ -75,7 +75,6 @@ class qtype_varnumeric_calculator {
 
 
     public function evaluate_all(){
-        error_log(print_r(array('evaluate_all' => func_get_args()), true));
         for ($variantno = 0; $variantno < $this->noofvariants; $variantno++){
             $this->evaluate_variant($variantno);
             $this->calculatedvariants[$variantno] = $this->get_calculated_variant_values($variantno);
@@ -86,7 +85,6 @@ class qtype_varnumeric_calculator {
     }
 
     public function evaluate($item, $placetoputanyerror = null){
-        error_log(print_r(array('evaluate' => func_get_args()), true));
         $result = $this->ev->evaluate($item);
         if ($result === false && !is_null($placetoputanyerror)){
             $this->errors[$placetoputanyerror] = get_string('errorreportedbyexpressionevaluator',
@@ -100,7 +98,6 @@ class qtype_varnumeric_calculator {
      * @param integer $variantno
      */
     public function evaluate_variant($variantno){
-        error_log(print_r(array('evaluate_variant' => func_get_args()), true));
         $this->ev = new EvalMath(true, true);
         foreach ($this->variables as $varno => $variablenameorassignment){
             if (!self::is_assignment($variablenameorassignment)){

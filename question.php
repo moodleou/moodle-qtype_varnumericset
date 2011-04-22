@@ -36,8 +36,11 @@ defined('MOODLE_INTERNAL') || die();
  */
 class qtype_varnumeric_question extends question_graded_by_strategy
         implements question_response_answer_comparer {
-    /** @var boolean whether answers should be graded case-sensitively. */
-    public $usecase;
+
+
+    /** @var qtype_varnumeric_calculator calculator to deal with expressions, variable and variants. */
+    public $calculator;
+
     /** @var array of question_answer. */
     public $answers = array();
 

@@ -107,33 +107,13 @@ class qtype_varnumeric_edit_form extends question_edit_form {
         $question = $this->data_preprocessing_answers($question);
         $question = $this->data_preprocessing_hints($question);
 
-
-        if (!empty($question->id)) {
-            $vars = $DB->get_records('qtype_varnumeric_vars', array('questionid' => $question->id), 'id ASC', 'id, nameorassignment, varno');
-            if ($vars) {
-                $varidtovarno = array();
-                $question->varname = array();
-                foreach ($vars as $varid => $var){
-                    $question->varname[$var->varno] = $var->nameorassignment;
-                    if (qtype_varnumeric_calculator::is_assignment($var->nameorassignment)){
-                        $question->vartype[$var->varno] = 0;
-                    } else {
-                        $question->vartype[$var->varno] = 1;
-                    }
-                    $varidtovarno[$varid] = $var->varno;
-                }
-                list($varidsql, $varids) = $DB->get_in_or_equal(array_keys($vars));
-                $variants = $DB->get_records_select('qtype_varnumeric_variants', 'varid '.$varidsql, $varids);
-                $question->variant = array();
-                foreach ($variants as $variant){
-                    $propname = 'variant'.$variant->variantno;
-                    if (!isset($question->{$propname})){
-                        $question->{$propname} = array();
-                    }
-                    $question->{$propname}[$varidtovarno[$variant->varid]] = $variant->value;
-                }
-            }
+        if (isset($question->id)){
+            $calculator = new qtype_varnumeric_calculator();
+            $calculator->set_options($question->options->recalculaterand, $question->options->randomseed);
+            $calculator->load_data_from_database($question->id);
+            $question = $calculator->get_data_for_form($question);
         }
+
         return $question;
     }
 
@@ -174,29 +154,7 @@ class qtype_varnumeric_edit_form extends question_edit_form {
         }
         if (count($errors) == 0) {
             $calculator = new qtype_varnumeric_calculator();
-            foreach ($data['varname'] as $varno => $varname){
-                if ($varname!==''){
-                    $calculator->add_variable($varno, $varname);
-                }
-            }
-            for ($variantno = 0; $variantno < $data['noofvariants']; $variantno++) {
-                if (isset($data['variant'.$variantno])){
-                    $variants = $data['variant'.$variantno];
-                    foreach ($variants as $varno => $value){
-                        if ($data['vartype'][$varno] == 1) {
-                            if ($value!==''){
-                                $calculator->add_defined_variant($varno, $variantno, $value);
-                            }
-                        }
-
-                    }
-                }
-            }
-            foreach ($answers as $answerno => $answer) {
-                if (!empty($answer)){
-                    $calculator->add_answer($answerno, $answer);
-                }
-            }
+            $calculator->load_data_from_form($data);
             $calculator->evaluate_all();
             $errors = $calculator->get_errors();
         }

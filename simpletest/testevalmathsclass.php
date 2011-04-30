@@ -49,6 +49,22 @@ class qtype_varnumeric_evalmath_test extends UnitTestCase {
         $this->assertEqual($ev->evaluate('a'), 2);
 
     }
+    public function test_random_expressions() {
+        $ev = new EvalMath(true, true);
+        $results = array();
+        for ($i=0; $i < 500; $i++){
+            $ev->evaluate("a$i=rand_float()");
+            $results[] = $ev->evaluate("a$i");
+        }
+        $this->assertTrue(min($results) >= 0 && max($results) <= 1);
 
+        $ev = new EvalMath(true, true);
+        $results = array();
+        for ($i=0; $i < 500; $i++){
+            $ev->evaluate("a$i=rand_int(500,1000)");
+            $results[] = $ev->evaluate("a$i");
+        }
+        $this->assertTrue(min($results) >= 500 && max($results) <= 1000);
+    }
 
 }

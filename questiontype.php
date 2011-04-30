@@ -160,6 +160,9 @@ class qtype_varnumeric extends question_type {
      */
     protected function save_variants($varidstoprocess, $variants, $varnotovarid) {
         global $DB;
+        if (empty($varidstoprocess)){
+            return false;
+        }
         $changed = false;
         list($varidsql, $varids) = $DB->get_in_or_equal($varidstoprocess);
         $oldvariants = $DB->get_records_select('qtype_varnumeric_variants', 'varid '.$varidsql, $varids);
@@ -283,10 +286,9 @@ class qtype_varnumeric extends question_type {
         $this->initialise_question_answers($question, $questiondata);
     }
     protected function initialise_question_vars_and_variants(question_definition $question, $questiondata) {
-        global $DB;
         if (!empty($question->id)) {
             $question->calculator = new qtype_varnumeric_calculator();
-            $question->calculator->set_options($questiondata->options->randomseed, $questiondata->options->recalculaterand);
+            $question->calculator->set_options($question);
             $question->calculator->load_data_from_database($question->id);
         }
     }

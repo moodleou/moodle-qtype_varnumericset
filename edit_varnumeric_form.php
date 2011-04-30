@@ -109,7 +109,7 @@ class qtype_varnumeric_edit_form extends question_edit_form {
 
         if (isset($question->id)){
             $calculator = new qtype_varnumeric_calculator();
-            $calculator->set_options($question->options->recalculaterand, $question->options->randomseed);
+            $calculator->set_options($question);
             $calculator->load_data_from_database($question->id);
             $question = $calculator->get_data_for_form($question);
         }

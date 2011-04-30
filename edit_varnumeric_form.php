@@ -38,6 +38,7 @@ require_once($CFG->dirroot . '/question/type/varnumeric/calculator.php');
 class qtype_varnumeric_edit_form extends question_edit_form {
 
     protected function definition_inner($mform) {
+        global $DB;
 
         $mform->addElement('text', 'randomseed', get_string('randomseed', 'qtype_varnumeric'));
         $mform->setType('randomseed', PARAM_RAW);
@@ -60,7 +61,27 @@ class qtype_varnumeric_edit_form extends question_edit_form {
 
         $mform->setType('varname', PARAM_RAW_TRIMMED);
 
-        $noofvariants = max($noofvariants, 5);
+        if (isset($this->question->id)) {
+            $sql = 'SELECT MAX(vari.variantno)+1 '.
+                    'FROM {qtype_varnumeric_variants} vari, {qtype_varnumeric_vars} vars '.
+                    'WHERE vars.questionid = ? AND vars.id = vari.varid';
+            $noofvariantsindb = $DB->get_field_sql($sql, array($this->question->id));
+            $sql = 'SELECT MAX(varno)+1 '.
+                    'FROM {qtype_varnumeric_vars} vars '.
+                    'WHERE questionid = ?';
+            $noofvarsindb = $DB->get_field_sql($sql, array($this->question->id));
+        } else {
+            $noofvariantsindb = 0;
+            $noofvarsindb = 0;
+        }
+
+        if ($this->question->formoptions->repeatelements) {
+            $noofvariants = max($noofvariants, 5, $noofvariantsindb + 2);
+            $noofvarsatstart = max($noofvarsindb + 2, 5);
+        } else {
+            $noofvariants = max(5, $noofvariantsindb);
+            $noofvarsatstart = $noofvarsindb;
+        }
         for ($i=0; $i < $noofvariants; $i++){
             $repeated[] = $mform->createElement('text', "variant$i",
                     get_string('variant', 'qtype_varnumeric', $i+1), array('size' => 40));
@@ -68,7 +89,7 @@ class qtype_varnumeric_edit_form extends question_edit_form {
         }
         $mform->setType('variant', PARAM_RAW_TRIMMED);
 
-        $this->repeat_elements($repeated, $noofvariants, $repeatedoptions,
+        $this->repeat_elements($repeated, $noofvarsatstart, $repeatedoptions,
                 'novars', 'addvars', 2, get_string('addmorevars', 'qtype_varnumeric'));
 
         $mform->registerNoSubmitButton('addvariants');
@@ -80,7 +101,7 @@ class qtype_varnumeric_edit_form extends question_edit_form {
 
         $mform->addElement('submit', 'recalculatevars', get_string('recalculatevars', 'qtype_varnumeric', 2));
         //we are using a hook in questiontype to resdisplay the form and it expects a parameter wizard, which
-        //we won't actually use but we need to pass to avoid an error message.
+        //we won't actually use but we need to pass it to avoid an error message.
         $mform->addElement('hidden', 'wizard', '');
 
         $menu = array(

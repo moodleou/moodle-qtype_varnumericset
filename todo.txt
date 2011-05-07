@@ -1,3 +1,2 @@
-* check predefined variants are saved properly and handled properly when recalculating.
 * display question with possibly embedded variables
 * 

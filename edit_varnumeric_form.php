@@ -60,6 +60,7 @@ class qtype_varnumeric_edit_form extends question_edit_form {
         $repeated[] = $mform->createElement('text', 'varname', get_string('varname', 'qtype_varnumeric'), array('size' => 40));
 
         $mform->setType('varname', PARAM_RAW_TRIMMED);
+        $repeatedoptions['varname']['helpbutton'] = array('varname', 'qtype_varnumeric');
 
         if (isset($this->question->id)) {
             $sql = 'SELECT MAX(vari.variantno)+1 '.
@@ -86,6 +87,9 @@ class qtype_varnumeric_edit_form extends question_edit_form {
             $repeated[] = $mform->createElement('text', "variant$i",
                     get_string('variant', 'qtype_varnumeric', $i+1), array('size' => 40));
             $repeatedoptions["variant$i"]['disabledif'] = array('vartype', 'eq', 0);
+            if ($i == 0){
+                $repeatedoptions["variant$i"]['helpbutton'] = array('variants', 'qtype_varnumeric');
+            }
         }
         $mform->setType('variant', PARAM_RAW_TRIMMED);
 
@@ -99,16 +103,21 @@ class qtype_varnumeric_edit_form extends question_edit_form {
         $mform->setConstant('noofvariants', $noofvariants);
         $mform->setType('noofvariants', PARAM_INT);
 
-        $mform->addElement('submit', 'recalculatevars', get_string('recalculatevars', 'qtype_varnumeric', 2));
+        $mform->addElement('header', 'calculatewhen', get_string('calculatewhen', 'qtype_varnumeric'));
+
+        $menu = array(
+            get_string('recalculateeverytimeno', 'qtype_varnumeric'),
+            get_string('recalculateeverytimeyes', 'qtype_varnumeric')
+        );
+        $mform->addElement('select', 'recalculateeverytime', get_string('recalculateeverytime', 'qtype_varnumeric'), $menu);
+        $mform->addHelpButton('recalculateeverytime', 'recalculateeverytime', 'qtype_varnumeric');
+
+        $mform->addElement('submit', 'recalculatenow', get_string('recalculatenow', 'qtype_varnumeric', 2));
+        $mform->disabledIf('recalculatenow', 'recalculateeverytime', 'eq', 1);
+
         //we are using a hook in questiontype to resdisplay the form and it expects a parameter wizard, which
         //we won't actually use but we need to pass it to avoid an error message.
         $mform->addElement('hidden', 'wizard', '');
-
-        $menu = array(
-            get_string('recalculaterandno', 'qtype_varnumeric'),
-            get_string('recalculaterandyes', 'qtype_varnumeric')
-        );
-        $mform->addElement('select', 'recalculaterand', get_string('recalculaterand', 'qtype_varnumeric'), $menu);
 
         $mform->addElement('static', 'answersinstruct',
                 get_string('correctanswers', 'qtype_varnumeric'),
@@ -130,7 +139,8 @@ class qtype_varnumeric_edit_form extends question_edit_form {
 
         if (isset($question->id)){
             $calculator = new qtype_varnumeric_calculator();
-            $calculator->set_options($question);
+            $calculator->set_random_seed($question->options->randomseed, $question->stamp);
+            $calculator->set_recalculate_rand($question->options->recalculateeverytime);
             $calculator->load_data_from_database($question->id);
             $question = $calculator->get_data_for_form($question);
         }
@@ -175,6 +185,9 @@ class qtype_varnumeric_edit_form extends question_edit_form {
         }
         if (count($errors) == 0) {
             $calculator = new qtype_varnumeric_calculator();
+            //don't need to bother setting the random seed here as the
+            //results of the evaluation are not important, we are just seeing
+            //if the expressions evaluate without errors.
             $calculator->load_data_from_form($data);
             $calculator->evaluate_all();
             $errors = $calculator->get_errors();

@@ -42,7 +42,7 @@ require_once($CFG->dirroot . '/question/type/varnumeric/calculator.php');
  */
 class qtype_varnumeric extends question_type {
     public function extra_question_fields() {
-        return array('qtype_varnumeric', 'randomseed', 'recalculaterand');
+        return array('qtype_varnumeric', 'randomseed', 'recalculateeverytime');
     }
 
     protected function questionid_column_name() {
@@ -59,23 +59,23 @@ class qtype_varnumeric extends question_type {
         $this->delete_files_in_answers($questionid, $contextid);
     }
 
-    public function save_question_options($question) {
+    public function save_question_options($form) {
         global $DB;
         $result = new stdClass();
 
-        $context = $question->context;
+        $context = $form->context;
 
         $oldanswers = $DB->get_records('question_answers',
-                array('question' => $question->id), 'id ASC');
+                array('question' => $form->id), 'id ASC');
 
         $answers = array();
         $maxfraction = -1;
 
         // Insert all the new answers
-        foreach ($question->answer as $key => $answerdata) {
+        foreach ($form->answer as $key => $answerdata) {
             // Check for, and ignore, completely blank answer from the form.
-            if (trim($answerdata) == '' && $question->fraction[$key] == 0 &&
-                    html_is_blank($question->feedback[$key]['text'])) {
+            if (trim($answerdata) == '' && $form->fraction[$key] == 0 &&
+                    html_is_blank($form->feedback[$key]['text'])) {
                 continue;
             }
 
@@ -83,52 +83,61 @@ class qtype_varnumeric extends question_type {
             $answer = array_shift($oldanswers);
             if (!$answer) {
                 $answer = new stdClass();
-                $answer->question = $question->id;
+                $answer->question = $form->id;
                 $answer->answer = '';
                 $answer->feedback = '';
                 $answer->id = $DB->insert_record('question_answers', $answer);
             }
 
             $answer->answer   = trim($answerdata);
-            $answer->fraction = $question->fraction[$key];
-            $answer->feedback = $this->import_or_save_files($question->feedback[$key],
+            $answer->fraction = $form->fraction[$key];
+            $answer->feedback = $this->import_or_save_files($form->feedback[$key],
                     $context, 'question', 'answerfeedback', $answer->id);
-            $answer->feedbackformat = $question->feedback[$key]['format'];
+            $answer->feedbackformat = $form->feedback[$key]['format'];
             $DB->update_record('question_answers', $answer);
 
             $answers[] = $answer->id;
-            if ($question->fraction[$key] > $maxfraction) {
-                $maxfraction = $question->fraction[$key];
+            if ($form->fraction[$key] > $maxfraction) {
+                $maxfraction = $form->fraction[$key];
             }
         }
 
-        list ($varschanged, $varnotovarid, $assignments, $predefined) = $this->save_vars($question->id, $question->varname);
+        list ($varschanged, $varnotovarid, $assignments, $predefined) = $this->save_vars($form->id, $form->varname);
 
         $variants = array();
-        for ($variantno = 0; $variantno < $question->noofvariants; $variantno++){
+        for ($variantno = 0; $variantno < $form->noofvariants; $variantno++){
             $propname = 'variant'.$variantno;
-            $variants[$variantno] = $question->{$propname};
+            $variants[$variantno] = $form->{$propname};
         }
 
         //process variants
-        if ($question->recalculaterand) {
+        if ($form->recalculateeverytime) {
             //remove any old variants in the db that are calculated
             list($varidsql, $varids) = $DB->get_in_or_equal($assignments);
             $DB->delete_records_select('qtype_varnumeric_variants', 'varid '.$varidsql, $varids);
         }
         $definedvariantschanged = $this->save_variants($predefined, $variants, $varnotovarid);
 
-        if ((!$question->recalculaterand) &&
-                ((!empty($question->recalculatevars))|| $definedvariantschanged || $varschanged)){
+        //on save don't ever calculate calculated variants if the recalculate every time option is selected
+        //but if it is not recalculate whenever there is a change of predefined variants or any variable or
+        //when recalculate button is pressed.
+        if ((!$form->recalculateeverytime) && // the recalculate every time option
+                ((!empty($form->recalculatenow)) // the recalculate now option
+                || $definedvariantschanged || $varschanged)){
             //precalculate variant values
             $calculator = new qtype_varnumeric_calculator();
-            $calculator->load_data_from_form((array)$question);
+            if (empty($form->randomseed)){
+                $questionstamp = $DB->get_field('question', 'stamp', array('id' => $form->id));
+            }
+            $calculator->set_random_seed($form->randomseed, $questionstamp);
+            $calculator->load_data_from_form((array)$form);
             $calculator->evaluate_all();
             $calculatedvariants = $calculator->get_calculated_variants();
             $this->save_variants($assignments, $calculatedvariants, $varnotovarid);
+            error_log(print_r(array('saving variants '=>$assignments), true));
         }
 
-        $parentresult = parent::save_question_options($question);
+        $parentresult = parent::save_question_options($form);
         if ($parentresult !== null) {
             // Parent function returns null if all is OK
             return $parentresult;
@@ -142,7 +151,7 @@ class qtype_varnumeric extends question_type {
         }
 
 
-        $this->save_hints($question);
+        $this->save_hints($form);
 
         // Perform sanity checks on fractional grades
         if ($maxfraction != 1) {
@@ -274,7 +283,7 @@ class qtype_varnumeric extends question_type {
     public function finished_edit_wizard($fromform) {
         //keep browser from moving onto next page after saving question and
         //recalculating variable values.
-        if (!empty($fromform->recalculatevars)){
+        if (!empty($fromform->recalculatenow)){
             return false;
         } else {
             return true;
@@ -288,7 +297,8 @@ class qtype_varnumeric extends question_type {
     protected function initialise_question_vars_and_variants(question_definition $question, $questiondata) {
         if (!empty($question->id)) {
             $question->calculator = new qtype_varnumeric_calculator();
-            $question->calculator->set_options($question);
+            $question->calculator->set_random_seed($question->options->randomseed, $question->stamp);
+            $question->calculator->set_recalculate_rand($question->options->recalculateeverytime);
             $question->calculator->load_data_from_database($question->id);
         }
     }

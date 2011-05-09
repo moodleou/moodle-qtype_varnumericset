@@ -81,28 +81,25 @@ class qtype_varnumeric_question extends question_graded_by_strategy
         return $this->answers;
     }
 
-    public function compare_response_with_answer(array $response, question_answer $answer) {
-        return self::compare_string_with_wildcard(
-                $response['answer'], $answer->answer, !$this->usecase);
+    public function get_correct_answer() {
+        $answer = parent::get_correct_answer();
+        $answer->answer = $this->calculator->evaluate($answer->answer);
+        return $answer;
     }
 
-    public static function compare_string_with_wildcard($string, $pattern, $ignorecase) {
-        // Break the string on non-escaped asterisks.
-        $bits = preg_split('/(?<!\\\\)\*/', $pattern);
-        // Escape regexp special characters in the bits.
-        $excapedbits = array();
-        foreach ($bits as $bit) {
-            $excapedbits[] = preg_quote(str_replace('\*', '*', $bit));
+    public function compare_response_with_answer(array $response, question_answer $answer) {
+        if ($answer->answer == '*') {
+            return true;
         }
-        // Put it back together to make the regexp.
-        $regexp = '|^' . implode('.*', $excapedbits) . '$|u';
+        return self::compare_num_as_string_with_expression($response['answer'], $answer->answer);
+    }
 
-        // Make the match insensitive if requested to.
-        if ($ignorecase) {
-            $regexp .= 'i';
+    protected function compare_num_as_string_with_expression($string, $expression) {
+        if ($this->calculator->evaluate($expression) == $string){
+            return true;
+        } else {
+            return false;
         }
-
-        return preg_match($regexp, trim($string));
     }
 
     public function check_file_access($qa, $options, $component, $filearea, $args, $forcedownload) {

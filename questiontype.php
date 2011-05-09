@@ -134,7 +134,6 @@ class qtype_varnumeric extends question_type {
             $calculator->evaluate_all();
             $calculatedvariants = $calculator->get_calculated_variants();
             $this->save_variants($assignments, $calculatedvariants, $varnotovarid);
-            error_log(print_r(array('saving variants '=>$assignments), true));
         }
 
         $parentresult = parent::save_question_options($form);
@@ -295,11 +294,13 @@ class qtype_varnumeric extends question_type {
         $this->initialise_question_answers($question, $questiondata);
     }
     protected function initialise_question_vars_and_variants(question_definition $question, $questiondata) {
-        if (!empty($question->id)) {
+        if (!empty($questiondata->id)) {
             $question->calculator = new qtype_varnumeric_calculator();
-            $question->calculator->set_random_seed($question->options->randomseed, $question->stamp);
-            $question->calculator->set_recalculate_rand($question->options->recalculateeverytime);
-            $question->calculator->load_data_from_database($question->id);
+            $question->calculator->set_random_seed($questiondata->options->randomseed, $questiondata->stamp);
+            $question->calculator->set_recalculate_rand($questiondata->options->recalculateeverytime);
+            $question->calculator->load_data_from_database($questiondata->id);
+            $question->calculator->evaluate_variant(1);
+
         }
     }
     public function get_random_guess_score($questiondata) {

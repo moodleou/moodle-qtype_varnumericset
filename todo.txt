@@ -1,2 +1,9 @@
 * display question with possibly embedded variables
-* 
+* embedding variables and expressions in question text
+* add Sigfigs(val, noSigFigs)
+* adding floor() and ceil()
+* add method to work out what variant we want to display
+* check does php round away from zero for negative as well as positive numbers??
+* need to be able to enter numbers as answers as values in Maths expression with e format
+* need to be able to enter numbers as answers with <sup> html
+

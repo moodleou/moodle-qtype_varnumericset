@@ -86,9 +86,6 @@ class qtype_varnumeric_calculator {
 
 
     public function evaluate_all(){
-        if ($this->noofvariants == 0){
-            $this->noofvariants = 5;
-        }
         for ($variantno = 0; $variantno < $this->noofvariants; $variantno++){
             $this->evaluate_variant($variantno);
             $this->calculatedvariants[$variantno] = $this->calculate_calculated_variant_values($variantno);
@@ -158,6 +155,10 @@ class qtype_varnumeric_calculator {
                 }
             }
         }
+        if ($this->noofvariants == 0){
+            //if there are no predefined variables at all then have a set ammount of 5 variants
+            $this->noofvariants = 5;
+        }
         foreach ($formdata['answer'] as $answerno => $answer) {
             if (!empty($answer) && '*' != $answer){
                 $this->add_answer($answerno, $answer);
@@ -206,12 +207,17 @@ class qtype_varnumeric_calculator {
             foreach ($variants as $variant){
                 $this->add_defined_variant($varidtovarno[$variant->varid], $variant->variantno, $variant->value);
             }
-            if ($this->recalculateeverytime){
-                $this->evaluate_all();
+            if ($this->noofvariants == 0){
+                //if there are no predefined variables at all then have a set ammount of 5 variants
+                $this->noofvariants = 5;
             }
+
         }
     }
     public function get_data_for_form($dataforform){
+        if ($this->recalculateeverytime){
+            $this->evaluate_all();
+        }
         $dataforform->recalculateeverytime = $this->recalculateeverytime;
         $dataforform->randomseed = $dataforform->options->randomseed;
         $dataforform->vartype = $this->vartypes;

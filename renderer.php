@@ -113,7 +113,7 @@ class qtype_varnumeric_renderer extends qtype_renderer {
     public function correct_response(question_attempt $qa) {
         $question = $qa->get_question();
 
-        $answer = reset($question->get_answers());
+        $answer = $question->get_correct_answer();
         if (!$answer) {
             return '';
         }

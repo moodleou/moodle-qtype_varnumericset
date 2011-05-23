@@ -69,6 +69,10 @@ class qtype_varnumeric_calculator {
         $this->answers[$answerno] = $answer;
     }
 
+    public function get_no_of_variants(){
+        return $this->noofvariants;
+    }
+
     public function get_errors(){
         return $this->errors;
     }
@@ -181,7 +185,13 @@ class qtype_varnumeric_calculator {
         }
         $this->randomseed .= $USER->id;
     }
-
+    /**
+     *
+     * Get the portion of the random seed shared by all variants and variables.
+     */
+    public function get_random_seed(){
+        return $this->randomseed;
+    }
     public function set_recalculate_rand($recalculateeverytime){
         $this->recalculateeverytime = $recalculateeverytime;
     }

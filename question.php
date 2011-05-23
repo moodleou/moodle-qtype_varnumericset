@@ -20,7 +20,7 @@
  *
  * @package    qtype
  * @subpackage varnumeric
- * @copyright  2009 The Open University
+ * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -116,5 +116,24 @@ class qtype_varnumeric_question extends question_graded_by_strategy
             return parent::check_file_access($qa, $options, $component, $filearea,
                     $args, $forcedownload);
         }
+    }
+
+    public function get_no_of_variants(){
+        return $this->calculator->get_no_of_variants();
+    }
+
+    public function start_attempt(question_attempt_step $step) {
+        $this->calculator->evaluate_variant($step->get_behaviour_var('_variantno')-1);
+    }
+
+    public function apply_attempt_state(question_attempt_step $step) {
+        $this->calculator->evaluate_variant($step->get_behaviour_var('_variantno')-1);
+    }
+
+    /**
+     * @return string seed used for random number generation. Used to randomise variant order.
+     */
+    public function get_random_seed(){
+        return $this->calculator->get_random_seed();
     }
 }

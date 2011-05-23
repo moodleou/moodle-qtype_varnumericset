@@ -294,14 +294,10 @@ class qtype_varnumeric extends question_type {
         $this->initialise_question_answers($question, $questiondata);
     }
     protected function initialise_question_vars_and_variants(question_definition $question, $questiondata) {
-        if (!empty($questiondata->id)) {
-            $question->calculator = new qtype_varnumeric_calculator();
-            $question->calculator->set_random_seed($questiondata->options->randomseed, $questiondata->stamp);
-            $question->calculator->set_recalculate_rand($questiondata->options->recalculateeverytime);
-            $question->calculator->load_data_from_database($questiondata->id);
-            $question->calculator->evaluate_variant(1);
-
-        }
+        $question->calculator = new qtype_varnumeric_calculator();
+        $question->calculator->set_random_seed($questiondata->options->randomseed, $questiondata->stamp);
+        $question->calculator->set_recalculate_rand($questiondata->options->recalculateeverytime);
+        $question->calculator->load_data_from_database($question->id);
     }
     public function get_random_guess_score($questiondata) {
         foreach ($questiondata->options->answers as $aid => $answer) {

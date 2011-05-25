@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -31,14 +30,16 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Represents a short answer question.
  *
- * @copyright  2009 The Open University
+ * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_varnumeric_question extends question_graded_by_strategy
         implements question_response_answer_comparer {
 
 
-    /** @var qtype_varnumeric_calculator calculator to deal with expressions, variable and variants. */
+    /** @var qtype_varnumeric_calculator calculator to deal with expressions,
+     *                                    variable and variants.
+     */
     public $calculator;
 
     /** @var array of question_answer. */
@@ -95,7 +96,7 @@ class qtype_varnumeric_question extends question_graded_by_strategy
     }
 
     protected function compare_num_as_string_with_expression($string, $expression) {
-        if ($this->calculator->evaluate($expression) == $string){
+        if ($this->calculator->evaluate($expression) == $string) {
             return true;
         } else {
             return false;
@@ -118,7 +119,7 @@ class qtype_varnumeric_question extends question_graded_by_strategy
         }
     }
 
-    public function get_no_of_variants(){
+    public function get_no_of_variants() {
         return $this->calculator->get_no_of_variants();
     }
 
@@ -136,7 +137,7 @@ class qtype_varnumeric_question extends question_graded_by_strategy
     /**
      * @return string seed used for random number generation. Used to randomise variant order.
      */
-    public function get_random_seed(){
+    public function get_random_seed() {
         return $this->calculator->get_random_seed();
     }
 }

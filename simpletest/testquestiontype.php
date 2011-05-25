@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -20,7 +19,7 @@
  *
  * @package    qtype
  * @subpackage varnumeric
- * @copyright  2007 The Open University
+ * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -33,7 +32,7 @@ require_once($CFG->dirroot . '/question/type/varnumeric/questiontype.php');
 /**
  * Unit tests for the varnumeric question type class.
  *
- * @copyright  2007 The Open University
+ * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_varnumeric_test extends UnitTestCase {

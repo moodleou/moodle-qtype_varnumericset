@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -20,7 +19,7 @@
  *
  * @package    qtype
  * @subpackage varnumeric
- * @copyright  1999 onwards Martin Dougiamas  {@link http://moodle.com}
+ * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -37,7 +36,7 @@ require_once($CFG->dirroot . '/question/type/varnumeric/calculator.php');
 /**
  * The short answer question type.
  *
- * @copyright  1999 onwards Martin Dougiamas  {@link http://moodle.com}
+ * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_varnumeric extends question_type {
@@ -102,10 +101,11 @@ class qtype_varnumeric extends question_type {
             }
         }
 
-        list ($varschanged, $varnotovarid, $assignments, $predefined) = $this->save_vars($form->id, $form->varname);
+        list ($varschanged, $varnotovarid, $assignments, $predefined) =
+                                                    $this->save_vars($form->id, $form->varname);
 
         $variants = array();
-        for ($variantno = 0; $variantno < $form->noofvariants; $variantno++){
+        for ($variantno = 0; $variantno < $form->noofvariants; $variantno++) {
             $propname = 'variant'.$variantno;
             $variants[$variantno] = $form->{$propname};
         }
@@ -118,15 +118,15 @@ class qtype_varnumeric extends question_type {
         }
         $definedvariantschanged = $this->save_variants($predefined, $variants, $varnotovarid);
 
-        //on save don't ever calculate calculated variants if the recalculate every time option is selected
-        //but if it is not recalculate whenever there is a change of predefined variants or any variable or
-        //when recalculate button is pressed.
+        //on save don't ever calculate calculated variants if the recalculate every time option
+        //is selected but if it is not recalculate whenever there is a change of predefined variants
+        //or any variable or when recalculate button is pressed.
         if ((!$form->recalculateeverytime) && // the recalculate every time option
                 ((!empty($form->recalculatenow)) // the recalculate now option
-                || $definedvariantschanged || $varschanged)){
+                || $definedvariantschanged || $varschanged)) {
             //precalculate variant values
             $calculator = new qtype_varnumeric_calculator();
-            if (empty($form->randomseed)){
+            if (empty($form->randomseed)) {
                 $questionstamp = $DB->get_field('question', 'stamp', array('id' => $form->id));
             } else {
                 $questionstamp = '';
@@ -151,7 +151,6 @@ class qtype_varnumeric extends question_type {
             $DB->delete_records('question_answers', array('id' => $oldanswer->id));
         }
 
-
         $this->save_hints($form);
 
         // Perform sanity checks on fractional grades
@@ -170,12 +169,13 @@ class qtype_varnumeric extends question_type {
      */
     protected function save_variants($varidstoprocess, $variants, $varnotovarid) {
         global $DB;
-        if (empty($varidstoprocess)){
+        if (empty($varidstoprocess)) {
             return false;
         }
         $changed = false;
         list($varidsql, $varids) = $DB->get_in_or_equal($varidstoprocess);
-        $oldvariants = $DB->get_records_select('qtype_varnumeric_variants', 'varid '.$varidsql, $varids);
+        $oldvariants =
+                $DB->get_records_select('qtype_varnumeric_variants', 'varid '.$varidsql, $varids);
         //variants are indexed by variantno and then var no
         foreach ($variants as $variantno => $variant) {
             foreach ($variant as $varno => $value) {
@@ -185,7 +185,7 @@ class qtype_varnumeric extends question_type {
                 $foundold = false;
                 foreach ($oldvariants as $oldvariantid => $oldvariant) {
                     if ($oldvariant->varid == $varnotovarid[$varno]
-                             && $oldvariant->variantno == $variantno){
+                             && $oldvariant->variantno == $variantno) {
                         $foundold = true;
                         $variantrec = $oldvariant;
                         unset($oldvariants[$oldvariantid]);
@@ -209,10 +209,13 @@ class qtype_varnumeric extends question_type {
             }
         }
         //delete any remaining old variants
-        if (!empty($oldvariants)){
+        if (!empty($oldvariants)) {
             $changed = true;
-            list($oldvariantsidsql, $oldvariantsids) = $DB->get_in_or_equal(array_keys($oldvariants));
-            $DB->delete_records_select('qtype_varnumeric_variants', 'id '.$oldvariantsidsql, $oldvariantsids);
+            list($oldvariantsidsql, $oldvariantsids) =
+                                                $DB->get_in_or_equal(array_keys($oldvariants));
+            $DB->delete_records_select('qtype_varnumeric_variants',
+                                            'id '.$oldvariantsidsql,
+                                            $oldvariantsids);
         }
         return $changed;
 
@@ -226,11 +229,13 @@ class qtype_varnumeric extends question_type {
     protected function save_vars($questionid, $varnames) {
         global $DB;
         $changed = false;
-        $oldvars = $DB->get_records('qtype_varnumeric_vars', array('questionid' => $questionid), 'id ASC');
+        $oldvars = $DB->get_records('qtype_varnumeric_vars',
+                                       array('questionid' => $questionid),
+                                       'id ASC');
         $varnotovarid = array();
         $predefined = array();
         $assignments = array();
-        foreach ($varnames as $varno => $varname){
+        foreach ($varnames as $varno => $varname) {
             if ($varname == '') {
                 continue;
             }
@@ -253,7 +258,7 @@ class qtype_varnumeric extends question_type {
                 $varid = $var->id;
                 $changed = true;
             } else {
-                if ($varfromdb->nameorassignment != $varname){
+                if ($varfromdb->nameorassignment != $varname) {
                     $varfromdb->nameorassignment = $varname;
                     $DB->update_record('qtype_varnumeric_vars', $varfromdb);
                     $changed = true;
@@ -261,7 +266,7 @@ class qtype_varnumeric extends question_type {
                 $varid = $varfromdb->id;
             }
             $varnotovarid[$varno] = $varid;
-            if (qtype_varnumeric_calculator::is_assignment($varname)){
+            if (qtype_varnumeric_calculator::is_assignment($varname)) {
                 $assignments[] = $varid;
             } else {
                 $predefined[] = $varid;
@@ -269,7 +274,7 @@ class qtype_varnumeric extends question_type {
 
         }
         //delete any remaining old vars
-        if (!empty($oldvars)){
+        if (!empty($oldvars)) {
             $oldvarids = array();
             foreach ($oldvars as $oldvar) {
                 $oldvarids[] = $oldvar->id;
@@ -284,7 +289,7 @@ class qtype_varnumeric extends question_type {
     public function finished_edit_wizard($fromform) {
         //keep browser from moving onto next page after saving question and
         //recalculating variable values.
-        if (!empty($fromform->recalculatenow)){
+        if (!empty($fromform->recalculatenow)) {
             return false;
         } else {
             return true;
@@ -295,9 +300,11 @@ class qtype_varnumeric extends question_type {
         $this->initialise_question_vars_and_variants($question, $questiondata);
         $this->initialise_question_answers($question, $questiondata);
     }
-    protected function initialise_question_vars_and_variants(question_definition $question, $questiondata) {
+    protected function initialise_question_vars_and_variants(question_definition $question,
+                                                                                $questiondata) {
         $question->calculator = new qtype_varnumeric_calculator();
-        $question->calculator->set_random_seed($questiondata->options->randomseed, $questiondata->stamp);
+        $question->calculator->set_random_seed($questiondata->options->randomseed,
+                                                $questiondata->stamp);
         $question->calculator->set_recalculate_rand($questiondata->options->recalculateeverytime);
         $question->calculator->load_data_from_database($question->id);
     }

@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -30,16 +29,23 @@ class qtype_varnumeric_calculator {
     /** @var boolean whether assignments to variables should be evaluated on each question load. */
     protected $recalculateeverytime = false;
 
-    /** @var string used to randomize random functions. The variant no and variable name will be appended to this. **/
+    /** @var string used to randomize random functions. The variant no and variable name will be
+     *                   appended to this.
+     **/
     protected $randomseed;
 
     /** @var EvalMath $ev evaluation class instance to use. **/
     protected $ev;
 
-    /** @var array two dimensional array first key is varno, 2nd is variant no, contents is value of variant**/
+    /**
+     * @var array two dimensional array first key is varno,
+     *                2nd is variant no, contents is value of variant
+     **/
     protected $predefinedvariants = array();
 
-    /** @var array two dimensional array first key is varno, 2nd is variant no, contents is value of variant**/
+    /** @var array two dimensional array first key is varno,
+     *                2nd is variant no, contents is value of variant
+     **/
     protected $calculatedvariants = array();
 
     /** @var array one dimensional array key is varno **/
@@ -54,47 +60,48 @@ class qtype_varnumeric_calculator {
 
     protected $errors = array();
 
-    public function add_variable($varno, $variablenameorassignment){
+    public function add_variable($varno, $variablenameorassignment) {
         $this->variables[$varno] = $variablenameorassignment;
     }
 
-    public function add_defined_variant($varno, $variantno, $value){
+    public function add_defined_variant($varno, $variantno, $value) {
         $this->noofvariants = max($this->noofvariants, $variantno + 1);
-        if (!isset($this->predefinedvariants[$variantno])){
+        if (!isset($this->predefinedvariants[$variantno])) {
             $this->predefinedvariants[$variantno] = array();
         }
         $this->predefinedvariants[$variantno][$varno] = $value;
     }
-    public function add_answer($answerno, $answer){
+    public function add_answer($answerno, $answer) {
         $this->answers[$answerno] = $answer;
     }
 
-    public function get_no_of_variants(){
+    public function get_no_of_variants() {
         return $this->noofvariants;
     }
 
-    public function get_errors(){
+    public function get_errors() {
         return $this->errors;
     }
 
-    public function get_calculated_variants(){
+    public function get_calculated_variants() {
         return $this->calculatedvariants;
     }
 
-    protected function get_defined_variant($varno, $variantno){
-        while (!isset($this->predefinedvariants[$variantno][$varno])){
+    protected function get_defined_variant($varno, $variantno) {
+        while (!isset($this->predefinedvariants[$variantno][$varno])) {
             $variantno--;
         }
         return $this->predefinedvariants[$variantno][$varno];
     }
 
 
-    public function evaluate_all($forcerecalculate = false){
-        for ($variantno = 0; $variantno < $this->noofvariants; $variantno++){
+    public function evaluate_all($forcerecalculate = false) {
+        for ($variantno = 0; $variantno < $this->noofvariants; $variantno++) {
             $this->evaluate_variant($variantno, $forcerecalculate);
-            $this->calculatedvariants[$variantno] = $this->calculate_calculated_variant_values($variantno);
-            foreach ($this->answers as $answerno => $answer){
-                if (true === $this->evaluate($answer, "answer[$answerno]")){
+            $this->calculatedvariants[$variantno]
+                            = $this->calculate_calculated_variant_values($variantno);
+            foreach ($this->answers as $answerno => $answer) {
+                if (true === $this->evaluate($answer, "answer[$answerno]")) {
                     //this is an assignment not legal here
                     $this->errors["answer[$answerno]"] =
                                 get_string('expressionmustevaluatetoanumber', 'qtype_varnumeric');
@@ -103,11 +110,11 @@ class qtype_varnumeric_calculator {
         }
     }
 
-    public function evaluate($item, $placetoputanyerror = null){
+    public function evaluate($item, $placetoputanyerror = null) {
         $result = $this->ev->evaluate($item);
-        if ($result === false && !is_null($placetoputanyerror)){
+        if ($result === false && !is_null($placetoputanyerror)) {
             $this->errors[$placetoputanyerror] = get_string('errorreportedbyexpressionevaluator',
-                                                                'qtype_varnumeric', $this->ev->last_error);
+                                                        'qtype_varnumeric', $this->ev->last_error);
         }
         return $result;
     }
@@ -115,17 +122,18 @@ class qtype_varnumeric_calculator {
      *
      * Load all variable assignments.
      * @param integer $variantno
-     * @param boolean $recalculatecalculated recalculate calculated values or just load predefined values?
+     * @param boolean $forcerecalculate force recalculate calculated values
+     *                        or load calculated values as predefined values?
      */
-    public function evaluate_variant($variantno, $forcerecalculate = false){
+    public function evaluate_variant($variantno, $forcerecalculate = false) {
         if ((!$this->recalculateeverytime) && (!$forcerecalculate)) {
             $recalculatecalculated = false;
         } else {
             $recalculatecalculated = true;
         }
         $this->ev = new EvalMath(true, true);
-        foreach ($this->variables as $varno => $variablenameorassignment){
-            if (!$recalculatecalculated || !self::is_assignment($variablenameorassignment)){
+        foreach ($this->variables as $varno => $variablenameorassignment) {
+            if (!$recalculatecalculated || !self::is_assignment($variablenameorassignment)) {
                 $varname = self::var_in_assignment($variablenameorassignment);
                 $this->evaluate($varname.'='.$this->get_defined_variant($varno, $variantno),
                         "variant{$variantno}[{$varno}]");
@@ -138,12 +146,13 @@ class qtype_varnumeric_calculator {
     }
 
 
-    protected function calculate_calculated_variant_values($variantno){
+    protected function calculate_calculated_variant_values($variantno) {
         $calculatedvariants = array();
-        foreach ($this->variables as $varno => $variablenameorassignment){
-            if (self::is_assignment($variablenameorassignment)){
+        foreach ($this->variables as $varno => $variablenameorassignment) {
+            if (self::is_assignment($variablenameorassignment)) {
                 $varname = self::var_in_assignment($variablenameorassignment);
-                $calculatedvariants[$varno] = $this->evaluate($varname, "variant$variantno[$varno]");
+                $calculatedvariants[$varno]
+                            = $this->evaluate($varname, "variant$variantno[$varno]");
             }
         }
         return $calculatedvariants;
@@ -155,17 +164,18 @@ class qtype_varnumeric_calculator {
      * @param question_attempt_step $step
      * @param integer $variantno
      */
-    public function save_calculated_variant_values($step, $variantno){
+    public function save_calculated_variant_values($step, $variantno) {
         $calculatedvariants = $this->calculate_calculated_variant_values($variantno);
-        foreach ($calculatedvariants as $varno => $calculatedvariant){
+        foreach ($calculatedvariants as $varno => $calculatedvariant) {
             $step->set_qt_var("_var$varno", $calculatedvariant);
         }
     }
 
-    public function load_calculated_variant_values($step, $variantno){
+    public function load_calculated_variant_values($step, $variantno) {
         $this->ev = new EvalMath(true, true);
-        foreach ($this->variables as $varno => $variablenameorassignment){
-            if ((!$this->recalculateeverytime) || (!self::is_assignment($variablenameorassignment))){
+        foreach ($this->variables as $varno => $variablenameorassignment) {
+            if ((!$this->recalculateeverytime) ||
+                    (!self::is_assignment($variablenameorassignment))) {
                 $varname = self::var_in_assignment($variablenameorassignment);
                 $this->evaluate($varname.'='.$this->get_defined_variant($varno, $variantno),
                         "variant{$variantno}[{$varno}]");
@@ -177,30 +187,30 @@ class qtype_varnumeric_calculator {
         }
     }
 
-    public function load_data_from_form($formdata){
-        foreach ($formdata['varname'] as $varno => $varname){
-            if ($varname!==''){
+    public function load_data_from_form($formdata) {
+        foreach ($formdata['varname'] as $varno => $varname) {
+            if ($varname!=='') {
                 $this->add_variable($varno, $varname);
             }
         }
         for ($variantno = 0; $variantno < $formdata['noofvariants']; $variantno++) {
-            if (isset($formdata['variant'.$variantno])){
+            if (isset($formdata['variant'.$variantno])) {
                 $variants = $formdata['variant'.$variantno];
-                foreach ($variants as $varno => $value){
+                foreach ($variants as $varno => $value) {
                     if ($formdata['vartype'][$varno] == 1) {
-                        if ($value!==''){
+                        if ($value!=='') {
                             $this->add_defined_variant($varno, $variantno, $value);
                         }
                     }
                 }
             }
         }
-        if ($this->noofvariants == 0){
+        if ($this->noofvariants == 0) {
             //if there are no predefined variables at all then have a set ammount of 5 variants
             $this->noofvariants = 5;
         }
         foreach ($formdata['answer'] as $answerno => $answer) {
-            if (!empty($answer) && '*' != $answer){
+            if (!empty($answer) && '*' != $answer) {
                 $this->add_answer($answerno, $answer);
             }
         }
@@ -210,11 +220,12 @@ class qtype_varnumeric_calculator {
      *
      * Set the portion of the random seed shared by all variants and variables.
      * @param string $randomseed from the question creation form
-     * @param string $questionstamp autogenerated unique value for each question from question object
+     * @param string $questionstamp autogenerated unique value for each question from
+     *                              question object
      */
-    public function set_random_seed($randomseed, $questionstamp){
+    public function set_random_seed($randomseed, $questionstamp) {
         global $USER;
-        if (!empty($randomseed)){
+        if (!empty($randomseed)) {
             $this->randomseed = $randomseed;
         } else {
             $this->randomseed = $questionstamp;
@@ -225,22 +236,23 @@ class qtype_varnumeric_calculator {
      *
      * Get the portion of the random seed shared by all variants and variables.
      */
-    public function get_random_seed(){
+    public function get_random_seed() {
         return $this->randomseed;
     }
-    public function set_recalculate_rand($recalculateeverytime){
+    public function set_recalculate_rand($recalculateeverytime) {
         $this->recalculateeverytime = $recalculateeverytime;
     }
 
 
-    public function load_data_from_database($questionid){
+    public function load_data_from_database($questionid) {
         global $DB;
-        $vars = $DB->get_records('qtype_varnumeric_vars', array('questionid' => $questionid), 'id ASC', 'id, nameorassignment, varno');
+        $vars = $DB->get_records('qtype_varnumeric_vars', array('questionid' => $questionid),
+                                        'id ASC', 'id, nameorassignment, varno');
         if ($vars) {
             //declare and load data whether or not we will use calculator.
             $varidtovarno = array();
-            foreach ($vars as $varid => $var){
-                if (self::is_assignment($var->nameorassignment)){
+            foreach ($vars as $varid => $var) {
+                if (self::is_assignment($var->nameorassignment)) {
                     $this->vartypes[$var->varno] = 0;
                 } else {
                     $this->vartypes[$var->varno] = 1;
@@ -249,53 +261,55 @@ class qtype_varnumeric_calculator {
                 $varidtovarno[$varid] = $var->varno;
             }
             list($varidsql, $varids) = $DB->get_in_or_equal(array_keys($vars));
-            $variants = $DB->get_records_select('qtype_varnumeric_variants', 'varid '.$varidsql, $varids);
-            foreach ($variants as $variant){
-                $this->add_defined_variant($varidtovarno[$variant->varid], $variant->variantno, $variant->value);
+            $variants = $DB->get_records_select('qtype_varnumeric_variants',
+                                                    'varid '.$varidsql, $varids);
+            foreach ($variants as $variant) {
+                $this->add_defined_variant($varidtovarno[$variant->varid],
+                                            $variant->variantno, $variant->value);
             }
-            if ($this->noofvariants == 0){
+            if ($this->noofvariants == 0) {
                 //if there are no predefined variables at all then have a set ammount of 5 variants
                 $this->noofvariants = 5;
             }
 
         }
     }
-    public function get_data_for_form($dataforform){
-        if ($this->recalculateeverytime){
+    public function get_data_for_form($dataforform) {
+        if ($this->recalculateeverytime) {
             $this->evaluate_all(true);
         }
         $dataforform->recalculateeverytime = $this->recalculateeverytime;
         $dataforform->randomseed = $dataforform->options->randomseed;
         $dataforform->vartype = $this->vartypes;
         $dataforform->varname = $this->variables;
-        for ($variantno=0; $variantno < $this->noofvariants; $variantno++){
+        for ($variantno=0; $variantno < $this->noofvariants; $variantno++) {
             $propname = 'variant'.$variantno;
             $dataforform->{$propname} = array();
-            if (isset($this->predefinedvariants[$variantno])){
+            if (isset($this->predefinedvariants[$variantno])) {
                 $dataforform->{$propname} += $this->predefinedvariants[$variantno];
             }
-            if (isset($this->calculatedvariants[$variantno])){
+            if (isset($this->calculatedvariants[$variantno])) {
                 $dataforform->{$propname} += $this->calculatedvariants[$variantno];
             }
         }
         return $dataforform;
     }
 
-    public function get_var_types(){
+    public function get_var_types() {
         return $this->vartypes;
     }
 
-    public function get_var_names(){
+    public function get_var_names() {
         return $this->variables;
     }
 
-    public function get_defined_variants(){
+    public function get_defined_variants() {
         return $this->predefinedvariants;
     }
 
     public static function is_assignment($string) {
         $parts = explode('=', $string);
-        if (count($parts) != 2){
+        if (count($parts) != 2) {
             return false;
         }
         return EvalMath::is_valid_var_or_func_name(trim($parts[0]));

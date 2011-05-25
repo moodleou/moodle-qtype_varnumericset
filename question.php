@@ -123,11 +123,14 @@ class qtype_varnumeric_question extends question_graded_by_strategy
     }
 
     public function start_attempt(question_attempt_step $step) {
-        $this->calculator->evaluate_variant($step->get_behaviour_var('_variantno')-1);
+        $variantno = $step->get_behaviour_var('_variantno')-1;
+        $this->calculator->evaluate_variant($variantno);
+        $this->calculator->save_calculated_variant_values($step, $variantno);
     }
 
     public function apply_attempt_state(question_attempt_step $step) {
-        $this->calculator->evaluate_variant($step->get_behaviour_var('_variantno')-1);
+        $variantno = $step->get_behaviour_var('_variantno')-1;
+        $this->calculator->load_calculated_variant_values($step, $variantno);
     }
 
     /**

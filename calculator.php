@@ -89,9 +89,9 @@ class qtype_varnumeric_calculator {
     }
 
 
-    public function evaluate_all(){
+    public function evaluate_all($forcerecalculate = false){
         for ($variantno = 0; $variantno < $this->noofvariants; $variantno++){
-            $this->evaluate_variant($variantno);
+            $this->evaluate_variant($variantno, $forcerecalculate);
             $this->calculatedvariants[$variantno] = $this->calculate_calculated_variant_values($variantno);
             foreach ($this->answers as $answerno => $answer){
                 if (true === $this->evaluate($answer, "answer[$answerno]")){
@@ -115,15 +115,23 @@ class qtype_varnumeric_calculator {
      *
      * Load all variable assignments.
      * @param integer $variantno
+     * @param boolean $recalculatecalculated recalculate calculated values or just load predefined values?
      */
-    public function evaluate_variant($variantno){
+    public function evaluate_variant($variantno, $forcerecalculate = false){
+        if ((!$this->recalculateeverytime) && (!$forcerecalculate)) {
+            $recalculatecalculated = false;
+        } else {
+            $recalculatecalculated = true;
+        }
         $this->ev = new EvalMath(true, true);
         foreach ($this->variables as $varno => $variablenameorassignment){
-            if (!self::is_assignment($variablenameorassignment)){
+            if (!$recalculatecalculated || !self::is_assignment($variablenameorassignment)){
                 $varname = self::var_in_assignment($variablenameorassignment);
-                $this->evaluate($variablenameorassignment.'='.$this->get_defined_variant($varno, $variantno),
+                $this->evaluate($varname.'='.$this->get_defined_variant($varno, $variantno),
                         "variant{$variantno}[{$varno}]");
             } else {
+                $varname = self::var_in_assignment($variablenameorassignment);
+                EvalMathCalcEmul_randomised::set_random_seed($this->randomseed.$variantno.$varname);
                 $this->evaluate($variablenameorassignment, "variable[$varno]");
             }
         }
@@ -135,12 +143,40 @@ class qtype_varnumeric_calculator {
         foreach ($this->variables as $varno => $variablenameorassignment){
             if (self::is_assignment($variablenameorassignment)){
                 $varname = self::var_in_assignment($variablenameorassignment);
-                EvalMathCalcEmul_randomised::set_random_seed($this->randomseed.$variantno.$varname);
                 $calculatedvariants[$varno] = $this->evaluate($varname, "variant$variantno[$varno]");
             }
         }
         return $calculatedvariants;
     }
+
+    /**
+     *
+     * Save all calculated vars as question type step data.
+     * @param question_attempt_step $step
+     * @param integer $variantno
+     */
+    public function save_calculated_variant_values($step, $variantno){
+        $calculatedvariants = $this->calculate_calculated_variant_values($variantno);
+        foreach ($calculatedvariants as $varno => $calculatedvariant){
+            $step->set_qt_var("_var$varno", $calculatedvariant);
+        }
+    }
+
+    public function load_calculated_variant_values($step, $variantno){
+        $this->ev = new EvalMath(true, true);
+        foreach ($this->variables as $varno => $variablenameorassignment){
+            if ((!$this->recalculateeverytime) || (!self::is_assignment($variablenameorassignment))){
+                $varname = self::var_in_assignment($variablenameorassignment);
+                $this->evaluate($varname.'='.$this->get_defined_variant($varno, $variantno),
+                        "variant{$variantno}[{$varno}]");
+            } else {
+                $varname = self::var_in_assignment($variablenameorassignment);
+                $value = $step->get_qt_var("_var$varno");
+                $this->evaluate($varname.'='.$value);
+            }
+        }
+    }
+
     public function load_data_from_form($formdata){
         foreach ($formdata['varname'] as $varno => $varname){
             if ($varname!==''){
@@ -226,7 +262,7 @@ class qtype_varnumeric_calculator {
     }
     public function get_data_for_form($dataforform){
         if ($this->recalculateeverytime){
-            $this->evaluate_all();
+            $this->evaluate_all(true);
         }
         $dataforform->recalculateeverytime = $this->recalculateeverytime;
         $dataforform->randomseed = $dataforform->options->randomseed;

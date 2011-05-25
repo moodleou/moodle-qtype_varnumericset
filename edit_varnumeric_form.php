@@ -189,7 +189,7 @@ class qtype_varnumeric_edit_form extends question_edit_form {
             //results of the evaluation are not important, we are just seeing
             //if the expressions evaluate without errors.
             $calculator->load_data_from_form($data);
-            $calculator->evaluate_all();
+            $calculator->evaluate_all(true);
             $errors = $calculator->get_errors();
         }
         if ($answercount==0) {

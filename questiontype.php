@@ -128,10 +128,12 @@ class qtype_varnumeric extends question_type {
             $calculator = new qtype_varnumeric_calculator();
             if (empty($form->randomseed)){
                 $questionstamp = $DB->get_field('question', 'stamp', array('id' => $form->id));
+            } else {
+                $questionstamp = '';
             }
             $calculator->set_random_seed($form->randomseed, $questionstamp);
             $calculator->load_data_from_form((array)$form);
-            $calculator->evaluate_all();
+            $calculator->evaluate_all(true);
             $calculatedvariants = $calculator->get_calculated_variants();
             $this->save_variants($assignments, $calculatedvariants, $varnotovarid);
         }
@@ -177,7 +179,7 @@ class qtype_varnumeric extends question_type {
         //variants are indexed by variantno and then var no
         foreach ($variants as $variantno => $variant) {
             foreach ($variant as $varno => $value) {
-                if ($value == '' || !in_array($varnotovarid[$varno], $varidstoprocess)) {
+                if ($value === '' || !in_array($varnotovarid[$varno], $varidstoprocess)) {
                     continue;
                 }
                 $foundold = false;

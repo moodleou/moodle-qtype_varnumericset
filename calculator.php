@@ -91,8 +91,7 @@ class qtype_varnumeric_calculator {
         while (!isset($this->predefinedvariants[$variantno][$varno])) {
             $variantno--;
             if ($variantno < 0) {
-
-                throw new coding_exception('Predefined variants have not been loaded.', print_r($this, true));
+                throw new coding_exception('Predefined variants have not been loaded.');
             }
         }
         return $this->predefinedvariants[$variantno][$varno];

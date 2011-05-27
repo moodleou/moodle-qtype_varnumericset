@@ -119,19 +119,17 @@ class qtype_varnumeric_question extends question_graded_by_strategy
         }
     }
 
-    public function get_no_of_variants() {
-        return $this->calculator->get_no_of_variants();
+    public function get_num_variants() {
+        return $this->calculator->get_num_variants();
     }
 
-    public function start_attempt(question_attempt_step $step) {
-        $variantno = $step->get_behaviour_var('_variantno')-1;
-        $this->calculator->evaluate_variant($variantno);
-        $this->calculator->save_calculated_variant_values($step, $variantno);
+    public function start_attempt(question_attempt_step $step, $variantno) {
+        $this->calculator->evaluate_variant($variantno-1);
+        $this->calculator->save_state_as_qt_data($step);
     }
 
     public function apply_attempt_state(question_attempt_step $step) {
-        $variantno = $step->get_behaviour_var('_variantno')-1;
-        $this->calculator->load_calculated_variant_values($step, $variantno);
+        $this->calculator->load_state_from_qt_data($step);
     }
 
     /**

@@ -75,7 +75,7 @@ class qtype_varnumeric_calculator {
         $this->answers[$answerno] = $answer;
     }
 
-    public function get_no_of_variants() {
+    public function get_num_variants() {
         return $this->noofvariants;
     }
 
@@ -90,6 +90,10 @@ class qtype_varnumeric_calculator {
     protected function get_defined_variant($varno, $variantno) {
         while (!isset($this->predefinedvariants[$variantno][$varno])) {
             $variantno--;
+            if ($variantno < 0) {
+
+                throw new coding_exception('Predefined variants have not been loaded.', print_r($this, true));
+            }
         }
         return $this->predefinedvariants[$variantno][$varno];
     }
@@ -160,30 +164,22 @@ class qtype_varnumeric_calculator {
 
     /**
      *
-     * Save all calculated vars as question type step data.
+     * Save internal state of calculator as question type step data.
      * @param question_attempt_step $step
      * @param integer $variantno
      */
-    public function save_calculated_variant_values($step, $variantno) {
-        $calculatedvariants = $this->calculate_calculated_variant_values($variantno);
-        foreach ($calculatedvariants as $varno => $calculatedvariant) {
-            $step->set_qt_var("_var$varno", $calculatedvariant);
+    public function save_state_as_qt_data($step) {
+        foreach ($this->variables as $varno => $variablenameorassignment) {
+            $varname = self::var_in_assignment($variablenameorassignment);
+            $step->set_qt_var("_var$varno", $this->evaluate($varname));
         }
     }
 
-    public function load_calculated_variant_values($step, $variantno) {
+    public function load_state_from_qt_data ($step) {
         $this->ev = new EvalMath(true, true);
         foreach ($this->variables as $varno => $variablenameorassignment) {
-            if ((!$this->recalculateeverytime) ||
-                    (!self::is_assignment($variablenameorassignment))) {
-                $varname = self::var_in_assignment($variablenameorassignment);
-                $this->evaluate($varname.'='.$this->get_defined_variant($varno, $variantno),
-                        "variant{$variantno}[{$varno}]");
-            } else {
-                $varname = self::var_in_assignment($variablenameorassignment);
-                $value = $step->get_qt_var("_var$varno");
-                $this->evaluate($varname.'='.$value);
-            }
+            $varname = self::var_in_assignment($variablenameorassignment);
+            $this->evaluate("$varname=".$step->get_qt_var("_var$varno"));
         }
     }
 

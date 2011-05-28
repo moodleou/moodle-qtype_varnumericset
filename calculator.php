@@ -58,6 +58,8 @@ class qtype_varnumeric_calculator {
 
     protected $answers = array();
 
+    protected $textswithembeddedvars = array();
+
     protected $errors = array();
 
     public function add_variable($varno, $variablenameorassignment) {
@@ -73,6 +75,10 @@ class qtype_varnumeric_calculator {
     }
     public function add_answer($answerno, $answer) {
         $this->answers[$answerno] = $answer;
+    }
+
+    public function add_text_with_embedded_variables($fromformfield, $textwithembeddedvariables) {
+        $this->textswithembeddedvars[$fromformfield] = $textwithembeddedvariables;
     }
 
     public function get_num_variants() {
@@ -104,14 +110,20 @@ class qtype_varnumeric_calculator {
             $this->calculatedvariants[$variantno]
                             = $this->calculate_calculated_variant_values($variantno);
             foreach ($this->answers as $answerno => $answer) {
-                if (true === $this->evaluate($answer, "answer[$answerno]")) {
+                if (self::is_assignment($answer)){
                     //this is an assignment not legal here
                     $this->errors["answer[$answerno]"] =
                                 get_string('expressionmustevaluatetoanumber', 'qtype_varnumeric');
+                } else {
+                    $this->evaluate($answer, "answer[$answerno]");
                 }
+            }
+            foreach ($this->textswithembeddedvars as $wherefrom => $textwithembeddedvars) {
+                $this->evaluate_variables_in_text($textwithembeddedvars, $wherefrom);
             }
         }
     }
+
 
     public function evaluate($item, $placetoputanyerror = null) {
         $result = $this->ev->evaluate($item);
@@ -207,6 +219,16 @@ class qtype_varnumeric_calculator {
         foreach ($formdata['answer'] as $answerno => $answer) {
             if (!empty($answer) && '*' != $answer) {
                 $this->add_answer($answerno, $answer);
+            }
+        }
+        $this->add_text_with_embedded_variables('questiontext', $formdata['questiontext']['text']);
+        $this->add_text_with_embedded_variables('generalfeedback',
+                                                $formdata['generalfeedback']['text']);
+        foreach (array('feedback', 'hint') as $itemname) {
+            if (isset($formdata[$itemname])) {
+                foreach ($formdata[$itemname] as $indexno => $item) {
+                    $this->add_text_with_embedded_variables("{$itemname}[{$indexno}]", $item['text']);
+                }
             }
         }
     }
@@ -314,5 +336,24 @@ class qtype_varnumeric_calculator {
         $parts = explode('=', $assignment);
         return trim($parts[0]);
     }
+    public function evaluate_variables_in_text($text, $wheretoputerror = null) {
+        $match = array();
+        $offset = 0;
+        //match anything surrounded by [[ ]]
+        while (0 !== preg_match('!\[\[(.+?)\]\]!', $text, $match,
+                                                PREG_OFFSET_CAPTURE, $offset)) {
+            $variableorexpression = $match[1][0];
+            if (self::is_assignment($variableorexpression)) {
+                //this is an assignment, not legal here
+                $this->errors[$wheretoputerror] =
+                        get_string('expressionmustevaluatetoanumber', 'qtype_varnumeric');
+            } else {
+                $evaluated = $this->evaluate($variableorexpression, $wheretoputerror);
+            }
 
+            $text = substr_replace($text, $evaluated, $match[0][1], strlen($match[0][0]));
+            $offset = $match[0][1] + strlen($evaluated);
+        }
+        return $text;
+    }
 }

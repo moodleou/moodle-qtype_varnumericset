@@ -138,4 +138,11 @@ class qtype_varnumeric_question extends question_graded_by_strategy
     public function get_random_seed() {
         return $this->calculator->get_random_seed();
     }
+
+    public function format_text($text, $format, $qa, $component, $filearea, $itemid,
+            $clean = false) {
+        $processedtext = $this->calculator->evaluate_variables_in_text($text);
+        return parent::format_text($processedtext, $format, $qa, $component,
+                                     $filearea, $itemid, $clean);
+    }
 }

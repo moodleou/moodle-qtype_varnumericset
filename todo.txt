@@ -1,5 +1,5 @@
-* display question with possibly embedded variables
-* embedding variables and expressions in question text
+* display question with possibly embedded variables -(done)
+** different formatting options
 * add Sigfigs(val, noSigFigs)
 * need to be able to enter numbers as answers as values in Maths expression with e format
 * need to be able to enter numbers as answers with <sup> html

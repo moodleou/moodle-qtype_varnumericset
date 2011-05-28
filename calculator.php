@@ -128,9 +128,16 @@ class qtype_varnumeric_calculator {
     public function evaluate($item, $placetoputanyerror = null) {
         $result = $this->ev->evaluate($item);
         if ($result === false && !is_null($placetoputanyerror)) {
-            $this->errors[$placetoputanyerror] = get_string('errorreportedbyexpressionevaluator',
+            $error = get_string('errorreportedbyexpressionevaluator',
                                                         'qtype_varnumeric', $this->ev->last_error);
         }
+        if (is_nan($result)){
+            $error = get_string('expressionevaluatesasnan', 'qtype_varnumeric');
+        }
+        if (is_infinite($result)){
+            $error = get_string('expressionevaluatesasinfinite', 'qtype_varnumeric');
+        }
+        $this->errors[$placetoputanyerror] = $error;
         return $result;
     }
     /**

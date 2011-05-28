@@ -127,7 +127,8 @@ class qtype_varnumeric_calculator {
 
     public function evaluate($item, $placetoputanyerror = null) {
         $result = $this->ev->evaluate($item);
-        if ($result === false && !is_null($placetoputanyerror)) {
+        $error = '';
+        if ($result === false) {
             $error = get_string('errorreportedbyexpressionevaluator',
                                                         'qtype_varnumeric', $this->ev->last_error);
         }
@@ -137,7 +138,9 @@ class qtype_varnumeric_calculator {
         if (is_infinite($result)){
             $error = get_string('expressionevaluatesasinfinite', 'qtype_varnumeric');
         }
-        $this->errors[$placetoputanyerror] = $error;
+        if (!empty($error) && !is_null($placetoputanyerror)) {
+            $this->errors[$placetoputanyerror] = $error;
+        }
         return $result;
     }
     /**

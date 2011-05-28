@@ -96,7 +96,9 @@ class qtype_varnumeric_question extends question_graded_by_strategy
     }
 
     protected function compare_num_as_string_with_expression($string, $expression) {
-        if ($this->calculator->evaluate($expression) == $string) {
+        $evaluated = $this->calculator->evaluate($expression);
+        $cast = (float)$string;
+        if (($evaluated - $cast) < ($evaluated * 1e-6)) {
             return true;
         } else {
             return false;

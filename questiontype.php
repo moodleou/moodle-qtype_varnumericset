@@ -44,6 +44,17 @@ class qtype_varnumeric extends question_type {
         return array('qtype_varnumeric', 'randomseed', 'recalculateeverytime');
     }
 
+    protected function extra_answer_fields() {
+        return array('qtype_varnumeric_answers',
+                        'sigfigs',
+                        'error',
+                        'syserrorpenalty',
+                        'checknumerical',
+                        'checkscinotation',
+                        'checkpowerof10',
+                        'checkrounding');
+    }
+
     protected function questionid_column_name() {
         return 'questionid';
     }
@@ -66,6 +77,10 @@ class qtype_varnumeric extends question_type {
 
         $oldanswers = $DB->get_records('question_answers',
                 array('question' => $form->id), 'id ASC');
+
+        $oldanswerids = array_keys($oldanswers);
+        list($oldansweridsql, $oldansweridparams) = $DB->get_in_or_equal($oldanswerids);
+        $DB->delete_records_select('qtype_varnumeric_answers', $oldansweridsql, $oldansweridparams);
 
         $answers = array();
         $maxfraction = -1;
@@ -99,6 +114,16 @@ class qtype_varnumeric extends question_type {
             if ($form->fraction[$key] > $maxfraction) {
                 $maxfraction = $form->fraction[$key];
             }
+            $varnumericanswer = new stdClass();
+            $varnumericanswer->answerid = $answer->id;
+            $varnumericanswer->sigfigs = $form->sigfigs[$key];
+            $varnumericanswer->error = $form->error[$key];
+            $varnumericanswer->syserrorpenalty = $form->syserrorpenalty[$key];
+            $varnumericanswer->checknumerical = $form->checknumerical[$key];
+            $varnumericanswer->checkscinotation = $form->checkscinotation[$key];
+            $varnumericanswer->checkpowerof10 = $form->checkpowerof10[$key];
+            $varnumericanswer->checkrounding = $form->checkrounding[$key];
+            $DB->insert_record('qtype_varnumeric_answers', $varnumericanswer);
         }
 
         list ($varschanged, $varnotovarid, $assignments, $predefined) =
@@ -307,6 +332,23 @@ class qtype_varnumeric extends question_type {
                                                 $questiondata->stamp);
         $question->calculator->set_recalculate_rand($questiondata->options->recalculateeverytime);
         $question->calculator->load_data_from_database($question->id);
+    }
+    /**
+     * Initialise question_definition::answers field.
+     * @param question_definition $question the question_definition we are creating.
+     * @param object $questiondata the question data loaded from the database.
+     */
+    protected function initialise_question_answers(question_definition $question, $questiondata) {
+        $question->answers = array();
+        if (empty($questiondata->options->answers)) {
+            return;
+        }
+        foreach ($questiondata->options->answers as $a) {
+            $question->answers[$a->id] = new qtype_varnumeric_answer($a->id, $a->answer,
+                    $a->fraction, $a->feedback, $a->feedbackformat, $a->sigfigs, $a->error,
+                    $a->syserrorpenalty, $a->checknumerical, $a->checkscinotation,
+                    $a->checkpowerof10, $a->checkrounding);
+        }
     }
     public function get_random_guess_score($questiondata) {
         foreach ($questiondata->options->answers as $aid => $answer) {

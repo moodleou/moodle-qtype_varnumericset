@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Short answer question definition class.
+ * varnumeric question definition class.
  *
  * @package    qtype
  * @subpackage varnumeric
@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 
 
 /**
- * Represents a short answer question.
+ * Represents a varnumeric question.
  *
  * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -146,5 +146,44 @@ class qtype_varnumeric_question extends question_graded_by_strategy
         $processedtext = $this->calculator->evaluate_variables_in_text($text);
         return parent::format_text($processedtext, $format, $qa, $component,
                                      $filearea, $itemid, $clean);
+    }
+}
+
+/**
+ * Class to represent a question answer, loaded from the question_answers table
+ * in the database.
+ *
+ * @copyright  2009 The Open University
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class qtype_varnumeric_answer extends question_answer {
+    public $sigfigs;
+    public $error;
+    public $syserrorpenalty;
+    public $checknumerical;
+    public $checkscinotation;
+    public $checkpowerof10;
+    public $checkrounding;
+
+    /**
+     * Constructor.
+     * @param int $id the answer.
+     * @param string $answer the answer.
+     * @param int $answerformat the format of the answer.
+     * @param number $fraction the fraction this answer is worth.
+     * @param string $feedback the feedback for this answer.
+     * @param int $feedbackformat the format of the feedback.
+     */
+    public function __construct($id, $answer, $fraction, $feedback, $feedbackformat,
+                            $sigfigs, $error, $syserrorpenalty, $checknumerical, $checkscinotation,
+                            $checkpowerof10, $checkrounding) {
+        parent::__construct($id, $answer, $fraction, $feedback, $feedbackformat);
+        $this->sigfigs = $sigfigs;
+        $this->error = $error;
+        $this->syserrorpenalty = $syserrorpenalty;
+        $this->checknumerical = $checknumerical;
+        $this->checkscinotation = $checkscinotation;
+        $this->checkpowerof10 = $checkpowerof10;
+        $this->checkrounding = $checkrounding;
     }
 }

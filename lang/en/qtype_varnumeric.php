@@ -30,12 +30,18 @@ $string['addmoreanswerblanks'] = 'Blanks for {no} More Answers';
 $string['answer'] = 'Answer: {$a}';
 $string['answermustbegiven'] = 'You must enter an answer if there is a grade or feedback.';
 $string['answerno'] = 'Answer {$a}';
+$string['autofirehdr'] = 'Automatic Checks For Common Errors For Answer {$a}';
 $string['calculatewhen'] = 'When to calculate calculated values';
+$string['checknumerical'] = 'Hint If Numerically Correct';
+$string['checkpowerof10'] = 'Hint If Power of 10 is Off';
+$string['checkrounding'] = 'Hint if rounding incorrect';
+$string['checkscinotation'] = 'Hint if scientific notation incorrect';
 $string['errorreportedbyexpressionevaluator'] = 'Expression Evaluation Error : {$a}';
 $string['expressionmustevaluatetoanumber'] = 'You should enter an expression that evaluates to a number here, not an assignment';
 $string['correctansweris'] = 'The correct answer is: {$a}.';
 $string['correctanswers'] = 'Correct answers';
 $string['editingvarnumeric'] = 'Editing a Variable Numeric Question';
+$string['error'] = 'Accepted Error';
 $string['expectingassignment'] = 'You must use a mathematical expression to assign a value to a \'Calculated Variable\'.';
 $string['expectingvariablename'] = 'Expecting a variable name here';
 $string['expressionevaluatesasinfinite'] = 'Result is infinite.';
@@ -53,6 +59,9 @@ You can select to only calculate calculated values when the defined values or an
 
 Or you can recalculate the calculated values every time this form or the question is displayed, then any random values will be different for every user.';
 $string['recalculatenow'] = 'Recalculate Now';
+$string['sigfigs'] = 'Significant Figures';
+$string['syserrorpenalty'] = 'Penalty for each hint / retry iteration';
+$string['unspecified'] = 'Unspecified';
 $string['varheader'] = 'Variable {no}';
 $string['variant'] = 'Value for Variant {$a}';
 $string['variants'] = 'Value for Variants';

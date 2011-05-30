@@ -135,7 +135,37 @@ class qtype_varnumeric_edit_form extends question_edit_form {
 
         $this->add_interactive_settings();
     }
-
+    protected function get_per_answer_fields(&$mform, $label, $gradeoptions,
+            &$repeatedoptions, &$answersoption) {
+        $answeroptions = parent::get_per_answer_fields($mform, $label, $gradeoptions,
+                                                        $repeatedoptions, $answersoption);
+        $sigfigsoptions = array(0 => get_string('unspecified', 'qtype_varnumeric'),
+                                1 => 1, 2 => 2, 3 => 3, 4 => 4, 5 => 5, 6 => 6);
+        $answeroptions[4] = $answeroptions[2];
+        $answeroptions[5] = $answeroptions[3];
+        $answeroptions[2] = $mform->createElement('select', 'sigfigs',
+                                get_string('sigfigs', 'qtype_varnumeric'), $sigfigsoptions);
+        $answeroptions[3] = $mform->createElement('text', 'error',
+                                get_string('error', 'qtype_varnumeric'), array('size' => 80));
+        $answeroptions[6] = $mform->createElement('header', 'autofirehdr',
+                                get_string('autofirehdr', 'qtype_varnumeric', '{no}'));
+        $answeroptions[7] = $mform->createElement('select', 'syserrorpenalty',
+        get_string('syserrorpenalty', 'qtype_varnumeric'), $gradeoptions);
+        $repeatedoptions['syserrorpenalty']['default'] = '0.1';
+        $answeroptions[8] = $mform->createElement('selectyesno', 'checknumerical',
+                                get_string('checknumerical', 'qtype_varnumeric'));
+        $answeroptions[9] = $mform->createElement('selectyesno', 'checkscinotation',
+                                get_string('checkscinotation', 'qtype_varnumeric'));
+        $checkpowerof10options = array(0 => get_string('no'),
+                                1 => '+/- 1', 2 => '+/- 2', 3 => '+/- 3',
+                                4 => '+/- 4', 5 => '+/- 5', 6 => '+/- 6');
+        $answeroptions[10] = $mform->createElement('select', 'checkpowerof10',
+                                get_string('checkpowerof10', 'qtype_varnumeric'),
+                                $checkpowerof10options);
+        $answeroptions[11] = $mform->createElement('selectyesno', 'checkrounding',
+                                get_string('checkrounding', 'qtype_varnumeric'));
+        return $answeroptions;
+    }
     protected function data_preprocessing($question) {
         global $DB;
         $question = parent::data_preprocessing($question);

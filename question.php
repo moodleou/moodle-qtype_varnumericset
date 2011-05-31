@@ -92,11 +92,11 @@ class qtype_varnumeric_question extends question_graded_by_strategy
         if ($answer->answer == '*') {
             return true;
         }
-        return self::compare_num_as_string_with_expression($response['answer'], $answer->answer);
+        return self::compare_num_as_string_with_answer($response['answer'], $answer);
     }
 
-    protected function compare_num_as_string_with_expression($string, $expression) {
-        $evaluated = $this->calculator->evaluate($expression);
+    protected function compare_num_as_string_with_answer($string, qtype_varnumeric_answer $answer) {
+        $evaluated = $this->calculator->evaluate($answer->answer);
         $cast = (float)$string;
         if (($evaluated - $cast) < ($evaluated * 1e-6)) {
             return true;

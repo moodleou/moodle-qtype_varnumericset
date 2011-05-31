@@ -80,7 +80,7 @@ class qtype_varnumeric extends question_type {
 
         $oldanswerids = array_keys($oldanswers);
         list($oldansweridsql, $oldansweridparams) = $DB->get_in_or_equal($oldanswerids);
-        $DB->delete_records_select('qtype_varnumeric_answers', $oldansweridsql, $oldansweridparams);
+        $DB->delete_records_select('qtype_varnumeric_answers', "answerid $oldansweridsql", $oldansweridparams);
 
         $answers = array();
         $maxfraction = -1;

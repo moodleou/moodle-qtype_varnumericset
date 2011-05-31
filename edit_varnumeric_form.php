@@ -145,6 +145,7 @@ class qtype_varnumeric_edit_form extends question_edit_form {
         $answeroptions[5] = $answeroptions[3];
         $answeroptions[2] = $mform->createElement('select', 'sigfigs',
                                 get_string('sigfigs', 'qtype_varnumeric'), $sigfigsoptions);
+        $repeatedoptions['sigfigs']['default'] = '3';
         $answeroptions[3] = $mform->createElement('text', 'error',
                                 get_string('error', 'qtype_varnumeric'), array('size' => 80));
         $answeroptions[6] = $mform->createElement('header', 'autofirehdr',
@@ -180,6 +181,31 @@ class qtype_varnumeric_edit_form extends question_edit_form {
             $question = $calculator->get_data_for_form($question);
         }
 
+        return $question;
+    }
+
+    /**
+     * Perform the necessary preprocessing for the fields added by
+     * {@link add_per_answer_fields()}.
+     * @param object $question the data being passed to the form.
+     * @return object $question the modified data.
+     */
+    protected function data_preprocessing_answers($question) {
+        $question = parent::data_preprocessing_answers($question);
+        if (empty($question->options->answers)) {
+            return $question;
+        }
+        $key = 0;
+        foreach ($question->options->answers as $answer) {
+            $question->sigfigs[$key] = $answer->sigfigs;
+            $question->error[$key] = $answer->error;
+            $question->syserrorpenalty[$key] = $answer->syserrorpenalty;
+            $question->checknumerical[$key] = $answer->checknumerical;
+            $question->checkscinotation[$key] = $answer->checkscinotation;
+            $question->checkpowerof10[$key] = $answer->checkpowerof10;
+            $question->checkrounding[$key] = $answer->checkrounding;
+            $key++;
+        }
         return $question;
     }
 

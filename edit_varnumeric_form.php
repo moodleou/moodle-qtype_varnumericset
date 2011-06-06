@@ -124,6 +124,11 @@ class qtype_varnumeric_edit_form extends question_edit_form {
         //wizard, which we won't actually use but we need to pass it to avoid an error message.
         $mform->addElement('hidden', 'wizard', '');
 
+        $mform->addElement('header', 'forallanswers',
+                                get_string('forallanswers', 'qtype_varnumeric'));
+        $mform->addElement('selectyesno', 'requirescinotation',
+                                get_string('requirescinotation', 'qtype_varnumeric'));
+
         $mform->addElement('static', 'answersinstruct',
                 get_string('correctanswers', 'qtype_varnumeric'),
                 get_string('filloutoneanswer', 'qtype_varnumeric'));
@@ -137,35 +142,42 @@ class qtype_varnumeric_edit_form extends question_edit_form {
     }
     protected function get_per_answer_fields(&$mform, $label, $gradeoptions,
             &$repeatedoptions, &$answersoption) {
-        $answeroptions = parent::get_per_answer_fields($mform, $label, $gradeoptions,
+        $parentansweroptions = parent::get_per_answer_fields($mform, $label, $gradeoptions,
                                                         $repeatedoptions, $answersoption);
         $sigfigsoptions = array(0 => get_string('unspecified', 'qtype_varnumeric'),
                                 1 => 1, 2 => 2, 3 => 3, 4 => 4, 5 => 5, 6 => 6);
-        $answeroptions[4] = $answeroptions[2];
-        $answeroptions[5] = $answeroptions[3];
-        $answeroptions[2] = $mform->createElement('select', 'sigfigs',
+        $answeroptions = array();
+
+        $answeroptions[] = $parentansweroptions[0]; // header
+        $answeroptions[] = $parentansweroptions[1]; // answer text box
+
+        $answeroptions[] = $mform->createElement('text', 'error',
+                                get_string('error', 'qtype_varnumeric'), array('size' => 80));
+        $answeroptions[] = $mform->createElement('select', 'sigfigs',
                                 get_string('sigfigs', 'qtype_varnumeric'), $sigfigsoptions);
         $repeatedoptions['sigfigs']['default'] = '3';
-        $answeroptions[3] = $mform->createElement('text', 'error',
-                                get_string('error', 'qtype_varnumeric'), array('size' => 80));
-        $answeroptions[6] = $mform->createElement('header', 'autofirehdr',
+
+        $answeroptions[] = $parentansweroptions[2]; // grade
+        $answeroptions[] = $parentansweroptions[3]; // feedback
+
+        $answeroptions[] = $mform->createElement('header', 'autofirehdr',
                                 get_string('autofirehdr', 'qtype_varnumeric', '{no}'));
-        $answeroptions[7] = $mform->createElement('select', 'syserrorpenalty',
-        get_string('syserrorpenalty', 'qtype_varnumeric'), $gradeoptions);
-        $repeatedoptions['syserrorpenalty']['default'] = '0.1';
-        $answeroptions[8] = $mform->createElement('selectyesno', 'checknumerical',
+        $answeroptions[] = $mform->createElement('selectyesno', 'checknumerical',
                                 get_string('checknumerical', 'qtype_varnumeric'));
-        $answeroptions[9] = $mform->createElement('selectyesno', 'checkscinotation',
-                                get_string('checkscinotation', 'qtype_varnumeric'));
         $checkpowerof10options = array(0 => get_string('no'),
                                 1 => '+/- 1', 2 => '+/- 2', 3 => '+/- 3',
                                 4 => '+/- 4', 5 => '+/- 5', 6 => '+/- 6');
-        $answeroptions[10] = $mform->createElement('select', 'checkpowerof10',
+        $answeroptions[] = $mform->createElement('selectyesno', 'checkscinotation',
+                                get_string('checkscinotation', 'qtype_varnumeric'));
+        $answeroptions[] = $mform->createElement('select', 'checkpowerof10',
                                 get_string('checkpowerof10', 'qtype_varnumeric'),
                                 $checkpowerof10options);
-        $answeroptions[11] = $mform->createElement('selectyesno', 'checkrounding',
+        $answeroptions[] = $mform->createElement('selectyesno', 'checkrounding',
                                 get_string('checkrounding', 'qtype_varnumeric'));
-        return $answeroptions;
+        $answeroptions[] = $mform->createElement('select', 'syserrorpenalty',
+                                get_string('syserrorpenalty', 'qtype_varnumeric'), $gradeoptions);
+        $repeatedoptions['syserrorpenalty']['default'] = '0.1';
+                                return $answeroptions;
     }
     protected function data_preprocessing($question) {
         global $DB;
@@ -179,6 +191,7 @@ class qtype_varnumeric_edit_form extends question_edit_form {
             $calculator->set_recalculate_rand($question->options->recalculateeverytime);
             $calculator->load_data_from_database($question->id);
             $question = $calculator->get_data_for_form($question);
+            $question->requirescinotation = $question->options->requirescinotation;
         }
 
         return $question;

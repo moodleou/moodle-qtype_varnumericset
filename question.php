@@ -42,6 +42,14 @@ class qtype_varnumeric_question extends question_graded_by_strategy
      */
     public $calculator;
 
+    /**
+     *
+     * Whether to require scientific notation and whether to allow use of superscript.
+     *
+     * @var boolean
+     */
+    public $requirescinotation;
+
     /** @var array of question_answer. */
     public $answers = array();
 

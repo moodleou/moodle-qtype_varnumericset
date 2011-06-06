@@ -41,7 +41,7 @@ require_once($CFG->dirroot . '/question/type/varnumeric/calculator.php');
  */
 class qtype_varnumeric extends question_type {
     public function extra_question_fields() {
-        return array('qtype_varnumeric', 'randomseed', 'recalculateeverytime');
+        return array('qtype_varnumeric', 'randomseed', 'recalculateeverytime', 'requirescinotation');
     }
 
     protected function extra_answer_fields() {

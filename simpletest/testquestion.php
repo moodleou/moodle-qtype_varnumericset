@@ -37,141 +37,113 @@ require_once($CFG->dirroot . '/question/engine/simpletest/helpers.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_varnumeric_question_test extends UnitTestCase {
-    public function test_compare_string_with_wildcard() {
-        // Test case sensitive literal matches.
-        $this->assertTrue(qtype_varnumeric_question::compare_string_with_wildcard(
-                'Frog', 'Frog', false));
-        $this->assertFalse(qtype_varnumeric_question::compare_string_with_wildcard(
-                'Frog', 'frog', false));
-        $this->assertTrue(qtype_varnumeric_question::compare_string_with_wildcard(
-                '   Frog   ', 'Frog', false));
-        $this->assertFalse(qtype_varnumeric_question::compare_string_with_wildcard(
-                'Frogs', 'Frog', false));
+    public function test_num_within_allowed_error() {
+        $this->assertTrue(
+                qtype_varnumeric_question::num_within_allowed_error('1.230001e4', 1.23e4, ''));
+        $this->assertFalse(
+                qtype_varnumeric_question::num_within_allowed_error('1.230002e4', 1.23e4, ''));
+        $this->assertTrue(
+                qtype_varnumeric_question::num_within_allowed_error('1.2301e4', 1.23e4, '1'));
+        $this->assertFalse(
+                qtype_varnumeric_question::num_within_allowed_error('1.23015e4', 1.23e4, '1'));
+        $this->assertTrue(
+                qtype_varnumeric_question::num_within_allowed_error('12301', 1.23e4, '1'));
+        $this->assertFalse(
+                qtype_varnumeric_question::num_within_allowed_error('12301.5', 1.23e4, '1'));
+    }
+    public function test_wrong_by_a_factor_of_ten() {
+        $this->assertTrue(
+            qtype_varnumeric_question::wrong_by_a_factor_of_ten('1.23e4', 1.23e5, '', 1));
+        $this->assertFalse(
+            qtype_varnumeric_question::wrong_by_a_factor_of_ten('1.23e4', 1.23e6, '', 1));
+        $this->assertTrue(
+            qtype_varnumeric_question::wrong_by_a_factor_of_ten('1.231', 12.3, 0.01, 1));
+        $this->assertFalse(
+            qtype_varnumeric_question::wrong_by_a_factor_of_ten('1.232', 12.3, 0.01, 1));
+        $this->assertTrue(
+            qtype_varnumeric_question::wrong_by_a_factor_of_ten('151000', 150, 1, 3));
+        $this->assertFalse(
+            qtype_varnumeric_question::wrong_by_a_factor_of_ten('152000', 150, 1, 3));
+    }
+    public function test_has_number_of_sig_figs() {
+        $this->assertTrue(
+            qtype_varnumeric_question::has_number_of_sig_figs('1.23e4', 3));
+        $this->assertTrue(
+            qtype_varnumeric_question::has_number_of_sig_figs('1.23456e4', 6));
+         $this->assertFalse(
+            qtype_varnumeric_question::has_number_of_sig_figs('1.2345e4', 6));
+        $this->assertTrue(
+            qtype_varnumeric_question::has_number_of_sig_figs('1.231', 4));
+        $this->assertFalse(
+            qtype_varnumeric_question::has_number_of_sig_figs('1.231', 3));
+        $this->assertTrue(
+            qtype_varnumeric_question::has_number_of_sig_figs('1232', 4));
+        $this->assertTrue(
+            qtype_varnumeric_question::has_number_of_sig_figs('1230', 3));
+        $this->assertFalse(
+            qtype_varnumeric_question::has_number_of_sig_figs('1232', 3));
+        $this->assertTrue(
+            qtype_varnumeric_question::has_number_of_sig_figs('151000', 3));
+        $this->assertFalse(
+            qtype_varnumeric_question::has_number_of_sig_figs('152000', 2));
+    }
+    public function test_has_too_many_sig_figs() {
+        $this->assertTrue(
+            qtype_varnumeric_question::has_too_many_sig_figs('1.23456', 1.23456, 2));
+        $this->assertTrue(
+            qtype_varnumeric_question::has_too_many_sig_figs('1.2346', 1.23456, 2));
+        $this->assertFalse(
+            qtype_varnumeric_question::has_too_many_sig_figs('1.2345', 1.23456, 2));
+        $this->assertTrue(
+            qtype_varnumeric_question::has_too_many_sig_figs('1.23', 1.23456, 2));
+        $this->assertFalse(
+            qtype_varnumeric_question::has_too_many_sig_figs('1.24', 1.23456, 2));
+        $this->assertFalse(
+            qtype_varnumeric_question::has_too_many_sig_figs('1.23457', 1.23456, 2));
+        $this->assertTrue(
+            qtype_varnumeric_question::has_too_many_sig_figs('1.23456e4', 1.23456e4, 2));
+        $this->assertFalse(
+            qtype_varnumeric_question::has_too_many_sig_figs('1.23456e4', 1.33456e4, 2));
+        $this->assertTrue(
+            qtype_varnumeric_question::has_too_many_sig_figs('7.89e-4', 7.890123e-4, 2));
+        $this->assertFalse(
+            qtype_varnumeric_question::has_too_many_sig_figs('-1.23456e-12', -1.2346e-12, 4));
+    }
+    public function test_rounding_incorrect() {
+        $this->assertTrue(
+            qtype_varnumeric_question::rounding_incorrect('1.234', 1.2345, 4));
+        $this->assertTrue(
+            qtype_varnumeric_question::rounding_incorrect('1.2345', 1.23456, 5));
+        //this routine is not meant to catch incorrect rounding up
+        $this->assertFalse(
+            qtype_varnumeric_question::rounding_incorrect('1.3', 1.23, 2));
+        $this->assertFalse(
+            qtype_varnumeric_question::rounding_incorrect('1.23', 1.23456, 2));
 
-        // Test case insensitive literal matches.
-        $this->assertTrue(qtype_varnumeric_question::compare_string_with_wildcard(
-                'Frog', 'frog', true));
-        $this->assertTrue(qtype_varnumeric_question::compare_string_with_wildcard(
-                '   FROG   ', 'Frog', true));
-        $this->assertFalse(qtype_varnumeric_question::compare_string_with_wildcard(
-                'Frogs', 'Frog', true));
-
-        // Test case sensitive wildcard matches.
-        $this->assertTrue(qtype_varnumeric_question::compare_string_with_wildcard(
-                'Frog', 'F*og', false));
-        $this->assertTrue(qtype_varnumeric_question::compare_string_with_wildcard(
-                'Fog', 'F*og', false));
-        $this->assertTrue(qtype_varnumeric_question::compare_string_with_wildcard(
-                '   Fat dog   ', 'F*og', false));
-        $this->assertFalse(qtype_varnumeric_question::compare_string_with_wildcard(
-                'Frogs', 'F*og', false));
-        $this->assertFalse(qtype_varnumeric_question::compare_string_with_wildcard(
-                'Fg', 'F*og', false));
-        $this->assertFalse(qtype_varnumeric_question::compare_string_with_wildcard(
-                'frog', 'F*og', false));
-        $this->assertFalse(qtype_varnumeric_question::compare_string_with_wildcard(
-                '   fat dog   ', 'F*og', false));
-
-        // Test case insensitive wildcard matches.
-        $this->assertTrue(qtype_varnumeric_question::compare_string_with_wildcard(
-                'Frog', 'F*og', true));
-        $this->assertTrue(qtype_varnumeric_question::compare_string_with_wildcard(
-                'Fog', 'F*og', true));
-        $this->assertTrue(qtype_varnumeric_question::compare_string_with_wildcard(
-                '   Fat dog   ', 'F*og', true));
-        $this->assertFalse(qtype_varnumeric_question::compare_string_with_wildcard(
-                'Frogs', 'F*og', true));
-        $this->assertFalse(qtype_varnumeric_question::compare_string_with_wildcard(
-                'Fg', 'F*og', true));
-        $this->assertTrue(qtype_varnumeric_question::compare_string_with_wildcard(
-                'frog', 'F*og', true));
-        $this->assertTrue(qtype_varnumeric_question::compare_string_with_wildcard(
-                '   fat dog   ', 'F*og', true));
-
-        // Test match using regexp special chars.
-        $this->assertTrue(qtype_varnumeric_question::compare_string_with_wildcard(
-                '   *   ', '\*', false));
-        $this->assertTrue(qtype_varnumeric_question::compare_string_with_wildcard(
-                '*', '\*', false));
-        $this->assertTrue(qtype_varnumeric_question::compare_string_with_wildcard(
-                'Frog*toad', 'Frog\*toad', false));
-        $this->assertFalse(qtype_varnumeric_question::compare_string_with_wildcard(
-                'a', '[a-z]', false));
-        $this->assertTrue(qtype_varnumeric_question::compare_string_with_wildcard(
-                '[a-z]', '[a-z]', false));
-        $this->assertTrue(qtype_varnumeric_question::compare_string_with_wildcard(
-                '\{}/', '\{}/', true));
-
-        // See http://moodle.org/mod/forum/discuss.php?d=120557
-        $this->assertTrue(qtype_varnumeric_question::compare_string_with_wildcard(
-                'ITÁLIE', 'Itálie', true));
+    }
+    public function test_round_to() {
+        $this->assertIdentical('0.123', qtype_varnumeric_question::round_to(0.12345, 3, false));
+        $this->assertIdentical('0.1235', qtype_varnumeric_question::round_to(0.12345, 4, false));
+        //incorrect rounding
+        $this->assertIdentical('1.235e-1', qtype_varnumeric_question::round_to(0.12345, 4, true));
+        //incorrect rounding
+        $this->assertIdentical('1.234e-1',
+                                    qtype_varnumeric_question::round_to(0.12345, 4, true, true));
+        $this->assertIdentical('1234.57',
+                                    qtype_varnumeric_question::round_to(1234.5678, 6, false));
+        $this->assertIdentical('1.23457e3',
+                                    qtype_varnumeric_question::round_to(1234.5678, 6, true));
+        //incorrect rounding
+        $this->assertIdentical('1234.56',
+                                    qtype_varnumeric_question::round_to(1234.5678, 6, false, true));
+        $this->assertIdentical('1.23456e3',
+                                    qtype_varnumeric_question::round_to(1234.5678, 6, true, true));
+        //always round down when incorrect rounding requested
+        $this->assertIdentical('1234.56',
+                                    qtype_varnumeric_question::round_to(1234.5600, 6, false, true));
+        $this->assertIdentical('1.23456e3',
+                                    qtype_varnumeric_question::round_to(1234.5600, 6, true, true));
     }
 
-    public function test_is_complete_response() {
-        $question = test_question_maker::make_a_varnumeric_question();
 
-        $this->assertFalse($question->is_complete_response(array()));
-        $this->assertFalse($question->is_complete_response(array('answer' => '')));
-        $this->assertTrue($question->is_complete_response(array('answer' => '0')));
-        $this->assertTrue($question->is_complete_response(array('answer' => '0.0')));
-        $this->assertTrue($question->is_complete_response(array('answer' => 'x')));
-    }
-
-    public function test_is_gradable_response() {
-        $question = test_question_maker::make_a_varnumeric_question();
-
-        $this->assertFalse($question->is_gradable_response(array()));
-        $this->assertFalse($question->is_gradable_response(array('answer' => '')));
-        $this->assertTrue($question->is_gradable_response(array('answer' => '0')));
-        $this->assertTrue($question->is_gradable_response(array('answer' => '0.0')));
-        $this->assertTrue($question->is_gradable_response(array('answer' => 'x')));
-    }
-
-    public function test_grading() {
-        $question = test_question_maker::make_a_varnumeric_question();
-
-        $this->assertEqual(array(0, question_state::$gradedwrong),
-                $question->grade_response(array('answer' => 'x')));
-        $this->assertEqual(array(1, question_state::$gradedright),
-                $question->grade_response(array('answer' => 'frog')));
-        $this->assertEqual(array(0.8, question_state::$gradedpartial),
-                $question->grade_response(array('answer' => 'toad')));
-    }
-
-    public function test_get_correct_response() {
-        $question = test_question_maker::make_a_varnumeric_question();
-
-        $this->assertEqual(array('answer' => 'frog'),
-                $question->get_correct_response());
-    }
-
-    public function test_get_question_summary() {
-        $sa = test_question_maker::make_a_varnumeric_question();
-        $qsummary = $sa->get_question_summary();
-        $this->assertEqual('Name an amphibian: __________', $qsummary);
-    }
-
-    public function test_summarise_response() {
-        $sa = test_question_maker::make_a_varnumeric_question();
-        $summary = $sa->summarise_response(array('answer' => 'dog'));
-        $this->assertEqual('dog', $summary);
-    }
-
-    public function test_classify_response() {
-        $sa = test_question_maker::make_a_varnumeric_question();
-        $sa->start_attempt(new question_attempt_step());
-
-        $this->assertEqual(array(
-                new question_classified_response(13, 'frog', 1.0)),
-                $sa->classify_response(array('answer' => 'frog')));
-        $this->assertEqual(array(
-                new question_classified_response(14, 'toad', 0.8)),
-                $sa->classify_response(array('answer' => 'toad')));
-        $this->assertEqual(array(
-                new question_classified_response(15, 'cat', 0.0)),
-                $sa->classify_response(array('answer' => 'cat')));
-        $this->assertEqual(array(
-                question_classified_response::no_response()),
-                $sa->classify_response(array('answer' => '')));
-    }
 }

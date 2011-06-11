@@ -78,9 +78,14 @@ class qtype_varnumeric extends question_type {
         $oldanswers = $DB->get_records('question_answers',
                 array('question' => $form->id), 'id ASC');
 
-        $oldanswerids = array_keys($oldanswers);
-        list($oldansweridsql, $oldansweridparams) = $DB->get_in_or_equal($oldanswerids);
-        $DB->delete_records_select('qtype_varnumeric_answers', "answerid $oldansweridsql", $oldansweridparams);
+        if (!empty($oldanswers)){
+            $oldanswerids = array_keys($oldanswers);
+            list($oldansweridsql, $oldansweridparams) = $DB->get_in_or_equal($oldanswerids);
+            $DB->delete_records_select('qtype_varnumeric_answers', "answerid $oldansweridsql",
+                                                                        $oldansweridparams);
+        } else  {
+            $oldanswers = array();
+        }
 
         $answers = array();
         $maxfraction = -1;
@@ -176,7 +181,7 @@ class qtype_varnumeric extends question_type {
             $DB->delete_records('question_answers', array('id' => $oldanswer->id));
         }
 
-        $this->save_hints($form);
+        $this->save_hints($form, true);
 
         // Perform sanity checks on fractional grades
         if ($maxfraction != 1) {
@@ -332,6 +337,7 @@ class qtype_varnumeric extends question_type {
                                                 $questiondata->stamp);
         $question->calculator->set_recalculate_rand($questiondata->options->recalculateeverytime);
         $question->calculator->load_data_from_database($question->id);
+        $question->requirescinotation = $questiondata->options->requirescinotation;
     }
     /**
      * Initialise question_definition::answers field.

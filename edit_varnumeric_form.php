@@ -179,11 +179,25 @@ class qtype_varnumeric_edit_form extends question_edit_form {
         $repeatedoptions['syserrorpenalty']['default'] = '0.1';
                                 return $answeroptions;
     }
+
+    protected function get_hint_fields($withclearwrong = false, $withshownumpartscorrect = false) {
+        $mform = $this->_form;
+
+        list($repeated, $repeatedoptions) =
+                            parent::get_hint_fields($withclearwrong, $withshownumpartscorrect);
+        $repeated[] = $mform->createElement('advcheckbox', 'hintclearwrong',
+                                get_string('options', 'qtype_varnumeric'),
+                                get_string('hintoverride', 'qtype_varnumeric'), null, array(0, 1));
+        $repeatedoptions['hintclearwrong']['type'] = PARAM_BOOL;
+
+        return array($repeated, $repeatedoptions);
+    }
+
     protected function data_preprocessing($question) {
         global $DB;
         $question = parent::data_preprocessing($question);
         $question = $this->data_preprocessing_answers($question);
-        $question = $this->data_preprocessing_hints($question);
+        $question = $this->data_preprocessing_hints($question, true);
 
         if (isset($question->id)) {
             $calculator = new qtype_varnumeric_calculator();
@@ -221,6 +235,7 @@ class qtype_varnumeric_edit_form extends question_edit_form {
         }
         return $question;
     }
+
 
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);

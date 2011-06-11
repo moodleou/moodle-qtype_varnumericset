@@ -33,8 +33,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class qtype_varnumeric_question extends question_graded_by_strategy
-        implements question_response_answer_comparer {
+class qtype_varnumeric_question extends question_graded_automatically {
 
 
     /** @var qtype_varnumeric_calculator calculator to deal with expressions,
@@ -53,9 +52,6 @@ class qtype_varnumeric_question extends question_graded_by_strategy
     /** @var array of question_answer. */
     public $answers = array();
 
-    public function __construct() {
-        parent::__construct(new question_first_matching_answer_grading_strategy($this));
-    }
 
     public function get_expected_data() {
         return array('answer' => PARAM_RAW_TRIMMED);
@@ -90,23 +86,243 @@ class qtype_varnumeric_question extends question_graded_by_strategy
         return $this->answers;
     }
 
+
+    public function get_matching_answer($response) {
+        foreach ($this->get_answers() as $aid => $answer) {
+            $thisanswer = $this->compare_response_with_answer($response, $answer);
+            if (!is_null($thisanswer)) {
+                $thisanswer->id = $aid;
+                return $thisanswer;
+            }
+        }
+        return null;
+    }
+
+    public function grade_response(array $response) {
+        $answer = $this->get_matching_answer($response);
+        if (!is_null($answer)) {
+            return array($answer->fraction,
+                    question_state::graded_state_for_fraction($answer->fraction));
+        } else {
+            return array(0, question_state::$gradedwrong);
+        }
+    }
+
+    public function get_correct_response() {
+        $answer = $this->get_correct_answer();
+        if (!$answer) {
+            return array();
+        }
+
+        return array('answer' => $answer->answer);
+    }
+
     public function get_correct_answer() {
-        $answer = parent::get_correct_answer();
-        $answer->answer = $this->calculator->evaluate($answer->answer);
-        return $answer;
+        foreach ($this->get_answers() as $answer) {
+            $state = question_state::graded_state_for_fraction($answer->fraction);
+            if ($state == question_state::$gradedright) {
+                $answer->answer = $this->calculator->evaluate($answer->answer);
+                return $answer;
+            }
+        }
+        return null;
     }
 
     public function compare_response_with_answer(array $response, question_answer $answer) {
         if ($answer->answer == '*') {
-            return true;
+            return $answer;
         }
-        return self::compare_num_as_string_with_answer($response['answer'], $answer);
+        list($penalty, $feedback) =
+                        self::compare_num_as_string_with_answer($response['answer'], $answer);
+        $answer->fraction = $answer->fraction - $penalty;
+        if (!empty($feedback)) {
+            $answer->feedback = $feedback;
+        }
+        $state = question_state::graded_state_for_fraction($answer->fraction);
+        if ($state == question_state::$gradedwrong) {
+            return null;
+        } else {
+            return $answer;
+        }
     }
 
     protected function compare_num_as_string_with_answer($string, qtype_varnumeric_answer $answer) {
+        $autofireerrorfeedback = '';
         $evaluated = $this->calculator->evaluate($answer->answer);
+        $rounded = (float)self::round_to($evaluated, $answer->sigfigs, true);
+        $string = self::normalize_number_format($string, $this->requirescinotation);
+        if (self::num_within_allowed_error($string, $rounded, $answer->error) &&
+                (($answer->sigfigs == 0)
+                        || self::has_number_of_sig_figs($string, $answer->sigfigs)) &&
+                (!$this->requirescinotation || self::is_sci_notation($string))) {
+            return array(0, ''); //this answer is a perfect match 0% penalty
+        } else if ($answer->checknumerical &&
+                        self::num_within_allowed_error($string, $rounded, $answer->error)) {
+            //numerically correct
+            $autofireerrorfeedback = 'numericallycorrect';
+        } else if (($answer->sigfigs != 0) &&
+                        self::has_too_many_sig_figs($string, $evaluated, $answer->sigfigs)) {
+            $autofireerrorfeedback = 'toomanysigfigs';
+        } else if (self::wrong_by_a_factor_of_ten($string, $rounded,
+                                                        $answer->error, $answer->checkpowerof10)) {
+            $autofireerrorfeedback = 'wrongbyfactorof10';
+        } else if (self::rounding_incorrect($string, $evaluated, $answer->sigfigs)) {
+            $autofireerrorfeedback = 'roundingincorrect';
+        } else {
+            return array(1, '');//this answer is not a match 100% penalty
+        }
+        if (!empty($autofireerrorfeedback) && $this->requirescinotation && !self::is_sci_notation($string)){
+            $autofireerrorfeedback = $autofireerrorfeedback.'andwrongformat';
+            $autofireerrors = 2;
+        } else {
+            $autofireerrors = 1;
+        }
+        $penalty = ($answer->syserrorpenalty * $autofireerrors);
+        return array($penalty, get_string('ae_'.$autofireerrorfeedback, 'qtype_varnumeric'));
+    }
+
+    public static function num_within_allowed_error($string, $answer, $allowederror) {
         $cast = (float)$string;
-        if (($evaluated - $cast) < ($evaluated * 1e-6)) {
+        if ($allowederror == '') {
+            $allowederror = $answer * 1e-6;
+        }
+        $errorduetofloatprecision = $answer * 1e-15;
+        if (abs($answer - $cast) <= $allowederror + $errorduetofloatprecision) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+    /**
+     *
+     * Convert html used to write exponential to standard php way. Used to process numbers entered
+     * as strings by students.
+     * @param string $string number as string
+     * @return string number in standardised formt with / without standard php scientific notation.
+     */
+    public static function normalize_number_format($string, $normalizescinotation){
+        if ($normalizescinotation) {
+            //strip any extra tags added by html editor that are not sup
+            $string = strip_tags($string, '<sup>');
+            //Convert html used to write exponential to standard php way.
+            $string = preg_replace('!\s*[x*]\s*10\s*<sup>\s*([+-]?[0-9])+\s*</sup>\s*!i', 'e$1',
+                                    $string, 1);
+        }
+        //remove any redundant characters
+        $string = str_replace(array(' ', '+'), '', $string);//remove all spaces and any + signs.
+        $string = str_replace('E', 'e', $string); // use lower case e
+        return $string;
+    }
+
+    /**
+     *
+     * Check to see if $normalizedstring has $sigfigs significant figures.
+     * @param string $normalizedstring number as a normalized string
+     * @param integer $sigfigs
+     * @return boolean
+     */
+    public static function wrong_by_a_factor_of_ten($normalizedstring, $roundedanswer,
+                                                        $error, $maxfactor) {
+        if ($maxfactor == 0) {
+            return false;
+        }
+        if ($error == '') {
+            $error = $roundedanswer * 1e-6;
+        }
+        for ($wrongby = 1; $wrongby <= $maxfactor; $wrongby++) {
+            $multiplier = pow(10, $wrongby);
+            if (self::num_within_allowed_error($normalizedstring, $roundedanswer*$multiplier,
+                                                    $error*$multiplier)) {
+                return true;
+            }
+            if (self::num_within_allowed_error($normalizedstring, $roundedanswer/$multiplier,
+                                                    $error/$multiplier)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     *
+     * Check to see if $normalizedstring has $sigfigs significant figures.
+     * @param string $normalizedstring number as a normalized string
+     * @param integer $sigfigs
+     * @return boolean
+     */
+    public static function has_number_of_sig_figs($normalizedstring, $sigfigs) {
+        $scinotation = self::is_sci_notation($normalizedstring);
+        if (self::round_to($normalizedstring, $sigfigs, $scinotation) === $normalizedstring) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static function round_to($number, $sigfigs, $scinotation, $floor = false) {
+        //do the rounding ourselves so we can get it wrong (round down) if requested
+        if ($number == 0.0) {
+            $poweroften = 0;//avoid NaN result for log10
+        } else {
+            $poweroften = floor(log10(abs($number)));
+        }
+        $digitsafterdecimalpoint = $sigfigs - $poweroften - 1;
+        $number = $number * pow(10, $digitsafterdecimalpoint);
+        if (!$floor) {
+            $rounded = round($number);
+        } else {
+            $rounded = floor($number);
+        }
+        $rounded =  $rounded / pow(10, $digitsafterdecimalpoint);
+        //change to a string so we can do a string compare and check we have the right no
+        //of 0s on the end if necessary.
+        if ($scinotation){
+            $f = '%.'.($sigfigs - 1).'e';
+        } else if ($digitsafterdecimalpoint >= 0) {
+            $f= '%.'.($digitsafterdecimalpoint).'F';
+        } else {
+            $f= '%.0F'; // no digits after decimal point
+        }
+        $rounded = sprintf($f, $rounded);
+        return (str_replace('+', '', $rounded)); //remove extra '+' in sci notation
+    }
+
+    /**
+     *
+     * Check to see if $normalizedstring has the correct answer to too many $sigfigs significant
+     * figures.
+     * @param string $normalizedstring number as a normalized string
+     * @param integer $answerunrounded
+     * @param integer $sigfigs correct ammount of sigfigs
+     * @return boolean
+     */
+    public static function has_too_many_sig_figs($normalizedstring, $answerunrounded, $sigfigs) {
+        $scinotation = self::is_sci_notation($normalizedstring);
+        for ($roundto = ($sigfigs +1); $roundto <= ($sigfigs + 10); $roundto++) {
+            $rounded = self::round_to($answerunrounded, $roundto, $scinotation);
+            if ($rounded === $normalizedstring){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static function rounding_incorrect($normalizedstring, $answerunrounded, $sigfigs) {
+        $scinotation = self::is_sci_notation($normalizedstring);
+        $incorrectlyrounded = self::round_to($answerunrounded, $sigfigs, $scinotation, true);
+        return ($normalizedstring === $incorrectlyrounded);
+    }
+
+    /**
+     *
+     * Check to see if $normalizedstring uses scientific notation.
+     * @param string $normalizedstring number as a normalized string
+     * @return boolean
+     */
+    public static function is_sci_notation($normalizedstring) {
+        if (strpos($normalizedstring, 'e') !== false){
             return true;
         } else {
             return false;

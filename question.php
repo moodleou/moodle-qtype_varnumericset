@@ -371,6 +371,23 @@ class qtype_varnumeric_question extends question_graded_automatically {
         return parent::format_text($processedtext, $format, $qa, $component,
                                      $filearea, $itemid, $clean);
     }
+
+    public function get_hint($hintnumber, question_attempt $qa){
+        $question = $qa->get_question();
+        $currentanswer = $qa->get_last_qt_var('answer');
+        $answer = $question->get_matching_answer(array('answer' => $currentanswer));
+        if ($answer) {
+            $fraction = $answer->fraction;
+        } else {
+            $fraction = 0;
+        }
+        $state = question_state::graded_state_for_fraction($answer->fraction);
+        if ($state != question_state::$gradedpartial){
+            return parent::get_hint($hintnumber, $qa);
+        } else {
+            return null;
+        }
+    }
 }
 
 /**

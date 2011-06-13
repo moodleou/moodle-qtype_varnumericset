@@ -121,7 +121,9 @@ class qtype_varnumeric_question extends question_graded_automatically {
         foreach ($this->get_answers() as $answer) {
             $state = question_state::graded_state_for_fraction($answer->fraction);
             if ($state == question_state::$gradedright) {
-                $answer->answer = $this->calculator->evaluate($answer->answer);
+                $evaluated = $this->calculator->evaluate($answer->answer);
+                $answer->answer =
+                        $this->round_to($evaluated, $answer->sigfigs, $this->requirescinotation);
                 return $answer;
             }
         }

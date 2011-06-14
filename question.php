@@ -38,7 +38,7 @@ define('QTYPE_VARNUMERIC_DECIMAL_SEP', '.');
  * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class qtype_varnumeric_question extends question_graded_automatically {
+class qtype_varnumeric_question extends question_graded_automatically_with_countback {
 
 
     /** @var qtype_varnumeric_calculator calculator to deal with expressions,
@@ -167,15 +167,16 @@ class qtype_varnumeric_question extends question_graded_automatically {
         }
         list($penalty, $feedback) =
                         self::compare_num_as_string_with_answer($response['answer'], $answer);
-        $answer->fraction = $answer->fraction - $penalty;
+        $answertoreturn = clone($answer);
+        $answertoreturn->fraction = $answer->fraction - $penalty;
         if (!empty($feedback)) {
-            $answer->feedback = $feedback;
+            $answertoreturn->feedback = $feedback;
         }
-        $state = question_state::graded_state_for_fraction($answer->fraction);
+        $state = question_state::graded_state_for_fraction($answertoreturn->fraction);
         if ($state == question_state::$gradedwrong) {
             return null;
         } else {
-            return $answer;
+            return $answertoreturn;
         }
     }
 
@@ -417,12 +418,32 @@ class qtype_varnumeric_question extends question_graded_automatically {
         } else {
             $fraction = 0;
         }
-        $state = question_state::graded_state_for_fraction($answer->fraction);
+        $state = question_state::graded_state_for_fraction($fraction);
         if ($state != question_state::$gradedpartial){
             return parent::get_hint($hintnumber, $qa);
         } else {
             return null;
         }
+    }
+
+    public function compute_final_grade($responses, $totaltries) {
+        $totalsyspenalty = 0;
+        $trieswithnopenalty = 0;
+
+        foreach ($responses as $i => $response) {
+            list($fraction, $state) = $this->grade_response($response);
+            if ($state == question_state::$gradedpartial) {
+                $syserrorpenalty = 1 - $fraction;
+                $totalsyspenalty = $totalsyspenalty + $syserrorpenalty;
+                if ((isset($this->hints[$i])) && $this->hints[$i]->clearwrong) {
+                    $trieswithnopenalty++;
+                }
+            }
+        }
+        $finalfraction = 1 - ($totalsyspenalty -
+                         ((count($responses) - 1 - $trieswithnopenalty) * $this->penalty));
+        return $finalfraction;
+
     }
 }
 

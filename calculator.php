@@ -350,7 +350,7 @@ class qtype_varnumeric_calculator {
         $match = array();
         $offset = 0;
         //match anything surrounded by [[ ]]
-        while (0 !== preg_match('!\[\[(.+?)\]\]!', $text, $match,
+        while (0 !== preg_match('!\[\[(.+?)(\s*,\s*(.+?))?\]\]!', $text, $match,
                                                 PREG_OFFSET_CAPTURE, $offset)) {
             $variableorexpression = $match[1][0];
             if (self::is_assignment($variableorexpression)) {
@@ -361,9 +361,27 @@ class qtype_varnumeric_calculator {
                 $evaluated = $this->evaluate($variableorexpression, $wheretoputerror);
             }
 
-            $text = substr_replace($text, $evaluated, $match[0][1], strlen($match[0][0]));
-            $offset = $match[0][1] + strlen($evaluated);
+            if (!empty($match[3][0])){
+                $sprintfcode = $match[3][0];
+                $numberasstring = self::format_number($evaluated, $sprintfcode);
+            } else {
+                $numberasstring = (string)$evaluated;
+            }
+
+            $numberasstring = self::htmlize_exponent($numberasstring);
+
+
+            $text = substr_replace($text, $numberasstring, $match[0][1], strlen($match[0][0]));
+            $offset = $match[0][1] + strlen($numberasstring);
         }
         return $text;
+    }
+
+    public static function format_number($number, $sprintfcode) {
+        return sprintf('%'.$sprintfcode, $number);
+    }
+
+    public static function htmlize_exponent($numberasstring) {
+        return preg_replace('!e([+-]?[0-9]+)$!i', 'x10<sup>$1</sup>', $numberasstring);
     }
 }

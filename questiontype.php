@@ -376,4 +376,8 @@ class qtype_varnumeric extends question_type {
 
         return array($questiondata->id => $responses);
     }
+
+    protected function make_hint($hint) {
+        return question_hint_with_parts::load_from_record($hint);
+    }
 }

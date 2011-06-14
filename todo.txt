@@ -1,6 +1,2 @@
-* display question with possibly embedded variables -(done)
-** different formatting options
-* add Sigfigs(val, noSigFigs)
-* student need to be able to enter numbers as answers as values in Maths expression with e format
-* need to be able to enter numbers as answers with <sup> html
-
+* check the statistics is working
+* check grade calculation

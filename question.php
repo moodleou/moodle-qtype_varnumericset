@@ -27,6 +27,11 @@
 defined('MOODLE_INTERNAL') || die();
 
 
+//these only affect how student input is processed, not how values are displayed.
+define('QTYPE_VARNUMERIC_THOUSAND_SEP', ',');
+define('QTYPE_VARNUMERIC_DECIMAL_SEP', '.');
+
+
 /**
  * Represents a varnumeric question.
  *
@@ -65,16 +70,42 @@ class qtype_varnumeric_question extends question_graded_automatically {
         }
     }
 
+    public function is_no_response(array $response) {
+        return (!array_key_exists('answer', $response)) || ($response['answer'] === '');
+    }
+
     public function is_complete_response(array $response) {
-        return array_key_exists('answer', $response) &&
-                ($response['answer'] || $response['answer'] === '0');
+        return $this->is_gradable_response($response);
+    }
+
+    public static function is_valid_normalized_number_string($number) {
+        return (0 === preg_match('!-?[0-9]*(\.[0-9]*)?(e-?[0-9]*)?$!A', $number));
     }
 
     public function get_validation_error(array $response) {
-        if ($this->is_gradable_response($response)) {
-            return '';
+        if ($this->is_no_response($response)) {
+            return get_string('pleaseenterananswer', 'qtype_varnumeric');
         }
-        return get_string('pleaseenterananswer', 'qtype_varnumeric');
+        if (false !== strpos($response['answer'], QTYPE_VARNUMERIC_THOUSAND_SEP)) {
+            $a = new stdClass();
+            $a->thousandssep = QTYPE_VARNUMERIC_THOUSAND_SEP;
+            $a->decimalsep = QTYPE_VARNUMERIC_DECIMAL_SEP;
+            return get_string('illegalthousandseparator', 'qtype_varnumeric', $a);
+        }
+        $string = self::normalize_number_format($response['answer'], $this->requirescinotation);
+
+        if (self::is_valid_normalized_number_string($string)){
+            return get_string('notvalidnumber', 'qtype_varnumeric');
+        }
+        return '';
+    }
+
+    public function is_gradable_response(array $response){
+        if ('' == $this->get_validation_error($response)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public function is_same_response(array $prevresponse, array $newresponse) {
@@ -211,6 +242,9 @@ class qtype_varnumeric_question extends question_graded_automatically {
             //Convert html used to write exponential to standard php way.
             $string = preg_replace('!\s*[x*]\s*10\s*<sup>\s*([+-]?[0-9])+\s*</sup>\s*!i', 'e$1',
                                     $string, 1);
+        }
+        if (QTYPE_VARNUMERIC_DECIMAL_SEP != '.') {
+            $string = str_replace(QTYPE_VARNUMERIC_DECIMAL_SEP, '.', $string);
         }
         //remove any redundant characters
         $string = str_replace(array(' ', '+'), '', $string);//remove all spaces and any + signs.

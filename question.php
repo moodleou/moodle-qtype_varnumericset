@@ -194,22 +194,29 @@ class qtype_varnumeric_question extends question_graded_automatically_with_count
                         self::num_within_allowed_error($string, $rounded, $answer->error)) {
             //numerically correct
             $autofireerrorfeedback = 'numericallycorrect';
+            if (!self::has_number_of_sig_figs($string, $answer->sigfigs)){
+                $autofireerrors = 1;
+            } else {
+                $autofireerrors = 0;
+            }
         } else if (($answer->sigfigs != 0) &&
                         self::has_too_many_sig_figs($string, $evaluated, $answer->sigfigs)) {
             $autofireerrorfeedback = 'toomanysigfigs';
+            $autofireerrors = 1;
         } else if (self::wrong_by_a_factor_of_ten($string, $rounded,
                                                         $answer->error, $answer->checkpowerof10)) {
             $autofireerrorfeedback = 'wrongbyfactorof10';
+            $autofireerrors = 1;
         } else if (self::rounding_incorrect($string, $evaluated, $answer->sigfigs)) {
             $autofireerrorfeedback = 'roundingincorrect';
+            $autofireerrors = 1;
         } else {
             return array(1, '');//this answer is not a match 100% penalty
         }
-        if (!empty($autofireerrorfeedback) && $this->requirescinotation && !self::is_sci_notation($string)){
+        if (!empty($autofireerrorfeedback)
+                            && $this->requirescinotation && !self::is_sci_notation($string)){
             $autofireerrorfeedback = $autofireerrorfeedback.'andwrongformat';
-            $autofireerrors = 2;
-        } else {
-            $autofireerrors = 1;
+            $autofireerrors ++;
         }
         $penalty = ($answer->syserrorpenalty * $autofireerrors);
         return array($penalty, get_string('ae_'.$autofireerrorfeedback, 'qtype_varnumeric'));

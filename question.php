@@ -419,8 +419,9 @@ class qtype_varnumeric_question extends question_graded_automatically_with_count
             $fraction = 0;
         }
         $state = question_state::graded_state_for_fraction($fraction);
-        if ($state != question_state::$gradedpartial){
-            return parent::get_hint($hintnumber, $qa);
+        $hint = parent::get_hint($hintnumber, $qa);
+        if ($state != question_state::$gradedpartial || !$hint->clearwrong){
+            return $hint;
         } else {
             return null;
         }
@@ -440,8 +441,11 @@ class qtype_varnumeric_question extends question_graded_automatically_with_count
                 }
             }
         }
-        $finalfraction = 1 - ($totalsyspenalty -
-                         ((count($responses) - 1 - $trieswithnopenalty) * $this->penalty));
+        if ($state == question_state::$gradedwrong) {
+            return 0;
+        }
+        $finalfraction = max(0 ,(1 - $totalsyspenalty -
+                         ((count($responses) - 1 - $trieswithnopenalty) * $this->penalty)));
         return $finalfraction;
 
     }

@@ -40,7 +40,7 @@ $string['answermustbegiven'] = 'You must enter an answer if there is a grade or 
 $string['answerno'] = 'Answer {$a}';
 $string['autofirehdr'] = 'Give feedback and partial credit where answer {$a} is partially wrong';
 $string['calculatewhen'] = 'When to calculate calculated values';
-$string['checknumerical'] = 'Feedback If Numerically Correct';
+$string['checknumerical'] = 'If Numerically Correct';
 $string['checkpowerof10'] = 'If Power of 10 is Off';
 $string['checkrounding'] = 'If Rounding Incorrect';
 $string['checkscinotation'] = 'If Scientific Notation Required But Not Used';
@@ -74,7 +74,7 @@ Or you can recalculate the calculated values every time this form or the questio
 $string['recalculatenow'] = 'Recalculate Now';
 $string['requirescinotation'] = 'Require Scientific Notation';
 $string['sigfigs'] = 'Significant Figures';
-$string['syserrorpenalty'] = 'For Partially Correct Response Deduct';
+$string['syserrorpenalty'] = 'For Each Error Deduct';
 $string['unspecified'] = 'Unspecified';
 $string['usesuperscript'] = 'Use Superscript Entry';
 $string['varheader'] = 'Variable {no}';

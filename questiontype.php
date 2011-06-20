@@ -41,7 +41,8 @@ require_once($CFG->dirroot . '/question/type/varnumeric/calculator.php');
  */
 class qtype_varnumeric extends question_type {
     public function extra_question_fields() {
-        return array('qtype_varnumeric', 'randomseed', 'recalculateeverytime', 'requirescinotation');
+        return array('qtype_varnumeric', 'randomseed',
+                                'recalculateeverytime', 'requirescinotation');
     }
 
     protected function extra_answer_fields() {
@@ -92,12 +93,12 @@ class qtype_varnumeric extends question_type {
         $oldanswers = $DB->get_records('question_answers',
                 array('question' => $form->id), 'id ASC');
 
-        if (!empty($oldanswers)){
+        if (!empty($oldanswers)) {
             $oldanswerids = array_keys($oldanswers);
             list($oldansweridsql, $oldansweridparams) = $DB->get_in_or_equal($oldanswerids);
             $DB->delete_records_select('qtype_varnumeric_answers', "answerid $oldansweridsql",
                                                                         $oldansweridparams);
-        } else  {
+        } else {
             $oldanswers = array();
         }
 

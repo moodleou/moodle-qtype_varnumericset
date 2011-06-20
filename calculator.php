@@ -110,7 +110,7 @@ class qtype_varnumeric_calculator {
             $this->calculatedvariants[$variantno]
                             = $this->calculate_calculated_variant_values($variantno);
             foreach ($this->answers as $answerno => $answer) {
-                if (self::is_assignment($answer)){
+                if (self::is_assignment($answer)) {
                     //this is an assignment not legal here
                     $this->errors["answer[$answerno]"] =
                                 get_string('expressionmustevaluatetoanumber', 'qtype_varnumeric');
@@ -132,10 +132,10 @@ class qtype_varnumeric_calculator {
             $error = get_string('errorreportedbyexpressionevaluator',
                                                         'qtype_varnumeric', $this->ev->last_error);
         }
-        if (is_nan($result)){
+        if (is_nan($result)) {
             $error = get_string('expressionevaluatesasnan', 'qtype_varnumeric');
         }
-        if (is_infinite($result)){
+        if (is_infinite($result)) {
             $error = get_string('expressionevaluatesasinfinite', 'qtype_varnumeric');
         }
         if (!empty($error) && !is_null($placetoputanyerror)) {
@@ -237,7 +237,8 @@ class qtype_varnumeric_calculator {
         foreach (array('feedback', 'hint') as $itemname) {
             if (isset($formdata[$itemname])) {
                 foreach ($formdata[$itemname] as $indexno => $item) {
-                    $this->add_text_with_embedded_variables("{$itemname}[{$indexno}]", $item['text']);
+                    $this->add_text_with_embedded_variables("{$itemname}[{$indexno}]",
+                                                                            $item['text']);
                 }
             }
         }
@@ -361,7 +362,7 @@ class qtype_varnumeric_calculator {
                 $evaluated = $this->evaluate($variableorexpression, $wheretoputerror);
             }
 
-            if (!empty($match[3][0])){
+            if (!empty($match[3][0])) {
                 $sprintfcode = $match[3][0];
                 $numberasstring = self::format_number($evaluated, $sprintfcode);
             } else {
@@ -369,7 +370,6 @@ class qtype_varnumeric_calculator {
             }
 
             $numberasstring = self::htmlize_exponent($numberasstring);
-
 
             $text = substr_replace($text, $numberasstring, $match[0][1], strlen($match[0][0]));
             $offset = $match[0][1] + strlen($numberasstring);

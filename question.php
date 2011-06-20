@@ -94,13 +94,13 @@ class qtype_varnumeric_question extends question_graded_automatically_with_count
         }
         $string = self::normalize_number_format($response['answer'], $this->requirescinotation);
 
-        if (self::is_valid_normalized_number_string($string)){
+        if (self::is_valid_normalized_number_string($string)) {
             return get_string('notvalidnumber', 'qtype_varnumeric');
         }
         return '';
     }
 
-    public function is_gradable_response(array $response){
+    public function is_gradable_response(array $response) {
         if ('' == $this->get_validation_error($response)) {
             return true;
         } else {
@@ -194,7 +194,7 @@ class qtype_varnumeric_question extends question_graded_automatically_with_count
                         self::num_within_allowed_error($string, $rounded, $answer->error)) {
             //numerically correct
             $autofireerrorfeedback = 'numericallycorrect';
-            if (!self::has_number_of_sig_figs($string, $answer->sigfigs)){
+            if (!self::has_number_of_sig_figs($string, $answer->sigfigs)) {
                 $autofireerrors = 1;
             } else {
                 $autofireerrors = 0;
@@ -214,7 +214,7 @@ class qtype_varnumeric_question extends question_graded_automatically_with_count
             return array(1, '');//this answer is not a match 100% penalty
         }
         if (!empty($autofireerrorfeedback)
-                            && $this->requirescinotation && !self::is_sci_notation($string)){
+                            && $this->requirescinotation && !self::is_sci_notation($string)) {
             $autofireerrorfeedback = $autofireerrorfeedback.'andwrongformat';
             $autofireerrors ++;
         }
@@ -243,7 +243,7 @@ class qtype_varnumeric_question extends question_graded_automatically_with_count
      * @param string $string number as string
      * @return string number in standardised formt with / without standard php scientific notation.
      */
-    public static function normalize_number_format($string, $normalizescinotation){
+    public static function normalize_number_format($string, $normalizescinotation) {
         if ($normalizescinotation) {
             //strip any extra tags added by html editor that are not sup
             $string = strip_tags($string, '<sup>');
@@ -322,7 +322,7 @@ class qtype_varnumeric_question extends question_graded_automatically_with_count
         $rounded =  $rounded / pow(10, $digitsafterdecimalpoint);
         //change to a string so we can do a string compare and check we have the right no
         //of 0s on the end if necessary.
-        if ($scinotation){
+        if ($scinotation) {
             $f = '%.'.($sigfigs - 1).'e';
         } else if ($digitsafterdecimalpoint >= 0) {
             $f= '%.'.($digitsafterdecimalpoint).'F';
@@ -346,7 +346,7 @@ class qtype_varnumeric_question extends question_graded_automatically_with_count
         $scinotation = self::is_sci_notation($normalizedstring);
         for ($roundto = ($sigfigs +1); $roundto <= ($sigfigs + 10); $roundto++) {
             $rounded = self::round_to($answerunrounded, $roundto, $scinotation);
-            if ($rounded === $normalizedstring){
+            if ($rounded === $normalizedstring) {
                 return true;
             }
         }
@@ -366,7 +366,7 @@ class qtype_varnumeric_question extends question_graded_automatically_with_count
      * @return boolean
      */
     public static function is_sci_notation($normalizedstring) {
-        if (strpos($normalizedstring, 'e') !== false){
+        if (strpos($normalizedstring, 'e') !== false) {
             return true;
         } else {
             return false;
@@ -416,7 +416,7 @@ class qtype_varnumeric_question extends question_graded_automatically_with_count
                                      $filearea, $itemid, $clean);
     }
 
-    public function get_hint($hintnumber, question_attempt $qa){
+    public function get_hint($hintnumber, question_attempt $qa) {
         $question = $qa->get_question();
         $currentanswer = $qa->get_last_qt_var('answer');
         $answer = $question->get_matching_answer(array('answer' => $currentanswer));
@@ -427,7 +427,7 @@ class qtype_varnumeric_question extends question_graded_automatically_with_count
         }
         $state = question_state::graded_state_for_fraction($fraction);
         $hint = parent::get_hint($hintnumber, $qa);
-        if ($state != question_state::$gradedpartial || !$hint->clearwrong){
+        if ($state != question_state::$gradedpartial || !$hint->clearwrong) {
             return $hint;
         } else {
             return null;
@@ -451,7 +451,7 @@ class qtype_varnumeric_question extends question_graded_automatically_with_count
         if ($state == question_state::$gradedwrong) {
             return 0;
         }
-        $finalfraction = max(0 ,(1 - $totalsyspenalty -
+        $finalfraction = max(0, (1 - $totalsyspenalty -
                          ((count($responses) - 1 - $trieswithnopenalty) * $this->penalty)));
         return $finalfraction;
 

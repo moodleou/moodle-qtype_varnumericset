@@ -69,6 +69,20 @@ class qtype_varnumeric extends question_type {
         $this->delete_files_in_answers($questionid, $contextid);
     }
 
+    public function delete_question($questionid, $contextid) {
+        global $DB;
+        $DB->delete_records('qtype_varnumeric', array('questionid' => $questionid));
+        $DB->execute("DELETE FROM {qtype_varnumeric_answers} AS qva USING {question_answers} AS qa".
+                       " WHERE qa.id = qva.answerid AND qa.question = ?", array($questionid));
+
+        $DB->execute("DELETE FROM {qtype_varnumeric_variants} AS va ".
+                       "USING {qtype_varnumeric_vars} AS v ".
+                       "WHERE va.varid = v.id AND v.questionid = ?", array($questionid));
+        $DB->delete_records('qtype_varnumeric_vars', array('questionid' => $questionid));
+
+        parent::delete_question($questionid, $contextid);
+    }
+
     public function save_question_options($form) {
         global $DB;
         $result = new stdClass();

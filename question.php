@@ -456,6 +456,21 @@ class qtype_varnumeric_question extends question_graded_automatically_with_count
         return $finalfraction;
 
     }
+
+    public function classify_response(array $response) {
+        if (empty($response['answer'])) {
+            return array($this->id => question_classified_response::no_response());
+        }
+
+        $ans = $this->get_matching_answer($response);
+        if (!$ans) {
+            return array($this->id => question_classified_response::no_response());
+        }
+        $responsenormalized = self::normalize_number_format($response['answer'], true);
+        $responsehtmlized = qtype_varnumeric_calculator::htmlize_exponent($responsenormalized);
+        return array($this->id => new question_classified_response(
+                $ans->id, $responsehtmlized, $ans->fraction));
+    }
 }
 
 /**

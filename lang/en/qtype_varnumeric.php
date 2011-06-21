@@ -62,6 +62,12 @@ $string['notenoughanswers'] = 'This type of question requires at least {$a} answ
 $string['notvalidnumber'] = 'You have not entered a number in a recognised format.';
 $string['options'] = 'Options';
 $string['pleaseenterananswer'] = 'Please enter an answer.';
+$string['questiontext'] = 'Question Text and Embedded Variables';
+$string['questiontext_help'] = 'You can embed variable names and expressions in question text, general feedback, answer feedback and hints
+
+Anything enclosed in double square brackets will be evaluated before being displayed. Eg. if you enter, for example, [[a]] then the value of the variable a will be displayed. [[log(a)]] will display the log of a.
+
+You can also specify how to display the result using printf codes. For example [[a,.3e]] will display the value of a in scientific notation with 4 significant figures.';
 $string['randomseed'] = 'String To Act As a Seed For Randomisation';
 $string['recalculateeverytime'] = 'Recalculate Values for Expressions';
 $string['recalculateeverytimeno'] = 'only when there are changes or when \'Recalculate Now\' button is pressed';

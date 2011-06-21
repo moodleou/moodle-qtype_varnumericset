@@ -39,6 +39,8 @@ class qtype_varnumeric_edit_form extends question_edit_form {
     protected function definition_inner($mform) {
         global $DB;
 
+        $mform->addHelpButton('questiontext', 'questiontext', 'qtype_varnumeric');
+
         $mform->addElement('text', 'randomseed', get_string('randomseed', 'qtype_varnumeric'));
         $mform->setType('randomseed', PARAM_RAW);
 

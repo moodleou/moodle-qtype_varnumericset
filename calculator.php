@@ -157,6 +157,7 @@ class qtype_varnumeric_calculator {
             $recalculatecalculated = true;
         }
         $this->ev = new EvalMath(true, true);
+        $this->ev->suppress_errors = true;
         foreach ($this->variables as $varno => $variablenameorassignment) {
             if (!$recalculatecalculated || !self::is_assignment($variablenameorassignment)) {
                 $varname = self::var_in_assignment($variablenameorassignment);

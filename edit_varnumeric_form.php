@@ -157,7 +157,6 @@ class qtype_varnumeric_edit_form extends question_edit_form {
                                 get_string('error', 'qtype_varnumeric'), array('size' => 80));
         $answeroptions[] = $mform->createElement('select', 'sigfigs',
                                 get_string('sigfigs', 'qtype_varnumeric'), $sigfigsoptions);
-        $repeatedoptions['sigfigs']['default'] = '3';
 
         $answeroptions[] = $parentansweroptions[2]; // grade
         $answeroptions[] = $parentansweroptions[3]; // feedback

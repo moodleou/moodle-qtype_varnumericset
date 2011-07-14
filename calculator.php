@@ -166,7 +166,7 @@ class qtype_varnumeric_calculator {
             } else {
                 $varname = self::var_in_assignment($variablenameorassignment);
                 EvalMathFuncs::set_random_seed($this->randomseed.$variantno.$varname);
-                $this->evaluate($variablenameorassignment, "variable[$varno]");
+                $this->evaluate($variablenameorassignment, "varname[$varno]");
             }
         }
     }

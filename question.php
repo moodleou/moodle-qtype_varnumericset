@@ -307,30 +307,38 @@ class qtype_varnumeric_question extends question_graded_automatically_with_count
 
     public static function round_to($number, $sigfigs, $scinotation, $floor = false) {
         //do the rounding ourselves so we can get it wrong (round down) if requested
-        if ($number == 0.0) {
-            $poweroften = 0;//avoid NaN result for log10
+        if ($sigfigs != 0) {
+            if ($number == 0.0) {
+                $poweroften = 0;//avoid NaN result for log10
+            } else {
+                $poweroften = floor(log10(abs($number)));
+            }
+            $digitsafterdecimalpoint = $sigfigs - $poweroften - 1;
+            $number = $number * pow(10, $digitsafterdecimalpoint);
+            if (!$floor) {
+                $rounded = round($number);
+            } else {
+                $rounded = floor($number);
+            }
+            $number =  $rounded / pow(10, $digitsafterdecimalpoint);
+            //change to a string so we can do a string compare and check we have the right no
+            //of 0s on the end if necessary.
+            if ($scinotation) {
+                $f = '%.'.($sigfigs - 1).'e';
+            } else if ($digitsafterdecimalpoint >= 0) {
+                $f= '%.'.($digitsafterdecimalpoint).'F';
+            } else {
+                $f= '%.0F'; // no digits after decimal point
+            }
         } else {
-            $poweroften = floor(log10(abs($number)));
+            if ($scinotation) {
+                $f = '%e';
+            } else {
+                $f= '%F';
+            }
         }
-        $digitsafterdecimalpoint = $sigfigs - $poweroften - 1;
-        $number = $number * pow(10, $digitsafterdecimalpoint);
-        if (!$floor) {
-            $rounded = round($number);
-        } else {
-            $rounded = floor($number);
-        }
-        $rounded =  $rounded / pow(10, $digitsafterdecimalpoint);
-        //change to a string so we can do a string compare and check we have the right no
-        //of 0s on the end if necessary.
-        if ($scinotation) {
-            $f = '%.'.($sigfigs - 1).'e';
-        } else if ($digitsafterdecimalpoint >= 0) {
-            $f= '%.'.($digitsafterdecimalpoint).'F';
-        } else {
-            $f= '%.0F'; // no digits after decimal point
-        }
-        $rounded = sprintf($f, $rounded);
-        return (str_replace('+', '', $rounded)); //remove extra '+' in sci notation
+        $number = sprintf($f, $number);
+        return (str_replace('+', '', $number)); //remove extra '+' in sci notation
     }
 
     /**

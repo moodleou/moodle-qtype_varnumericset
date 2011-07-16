@@ -203,11 +203,12 @@ class qtype_varnumeric_question extends question_graded_automatically_with_count
                         self::has_too_many_sig_figs($string, $evaluated, $answer->sigfigs)) {
             $autofireerrorfeedback = 'toomanysigfigs';
             $autofireerrors = 1;
-        } else if (self::wrong_by_a_factor_of_ten($string, $rounded,
-                                                        $answer->error, $answer->checkpowerof10)) {
+        } else if (($answer->checkpowerof10 != 0) && self::wrong_by_a_factor_of_ten($string,
+                                        $rounded, $answer->error, $answer->checkpowerof10)) {
             $autofireerrorfeedback = 'wrongbyfactorof10';
             $autofireerrors = 1;
-        } else if (self::rounding_incorrect($string, $evaluated, $answer->sigfigs)) {
+        } else if (($answer->checkrounding != 0) &&
+                            self::rounding_incorrect($string, $evaluated, $answer->sigfigs)) {
             $autofireerrorfeedback = 'roundingincorrect';
             $autofireerrors = 1;
         } else {
@@ -269,9 +270,6 @@ class qtype_varnumeric_question extends question_graded_automatically_with_count
      */
     public static function wrong_by_a_factor_of_ten($normalizedstring, $roundedanswer,
                                                         $error, $maxfactor) {
-        if ($maxfactor == 0) {
-            return false;
-        }
         if ($error == '') {
             $error = $roundedanswer * 1e-6;
         }
@@ -364,7 +362,9 @@ class qtype_varnumeric_question extends question_graded_automatically_with_count
     public static function rounding_incorrect($normalizedstring, $answerunrounded, $sigfigs) {
         $scinotation = self::is_sci_notation($normalizedstring);
         $incorrectlyrounded = self::round_to($answerunrounded, $sigfigs, $scinotation, true);
-        return ($normalizedstring === $incorrectlyrounded);
+        $correctlyrounded = self::round_to($answerunrounded, $sigfigs, $scinotation, false);
+        return (($correctlyrounded !== $incorrectlyrounded)
+                                                && $normalizedstring === $incorrectlyrounded);
     }
 
     /**

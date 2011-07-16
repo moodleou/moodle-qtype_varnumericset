@@ -173,7 +173,7 @@ class qtype_varnumeric_question extends question_graded_automatically_with_count
             $answertoreturn->feedback = $feedback;
         }
         $state = question_state::graded_state_for_fraction($answertoreturn->fraction);
-        if ($state == question_state::$gradedwrong) {
+        if ($penalty == 1 && $feedback == '') {
             return null;
         } else {
             return $answertoreturn;

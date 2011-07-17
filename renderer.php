@@ -117,8 +117,6 @@ class qtype_varnumeric_renderer extends qtype_renderer {
             return '';
         }
 
-        $response = qtype_varnumeric_calculator::htmlize_exponent($answer->answer);
-
-        return get_string('correctansweris', 'qtype_varnumeric', $response);
+        return get_string('correctansweris', 'qtype_varnumeric', $answer->answer);
     }
 }

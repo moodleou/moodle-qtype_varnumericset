@@ -140,27 +140,43 @@ class qtype_varnumeric_question extends question_graded_automatically_with_count
     }
 
     public function get_correct_response() {
-        $answer = $this->get_correct_answer();
+        $answer = $this->get_first_answer_graded_correct();
         if (!$answer) {
             return array();
         }
-
+        $evaluated = $this->calculator->evaluate($answer->answer);
+        $answer->answer =
+                    $this->round_to($evaluated, $answer->sigfigs, $this->requirescinotation);
         return array('answer' => $answer->answer);
     }
 
     public function get_correct_answer() {
+        $answer = $this->get_first_answer_graded_correct();
+        if (!is_null($answer)) {
+            $evaluated = $this->calculator->evaluate($answer->answer);
+            $answer->answer =
+                    $this->round_to($evaluated, $answer->sigfigs, $this->requirescinotation);
+            $answer->answer = qtype_varnumeric_calculator::htmlize_exponent($answer->answer);
+            if ($answer->error != '') {
+                $answer->error = $this->calculator->evaluate($answer->error);
+                $answer->answer = get_string('correctansweriserror', 'qtype_varnumeric', $answer);
+            }
+            if ($answer->sigfigs != 0) {
+                $answer->answer = get_string('correctanswerissigfigs', 'qtype_varnumeric', $answer);
+            }
+            return $answer;
+        } else {
+            return null;
+        }
+    }
+    public function get_first_answer_graded_correct() {
         foreach ($this->get_answers() as $answer) {
             $state = question_state::graded_state_for_fraction($answer->fraction);
             if ($state == question_state::$gradedright) {
-                $evaluated = $this->calculator->evaluate($answer->answer);
-                $answer->answer =
-                        $this->round_to($evaluated, $answer->sigfigs, $this->requirescinotation);
                 return $answer;
             }
         }
-        return null;
     }
-
     public function compare_response_with_answer(array $response, question_answer $answer) {
         if ($answer->answer == '*') {
             return $answer;
@@ -185,13 +201,18 @@ class qtype_varnumeric_question extends question_graded_automatically_with_count
         $evaluated = $this->calculator->evaluate($answer->answer);
         $rounded = (float)self::round_to($evaluated, $answer->sigfigs, true);
         $string = self::normalize_number_format($string, $this->requirescinotation);
-        if (self::num_within_allowed_error($string, $rounded, $answer->error) &&
+        if ($answer->error == '') {
+            $allowederror = 0;
+        } else {
+            $allowederror = $this->calculator->evaluate($answer->error);
+        }
+        if (self::num_within_allowed_error($string, $rounded, $allowederror) &&
                 (($answer->sigfigs == 0)
                         || self::has_number_of_sig_figs($string, $answer->sigfigs)) &&
                 (!$this->requirescinotation || self::is_sci_notation($string))) {
             return array(0, ''); //this answer is a perfect match 0% penalty
         } else if ($answer->checknumerical &&
-                        self::num_within_allowed_error($string, $rounded, $answer->error)) {
+                        self::num_within_allowed_error($string, $rounded, $allowederror)) {
             //numerically correct
             $autofireerrorfeedback = 'numericallycorrect';
             if (!self::has_number_of_sig_figs($string, $answer->sigfigs)) {
@@ -204,7 +225,7 @@ class qtype_varnumeric_question extends question_graded_automatically_with_count
             $autofireerrorfeedback = 'toomanysigfigs';
             $autofireerrors = 1;
         } else if (($answer->checkpowerof10 != 0) && self::wrong_by_a_factor_of_ten($string,
-                                        $rounded, $answer->error, $answer->checkpowerof10)) {
+                                        $rounded, $allowederror, $answer->checkpowerof10)) {
             $autofireerrorfeedback = 'wrongbyfactorof10';
             $autofireerrors = 1;
         } else if (($answer->checkrounding != 0) &&
@@ -225,7 +246,7 @@ class qtype_varnumeric_question extends question_graded_automatically_with_count
 
     public static function num_within_allowed_error($string, $answer, $allowederror) {
         $cast = (float)$string;
-        if ($allowederror == '') {
+        if ($allowederror == 0) {
             $allowederror = $answer * 1e-6;
         }
         $errorduetofloatprecision = $answer * 1e-15;
@@ -328,14 +349,13 @@ class qtype_varnumeric_question extends question_graded_automatically_with_count
             } else {
                 $f= '%.0F'; // no digits after decimal point
             }
+            $number = sprintf($f, $number);
         } else {
             if ($scinotation) {
                 $f = '%e';
-            } else {
-                $f= '%F';
+                $number = sprintf($f, $number);
             }
         }
-        $number = sprintf($f, $number);
         return (str_replace('+', '', $number)); //remove extra '+' in sci notation
     }
 

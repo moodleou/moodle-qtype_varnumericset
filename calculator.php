@@ -73,8 +73,11 @@ class qtype_varnumeric_calculator {
         }
         $this->predefinedvariants[$variantno][$varno] = $value;
     }
-    public function add_answer($answerno, $answer) {
-        $this->answers[$answerno] = $answer;
+    public function add_answer($answerno, $answer, $error) {
+        $answerobj = new stdClass();
+        $answerobj->answer = $answer;
+        $answerobj->error = $error;
+        $this->answers[$answerno] = $answerobj;
     }
 
     public function add_text_with_embedded_variables($fromformfield, $textwithembeddedvariables) {
@@ -104,18 +107,29 @@ class qtype_varnumeric_calculator {
     }
 
 
+    /**
+     *
+     * Evaluate everything loaded into caculator. Used for error checking and to calculate values
+     * for variables in every question variant.
+     * @param boolean $forcerecalculate
+     */
     public function evaluate_all($forcerecalculate = false) {
         for ($variantno = 0; $variantno < $this->noofvariants; $variantno++) {
             $this->evaluate_variant($variantno, $forcerecalculate);
             $this->calculatedvariants[$variantno]
                             = $this->calculate_calculated_variant_values($variantno);
             foreach ($this->answers as $answerno => $answer) {
-                if (self::is_assignment($answer)) {
-                    //this is an assignment not legal here
-                    $this->errors["answer[$answerno]"] =
+                foreach (array('answer', 'error') as $prop) {
+                    if ($prop == 'error' && $answer->{$prop} == '') {
+                        continue;// no error messages for blank allowed error fields in answer
+                    }
+                    if (self::is_assignment($answer->{$prop})) {
+                        //this is an assignment not legal here
+                        $this->errors["{$prop}[{$answerno}]"] =
                                 get_string('expressionmustevaluatetoanumber', 'qtype_varnumeric');
-                } else {
-                    $this->evaluate($answer, "answer[$answerno]");
+                    } else {
+                        $this->evaluate($answer->{$prop}, "{$prop}[{$answerno}]");
+                    }
                 }
             }
             foreach ($this->textswithembeddedvars as $wherefrom => $textwithembeddedvars) {
@@ -229,7 +243,7 @@ class qtype_varnumeric_calculator {
         }
         foreach ($formdata['answer'] as $answerno => $answer) {
             if (!empty($answer) && '*' != $answer) {
-                $this->add_answer($answerno, $answer);
+                $this->add_answer($answerno, $answer, $formdata['error'][$answerno]);
             }
         }
         $this->add_text_with_embedded_variables('questiontext', $formdata['questiontext']['text']);

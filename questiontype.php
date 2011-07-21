@@ -152,7 +152,9 @@ class qtype_varnumeric extends question_type {
         $variants = array();
         for ($variantno = 0; $variantno < $form->noofvariants; $variantno++) {
             $propname = 'variant'.$variantno;
-            $variants[$variantno] = $form->{$propname};
+            if (isset($form->{$propname})) {
+                $variants[$variantno] = $form->{$propname};
+            }
         }
 
         //process variants

@@ -80,8 +80,28 @@ class qtype_varnumeric_calculator {
         $this->answers[$answerno] = $answerobj;
     }
 
-    public function add_text_with_embedded_variables($fromformfield, $textwithembeddedvariables) {
-        $this->textswithembeddedvars[$fromformfield] = $textwithembeddedvariables;
+    public function add_text_with_embedded_variables($form, $keys) {
+        $value = $form;
+        $fromformfield = '';
+        do {
+            $key = array_shift($keys);
+            if ($fromformfield == '') {
+                $fromformfield = $key;
+            } else {
+                $fromformfield .= "[$key]";
+            }
+            if (isset($value[$key])) {
+                $value = $value[$key];
+            } else {
+                return;
+            }
+        } while (count($keys));
+        if (isset($value['text'])) {
+            $value = $value['text'];
+        } else {
+            return;
+        }
+        $this->textswithembeddedvars[$fromformfield] = $value;
     }
 
     public function get_num_variants() {
@@ -246,14 +266,12 @@ class qtype_varnumeric_calculator {
                 $this->add_answer($answerno, $answer, $formdata['error'][$answerno]);
             }
         }
-        $this->add_text_with_embedded_variables('questiontext', $formdata['questiontext']['text']);
-        $this->add_text_with_embedded_variables('generalfeedback',
-                                                $formdata['generalfeedback']['text']);
+        $this->add_text_with_embedded_variables($formdata, array('questiontext'));
+        $this->add_text_with_embedded_variables($formdata, array('generalfeedback'));
         foreach (array('feedback', 'hint') as $itemname) {
             if (isset($formdata[$itemname])) {
                 foreach ($formdata[$itemname] as $indexno => $item) {
-                    $this->add_text_with_embedded_variables("{$itemname}[{$indexno}]",
-                                                                            $item['text']);
+                    $this->add_text_with_embedded_variables($formdata, array($itemname, $indexno));
                 }
             }
         }

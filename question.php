@@ -370,11 +370,23 @@ class qtype_varnumeric_question extends question_graded_automatically_with_count
      */
     public static function has_too_many_sig_figs($normalizedstring, $answerunrounded, $sigfigs) {
         $scinotation = self::is_sci_notation($normalizedstring);
-        for ($roundto = ($sigfigs +1); $roundto <= ($sigfigs + 10); $roundto++) {
+        for ($roundto = ($sigfigs + 1); $roundto <= 6; $roundto++) {
             $rounded = self::round_to($answerunrounded, $roundto, $scinotation);
             if ($rounded === $normalizedstring) {
                 return true;
             }
+        }
+        //anything in the student response more than 7 figs is ignored
+        $rounded = self::round_to($answerunrounded, 7, $scinotation);
+        $roundedfloored = self::round_to($answerunrounded, 7, $scinotation, true);
+        $roundednormalizedstring = self::round_to($normalizedstring, 7, $scinotation);
+        if ($roundednormalizedstring === $rounded || $roundednormalizedstring === $roundedfloored) {
+            return true;
+        }
+        $roundednormalizedstringfloored = self::round_to($normalizedstring, 7, $scinotation, true);
+        if ($roundednormalizedstringfloored === $rounded ||
+                $roundednormalizedstringfloored === $roundedfloored) {
+            return true;
         }
         return false;
     }

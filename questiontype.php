@@ -347,13 +347,34 @@ class qtype_varnumeric extends question_type {
         $this->initialise_question_vars_and_variants($question, $questiondata);
         $this->initialise_question_answers($question, $questiondata);
     }
+    protected static function load_var_and_variants_from_db($questionid) {
+        global $DB;
+        $vars = $DB->get_records('qtype_varnumeric_vars',
+                                        array('questionid' => $questionid),
+                                        'id ASC', 'id, nameorassignment, varno');
+        if ($vars) {
+            list($varidsql, $varids) = $DB->get_in_or_equal(array_keys($vars));
+            $variants = $DB->get_records_select('qtype_varnumeric_variants',
+                                                    'varid '.$varidsql, $varids);
+            if (!$variants){
+                $variants = array();
+            }
+        } else {
+            $vars = array();
+            $variants = array();
+        }
+        return array($vars, $variants);
+    }
     protected function initialise_question_vars_and_variants(question_definition $question,
                                                                                 $questiondata) {
+        global $DB;
         $question->calculator = new qtype_varnumeric_calculator();
         $question->calculator->set_random_seed($questiondata->options->randomseed,
                                                 $questiondata->stamp);
         $question->calculator->set_recalculate_rand($questiondata->options->recalculateeverytime);
-        $question->calculator->load_data_from_database($question->id);
+
+        list($vars, $variants) = self::load_var_and_variants_from_db($question->id);
+        $question->calculator->load_data_from_database($vars, $variants);
         $question->requirescinotation = $questiondata->options->requirescinotation;
     }
     /**
@@ -396,5 +417,70 @@ class qtype_varnumeric extends question_type {
 
     protected function make_hint($hint) {
         return question_hint_with_parts::load_from_record($hint);
+    }
+
+    /// IMPORT/EXPORT FUNCTIONS /////////////////
+
+    /*
+     * Imports question from the Moodle XML format
+     *
+     * Imports question using information from extra_question_fields function
+     * If some of you fields contains id's you'll need to reimplement this
+     */
+    public function import_from_xml($data, $question, $format, $extra=null) {
+        $qo = parent::import_from_xml($data, $question, $format, $extra);
+        $qo->noofvariants = 0;
+        $vars = $data['#']['var'];
+        foreach ($vars as $var) {
+            $varno = $format->getpath($var, array('#', 'varno', 0, '#'), false);
+            $qo->varname[$varno] =
+                $format->getpath($var, array('#', 'nameorassignment', 0, '#'), false);
+            if (qtype_varnumeric_calculator::is_assignment($qo->varname[$varno])) {
+                $qo->vartype[$varno] = 0;
+            } else {
+                $qo->vartype[$varno] = 1;
+            }
+            if (isset($var['#']['variant'])) {
+                $variants = $var['#']['variant'];
+                foreach ($variants as $variant) {
+                    $variantno = $format->getpath($variant, array('#', 'variantno', 0, '#'), false);
+                    $variantpropname = 'variant'.$variantno;
+                    $qo->{$variantpropname}[$varno] =
+                                    $format->getpath($variant, array('#', 'value', 0, '#'), false);
+                    $qo->noofvariants = max($qo->noofvariants, $variantno + 1);
+                }
+            }
+        }
+        return $qo;
+    }
+
+    /*
+     * Export question to the Moodle XML format
+     *
+     * Export question using information from extra_question_fields function
+     * If some of you fields contains id's you'll need to reimplement this
+     */
+    public function export_to_xml($question, $format, $extra=null) {
+        $expout = parent::export_to_xml($question, $format, $extra);
+        list($vars, $variants) = self::load_var_and_variants_from_db($question->id);
+        foreach ($vars as $var) {
+            $expout .= "    <var>\n";
+            foreach (array('varno', 'nameorassignment') as $field) {
+                $exportedvalue = self::wrap_html_special_chars($var->$field);
+                $expout .= "      <$field>{$exportedvalue}</$field>\n";
+            }
+            foreach ($variants as $variant) {
+                if ($variant->varid == $var->id){
+                    $expout .= "      <variant>\n";
+                    foreach (array('variantno', 'value') as $field) {
+                        $exportedvalue = self::wrap_html_special_chars($variant->$field);
+                        $expout .= "        <$field>{$exportedvalue}</$field>\n";
+                    }
+                    $expout .= "      </variant>\n";
+                }
+            }
+            $expout .= "    </var>\n";
+        }
+        return $expout;
     }
 }

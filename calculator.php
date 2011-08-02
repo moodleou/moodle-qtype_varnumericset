@@ -305,34 +305,26 @@ class qtype_varnumeric_calculator {
     }
 
 
-    public function load_data_from_database($questionid) {
+    public function load_data_from_database($vars, $variants) {
         global $DB;
-        $vars = $DB->get_records('qtype_varnumeric_vars', array('questionid' => $questionid),
-                                        'id ASC', 'id, nameorassignment, varno');
-        if ($vars) {
-            //declare and load data whether or not we will use calculator.
-            $varidtovarno = array();
-            foreach ($vars as $varid => $var) {
-                if (self::is_assignment($var->nameorassignment)) {
-                    $this->vartypes[$var->varno] = 0;
-                } else {
-                    $this->vartypes[$var->varno] = 1;
-                }
-                $this->add_variable($var->varno, $var->nameorassignment);
-                $varidtovarno[$varid] = $var->varno;
+        //declare and load data whether or not we will use calculator.
+        $varidtovarno = array();
+        foreach ($vars as $varid => $var) {
+            if (self::is_assignment($var->nameorassignment)) {
+                $this->vartypes[$var->varno] = 0;
+            } else {
+                $this->vartypes[$var->varno] = 1;
             }
-            list($varidsql, $varids) = $DB->get_in_or_equal(array_keys($vars));
-            $variants = $DB->get_records_select('qtype_varnumeric_variants',
-                                                    'varid '.$varidsql, $varids);
-            foreach ($variants as $variant) {
-                $this->add_defined_variant($varidtovarno[$variant->varid],
-                                            $variant->variantno, $variant->value);
-            }
-            if ($this->noofvariants == 0) {
-                //if there are no predefined variables at all then have a set ammount of 5 variants
-                $this->noofvariants = 5;
-            }
-
+            $this->add_variable($var->varno, $var->nameorassignment);
+            $varidtovarno[$varid] = $var->varno;
+        }
+        foreach ($variants as $variant) {
+            $this->add_defined_variant($varidtovarno[$variant->varid],
+                                        $variant->variantno, $variant->value);
+        }
+        if ($this->noofvariants == 0) {
+            //if there are no predefined variables at all then have a set ammount of 5 variants
+            $this->noofvariants = 5;
         }
     }
     public function get_data_for_form($dataforform) {

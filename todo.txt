@@ -1,2 +1,0 @@
-* check the statistics is working
-* check grade calculation

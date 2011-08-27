@@ -203,7 +203,10 @@ class qtype_varnumericset_edit_form extends question_edit_form {
             $calculator = new qtype_varnumericset_calculator();
             $calculator->set_random_seed($question->options->randomseed, $question->stamp);
             $calculator->set_recalculate_rand($question->options->recalculateeverytime);
-            $calculator->load_data_from_database($question->id);
+            $qtypeobj = question_bank::get_qtype($this->qtype());
+            list($vars, $variants) = $qtypeobj->load_var_and_variants_from_db($question->id);
+            $calculator->load_data_from_database($vars, $variants);
+
             $question = $calculator->get_data_for_form($question);
             $question->requirescinotation = $question->options->requirescinotation;
         }

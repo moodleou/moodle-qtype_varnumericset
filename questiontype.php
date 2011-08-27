@@ -347,7 +347,7 @@ class qtype_varnumericset extends question_type {
         $this->initialise_question_vars_and_variants($question, $questiondata);
         $this->initialise_question_answers($question, $questiondata);
     }
-    protected static function load_var_and_variants_from_db($questionid) {
+    public function load_var_and_variants_from_db($questionid) {
         global $DB;
         $vars = $DB->get_records('qtype_varnumericset_vars',
                                         array('questionid' => $questionid),
@@ -373,7 +373,7 @@ class qtype_varnumericset extends question_type {
                                                 $questiondata->stamp);
         $question->calculator->set_recalculate_rand($questiondata->options->recalculateeverytime);
 
-        list($vars, $variants) = self::load_var_and_variants_from_db($question->id);
+        list($vars, $variants) = $this->load_var_and_variants_from_db($question->id);
         $question->calculator->load_data_from_database($vars, $variants);
         $question->requirescinotation = $questiondata->options->requirescinotation;
     }

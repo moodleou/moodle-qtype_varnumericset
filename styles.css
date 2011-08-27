@@ -1,8 +1,8 @@
-.que.varnumeric .answer {
+.que.varnumericset .answer {
     padding: 0.3em;
     width: auto;
     display: inline;
 }
-.que.varnumeric .answer input {
+.que.varnumericset .answer input {
     width: 99%;
 }

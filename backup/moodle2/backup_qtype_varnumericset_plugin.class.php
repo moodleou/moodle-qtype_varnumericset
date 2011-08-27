@@ -26,12 +26,12 @@ defined('MOODLE_INTERNAL') || die();
 
 
 /**
- * Provides the information to backup varnumeric questions
+ * Provides the information to backup varnumericset questions
  *
  * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class backup_qtype_varnumeric_plugin extends backup_qtype_plugin {
+class backup_qtype_varnumericset_plugin extends backup_qtype_plugin {
 
     /**
      * Returns the qtype information to attach to question element
@@ -39,7 +39,7 @@ class backup_qtype_varnumeric_plugin extends backup_qtype_plugin {
     protected function define_question_plugin_structure() {
 
         // Define the virtual plugin element with the condition to fulfill
-        $plugin = $this->get_plugin_element(null, '../../qtype', 'varnumeric');
+        $plugin = $this->get_plugin_element(null, '../../qtype', 'varnumericset');
 
         // Create one standard named plugin element (the visible container)
         $pluginwrapper = new backup_nested_element($this->get_recommended_name());
@@ -51,20 +51,20 @@ class backup_qtype_varnumeric_plugin extends backup_qtype_plugin {
         // to the tree before any other information that will use them
         $this->add_question_question_answers($pluginwrapper);
 
-        //extra answer fields for varnumeric question type
-        $this->add_question_qtype_varnumeric_answers($pluginwrapper);
+        //extra answer fields for varnumericset question type
+        $this->add_question_qtype_varnumericset_answers($pluginwrapper);
 
-        $this->add_question_qtype_varnumeric_vars($pluginwrapper);
+        $this->add_question_qtype_varnumericset_vars($pluginwrapper);
 
         // Now create the qtype own structures
-        $varnumeric = new backup_nested_element('varnumeric', array('id'), array(
+        $varnumericset = new backup_nested_element('varnumericset', array('id'), array(
             'randomseed', 'recalculateeverytime', 'requirescinotation'));
 
         // Now the own qtype tree
-        $pluginwrapper->add_child($varnumeric);
+        $pluginwrapper->add_child($varnumericset);
 
         // set source to populate the data
-        $varnumeric->set_source_table('qtype_varnumeric',
+        $varnumericset->set_source_table('qtype_varnumericset',
                 array('questionid' => backup::VAR_PARENTID));
 
         // don't need to annotate ids nor files
@@ -72,10 +72,10 @@ class backup_qtype_varnumeric_plugin extends backup_qtype_plugin {
         return $plugin;
     }
 
-    protected function add_question_qtype_varnumeric_vars($element) {
+    protected function add_question_qtype_varnumericset_vars($element) {
         // Check $element is one nested_backup_element
         if (! $element instanceof backup_nested_element) {
-            throw new backup_step_exception('qtype_varnumeric_vars_bad_parent_element', $element);
+            throw new backup_step_exception('qtype_varnumericset_vars_bad_parent_element', $element);
         }
 
         // Define the elements
@@ -83,21 +83,21 @@ class backup_qtype_varnumeric_plugin extends backup_qtype_plugin {
         $var = new backup_nested_element('var', array('id'),
                                                 array('varno', 'nameorassignment'));
 
-        $this->add_question_qtype_varnumeric_variants($var);
+        $this->add_question_qtype_varnumericset_variants($var);
 
         // Build the tree
         $element->add_child($vars);
         $vars->add_child($var);
 
         // set source to populate the data
-        $var->set_source_table('qtype_varnumeric_vars',
+        $var->set_source_table('qtype_varnumericset_vars',
                                                 array('questionid' => backup::VAR_PARENTID));
     }
 
-    protected function add_question_qtype_varnumeric_variants($element) {
+    protected function add_question_qtype_varnumericset_variants($element) {
         // Check $element is one nested_backup_element
         if (! $element instanceof backup_nested_element) {
-            throw new backup_step_exception('qtype_varnumeric_variants_bad_parent_element',
+            throw new backup_step_exception('qtype_varnumericset_variants_bad_parent_element',
                                                                                         $element);
         }
 
@@ -111,19 +111,19 @@ class backup_qtype_varnumeric_plugin extends backup_qtype_plugin {
         $variants->add_child($variant);
 
         // set source to populate the data
-        $variant->set_source_table('qtype_varnumeric_variants',
+        $variant->set_source_table('qtype_varnumericset_variants',
                                                 array('varid' => backup::VAR_PARENTID));
     }
-    protected function add_question_qtype_varnumeric_answers($element) {
+    protected function add_question_qtype_varnumericset_answers($element) {
         // Check $element is one nested_backup_element
         if (! $element instanceof backup_nested_element) {
-            throw new backup_step_exception('question_varnumeric_answers_bad_parent_element',
+            throw new backup_step_exception('question_varnumericset_answers_bad_parent_element',
                                                 $element);
         }
 
         // Define the elements
-        $answers = new backup_nested_element('varnumeric_answers');
-        $answer = new backup_nested_element('varnumeric_answer', array('id'), array(
+        $answers = new backup_nested_element('varnumericset_answers');
+        $answer = new backup_nested_element('varnumericset_answer', array('id'), array(
             'answerid', 'error', 'sigfigs', 'checknumerical', 'checkscinotation',
             'checkpowerof10', 'checkrounding', 'syserrorpenalty'));
 
@@ -134,7 +134,7 @@ class backup_qtype_varnumeric_plugin extends backup_qtype_plugin {
         // Set the sources
         $answer->set_source_sql('
                 SELECT vans.*
-                FROM {question_answers} AS ans, {qtype_varnumeric_answers} AS vans
+                FROM {question_answers} AS ans, {qtype_varnumericset_answers} AS vans
                 WHERE ans.question = :question AND ans.id = vans.answerid
                 ORDER BY id',
                 array('question' => backup::VAR_PARENTID));

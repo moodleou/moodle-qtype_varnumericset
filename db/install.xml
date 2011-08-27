@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="question/type/varnumeric/db" VERSION="20110606" COMMENT="XMLDB file for Moodle question/type/varnumeric"
+<XMLDB PATH="question/type/varnumericset/db" VERSION="20110606" COMMENT="XMLDB file for Moodle question/type/varnumericset"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../../lib/xmldb/xmldb.xsd"
 >
   <TABLES>
-    <TABLE NAME="qtype_varnumeric" COMMENT="Options for variable numeric questions." NEXT="qtype_varnumeric_vars">
+    <TABLE NAME="qtype_varnumericset" COMMENT="Options for variable numeric set questions." NEXT="qtype_varnumericset_vars">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="questionid"/>
         <FIELD NAME="questionid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" COMMENT="Foreign key references question.id." PREVIOUS="id" NEXT="randomseed"/>
@@ -17,7 +17,7 @@
         <KEY NAME="questionid" TYPE="unique" FIELDS="questionid" PREVIOUS="primary"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="qtype_varnumeric_vars" COMMENT="vars used by this question" PREVIOUS="qtype_varnumeric" NEXT="qtype_varnumeric_variants">
+    <TABLE NAME="qtype_varnumericset_vars" COMMENT="vars used by this question" PREVIOUS="qtype_varnumericset" NEXT="qtype_varnumericset_variants">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="questionid"/>
         <FIELD NAME="questionid" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" PREVIOUS="id" NEXT="varno"/>
@@ -29,7 +29,7 @@
         <KEY NAME="questionid" TYPE="foreign" FIELDS="questionid" REFTABLE="question" REFFIELDS="id" PREVIOUS="primary"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="qtype_varnumeric_variants" COMMENT="value of variants of each variable." PREVIOUS="qtype_varnumeric_vars" NEXT="qtype_varnumeric_answers">
+    <TABLE NAME="qtype_varnumericset_variants" COMMENT="value of variants of each variable." PREVIOUS="qtype_varnumericset_vars" NEXT="qtype_varnumericset_answers">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="varid"/>
         <FIELD NAME="varid" TYPE="int" LENGTH="10" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" COMMENT="points to variable that these variant values are for" PREVIOUS="id" NEXT="variantno"/>
@@ -38,10 +38,10 @@
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="varid"/>
-        <KEY NAME="varid" TYPE="foreign" FIELDS="varid" REFTABLE="qtype_varnumeric_vars" REFFIELDS="id" PREVIOUS="primary"/>
+        <KEY NAME="varid" TYPE="foreign" FIELDS="varid" REFTABLE="qtype_varnumericset_vars" REFFIELDS="id" PREVIOUS="primary"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="qtype_varnumeric_answers" COMMENT="Table for extra answer fields needed by varnumeric question type." PREVIOUS="qtype_varnumeric_variants">
+    <TABLE NAME="qtype_varnumericset_answers" COMMENT="Table for extra answer fields needed by varnumericset question type." PREVIOUS="qtype_varnumericset_variants">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="answerid"/>
         <FIELD NAME="answerid" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="id" NEXT="sigfigs"/>

@@ -15,10 +15,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Defines the editing form for the varnumeric question type.
+ * Defines the editing form for the varnumericset question type.
  *
  * @package    qtype
- * @subpackage varnumeric
+ * @subpackage varnumericset
  * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -26,7 +26,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot . '/question/type/varnumeric/calculator.php');
+require_once($CFG->dirroot . '/question/type/varnumericset/calculator.php');
 
 /**
  * Short answer question editing form definition.
@@ -34,14 +34,14 @@ require_once($CFG->dirroot . '/question/type/varnumeric/calculator.php');
  * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class qtype_varnumeric_edit_form extends question_edit_form {
+class qtype_varnumericset_edit_form extends question_edit_form {
 
     protected function definition_inner($mform) {
         global $DB;
 
-        $mform->addHelpButton('questiontext', 'questiontext', 'qtype_varnumeric');
+        $mform->addHelpButton('questiontext', 'questiontext', 'qtype_varnumericset');
 
-        $mform->addElement('text', 'randomseed', get_string('randomseed', 'qtype_varnumeric'));
+        $mform->addElement('text', 'randomseed', get_string('randomseed', 'qtype_varnumericset'));
         $mform->setType('randomseed', PARAM_RAW);
 
         $noofvariants = optional_param('noofvariants', 0, PARAM_INT);
@@ -51,27 +51,27 @@ class qtype_varnumeric_edit_form extends question_edit_form {
         }
         $answersoption = '';
 
-        $typemenu = array(0 => get_string('vartypecalculated', 'qtype_varnumeric'),
-                            1 => get_string('vartypepredefined', 'qtype_varnumeric'));
+        $typemenu = array(0 => get_string('vartypecalculated', 'qtype_varnumericset'),
+                            1 => get_string('vartypepredefined', 'qtype_varnumericset'));
 
         $repeated = array();
         $repeatedoptions = array();
         $repeated[] = $mform->createElement('header', 'varhdr',
-                                get_string('varheader', 'qtype_varnumeric'));
+                                get_string('varheader', 'qtype_varnumericset'));
         $repeated[] = $mform->createElement('select', 'vartype', '', $typemenu);
         $repeated[] = $mform->createElement('text', 'varname',
-                                get_string('varname', 'qtype_varnumeric'), array('size' => 40));
+                                get_string('varname', 'qtype_varnumericset'), array('size' => 40));
 
         $mform->setType('varname', PARAM_RAW_TRIMMED);
-        $repeatedoptions['varname']['helpbutton'] = array('varname', 'qtype_varnumeric');
+        $repeatedoptions['varname']['helpbutton'] = array('varname', 'qtype_varnumericset');
 
         if (isset($this->question->id)) {
             $sql = 'SELECT MAX(vari.variantno)+1 '.
-                    'FROM {qtype_varnumeric_variants} vari, {qtype_varnumeric_vars} vars '.
+                    'FROM {qtype_varnumericset_variants} vari, {qtype_varnumericset_vars} vars '.
                     'WHERE vars.questionid = ? AND vars.id = vari.varid';
             $noofvariantsindb = $DB->get_field_sql($sql, array($this->question->id));
             $sql = 'SELECT MAX(varno)+1 '.
-                    'FROM {qtype_varnumeric_vars} vars '.
+                    'FROM {qtype_varnumericset_vars} vars '.
                     'WHERE questionid = ?';
             $noofvarsindb = $DB->get_field_sql($sql, array($this->question->id));
         } else {
@@ -88,38 +88,38 @@ class qtype_varnumeric_edit_form extends question_edit_form {
         }
         for ($i=0; $i < $noofvariants; $i++) {
             $repeated[] = $mform->createElement('text', "variant$i",
-                    get_string('variant', 'qtype_varnumeric', $i+1), array('size' => 40));
+                    get_string('variant', 'qtype_varnumericset', $i+1), array('size' => 40));
             $repeatedoptions["variant$i"]['disabledif'] = array('vartype', 'eq', 0);
             if ($i == 0) {
-                $repeatedoptions["variant$i"]['helpbutton'] = array('variants', 'qtype_varnumeric');
+                $repeatedoptions["variant$i"]['helpbutton'] = array('variants', 'qtype_varnumericset');
             }
         }
         $mform->setType('variant', PARAM_RAW_TRIMMED);
 
         $this->repeat_elements($repeated, $noofvarsatstart, $repeatedoptions,
-                'novars', 'addvars', 2, get_string('addmorevars', 'qtype_varnumeric'));
+                'novars', 'addvars', 2, get_string('addmorevars', 'qtype_varnumericset'));
 
         $mform->registerNoSubmitButton('addvariants');
         $addvariantel = $mform->createElement('submit', 'addvariants',
-                                        get_string('addmorevariants', 'qtype_varnumeric', 2));
+                                        get_string('addmorevariants', 'qtype_varnumericset', 2));
         $mform->insertElementBefore($addvariantel, 'varhdr[1]');
         $mform->addElement('hidden', 'noofvariants', $noofvariants);
         $mform->setConstant('noofvariants', $noofvariants);
         $mform->setType('noofvariants', PARAM_INT);
 
         $mform->addElement('header', 'calculatewhen',
-                                        get_string('calculatewhen', 'qtype_varnumeric'));
+                                        get_string('calculatewhen', 'qtype_varnumericset'));
 
         $menu = array(
-            get_string('recalculateeverytimeno', 'qtype_varnumeric'),
-            get_string('recalculateeverytimeyes', 'qtype_varnumeric')
+            get_string('recalculateeverytimeno', 'qtype_varnumericset'),
+            get_string('recalculateeverytimeyes', 'qtype_varnumericset')
         );
         $mform->addElement('select', 'recalculateeverytime',
-                                get_string('recalculateeverytime', 'qtype_varnumeric'), $menu);
-        $mform->addHelpButton('recalculateeverytime', 'recalculateeverytime', 'qtype_varnumeric');
+                                get_string('recalculateeverytime', 'qtype_varnumericset'), $menu);
+        $mform->addHelpButton('recalculateeverytime', 'recalculateeverytime', 'qtype_varnumericset');
 
         $mform->addElement('submit', 'recalculatenow',
-                                        get_string('recalculatenow', 'qtype_varnumeric', 2));
+                                        get_string('recalculatenow', 'qtype_varnumericset', 2));
         $mform->disabledIf('recalculatenow', 'recalculateeverytime', 'eq', 1);
 
         //we are using a hook in questiontype to resdisplay the form and it expects a parameter
@@ -127,16 +127,16 @@ class qtype_varnumeric_edit_form extends question_edit_form {
         $mform->addElement('hidden', 'wizard', '');
 
         $mform->addElement('header', 'forallanswers',
-                                get_string('forallanswers', 'qtype_varnumeric'));
+                                get_string('forallanswers', 'qtype_varnumericset'));
         $mform->addElement('selectyesno', 'requirescinotation',
-                                get_string('requirescinotation', 'qtype_varnumeric'));
+                                get_string('requirescinotation', 'qtype_varnumericset'));
 
         $mform->addElement('static', 'answersinstruct',
-                get_string('correctanswers', 'qtype_varnumeric'),
-                get_string('filloutoneanswer', 'qtype_varnumeric'));
+                get_string('correctanswers', 'qtype_varnumericset'),
+                get_string('filloutoneanswer', 'qtype_varnumericset'));
         $mform->closeHeaderBefore('answersinstruct');
 
-        $this->add_per_answer_fields($mform, get_string('answerno', 'qtype_varnumeric', '{no}'),
+        $this->add_per_answer_fields($mform, get_string('answerno', 'qtype_varnumericset', '{no}'),
                 question_bank::fraction_options());
 
         $this->add_interactive_settings();
@@ -145,7 +145,7 @@ class qtype_varnumeric_edit_form extends question_edit_form {
             &$repeatedoptions, &$answersoption) {
         $parentansweroptions = parent::get_per_answer_fields($mform, $label, $gradeoptions,
                                                         $repeatedoptions, $answersoption);
-        $sigfigsoptions = array(0 => get_string('unspecified', 'qtype_varnumeric'),
+        $sigfigsoptions = array(0 => get_string('unspecified', 'qtype_varnumericset'),
                                 1 => 1, 2 => 2, 3 => 3, 4 => 4, 5 => 5, 6 => 6);
         $answeroptions = array();
 
@@ -153,29 +153,29 @@ class qtype_varnumeric_edit_form extends question_edit_form {
         $answeroptions[] = $parentansweroptions[1]; // answer text box
 
         $answeroptions[] = $mform->createElement('text', 'error',
-                                get_string('error', 'qtype_varnumeric'), array('size' => 80));
+                                get_string('error', 'qtype_varnumericset'), array('size' => 80));
         $answeroptions[] = $mform->createElement('select', 'sigfigs',
-                                get_string('sigfigs', 'qtype_varnumeric'), $sigfigsoptions);
+                                get_string('sigfigs', 'qtype_varnumericset'), $sigfigsoptions);
 
         $answeroptions[] = $parentansweroptions[2]; // grade
         $answeroptions[] = $parentansweroptions[3]; // feedback
 
         $answeroptions[] = $mform->createElement('header', 'autofirehdr',
-                                get_string('autofirehdr', 'qtype_varnumeric', '{no}'));
+                                get_string('autofirehdr', 'qtype_varnumericset', '{no}'));
         $answeroptions[] = $mform->createElement('selectyesno', 'checknumerical',
-                                get_string('checknumerical', 'qtype_varnumeric'));
+                                get_string('checknumerical', 'qtype_varnumericset'));
         $checkpowerof10options = array(0 => get_string('no'),
                                 1 => '+/- 1', 2 => '+/- 2', 3 => '+/- 3',
                                 4 => '+/- 4', 5 => '+/- 5', 6 => '+/- 6');
         $answeroptions[] = $mform->createElement('selectyesno', 'checkscinotation',
-                                get_string('checkscinotation', 'qtype_varnumeric'));
+                                get_string('checkscinotation', 'qtype_varnumericset'));
         $answeroptions[] = $mform->createElement('select', 'checkpowerof10',
-                                get_string('checkpowerof10', 'qtype_varnumeric'),
+                                get_string('checkpowerof10', 'qtype_varnumericset'),
                                 $checkpowerof10options);
         $answeroptions[] = $mform->createElement('selectyesno', 'checkrounding',
-                                get_string('checkrounding', 'qtype_varnumeric'));
+                                get_string('checkrounding', 'qtype_varnumericset'));
         $answeroptions[] = $mform->createElement('select', 'syserrorpenalty',
-                                get_string('syserrorpenalty', 'qtype_varnumeric'), $gradeoptions);
+                                get_string('syserrorpenalty', 'qtype_varnumericset'), $gradeoptions);
         $repeatedoptions['syserrorpenalty']['default'] = '0.1';
                                 return $answeroptions;
     }
@@ -186,8 +186,8 @@ class qtype_varnumeric_edit_form extends question_edit_form {
         list($repeated, $repeatedoptions) =
                             parent::get_hint_fields($withclearwrong, $withshownumpartscorrect);
         $repeated[] = $mform->createElement('advcheckbox', 'hintclearwrong',
-                                get_string('options', 'qtype_varnumeric'),
-                                get_string('hintoverride', 'qtype_varnumeric'), null, array(0, 1));
+                                get_string('options', 'qtype_varnumericset'),
+                                get_string('hintoverride', 'qtype_varnumericset'), null, array(0, 1));
         $repeatedoptions['hintclearwrong']['type'] = PARAM_BOOL;
 
         return array($repeated, $repeatedoptions);
@@ -200,7 +200,7 @@ class qtype_varnumeric_edit_form extends question_edit_form {
         $question = $this->data_preprocessing_hints($question, true);
 
         if (isset($question->id)) {
-            $calculator = new qtype_varnumeric_calculator();
+            $calculator = new qtype_varnumericset_calculator();
             $calculator->set_random_seed($question->options->randomseed, $question->stamp);
             $calculator->set_recalculate_rand($question->options->recalculateeverytime);
             $calculator->load_data_from_database($question->id);
@@ -251,32 +251,32 @@ class qtype_varnumeric_edit_form extends question_edit_form {
                 }
             } else if ($data['fraction'][$key] != 0 ||
                     !html_is_blank($data['feedback'][$key]['text'])) {
-                $errors["answer[$key]"] = get_string('answermustbegiven', 'qtype_varnumeric');
+                $errors["answer[$key]"] = get_string('answermustbegiven', 'qtype_varnumericset');
                 $answercount++;
             }
         }
         foreach ($data['varname'] as $varno => $varname) {
             if ($varname!=='') {
                 $isvalidvar =  EvalMath::is_valid_var_or_func_name($varname);
-                $isvalidassignment = qtype_varnumeric_calculator::is_assignment($varname);
+                $isvalidassignment = qtype_varnumericset_calculator::is_assignment($varname);
                 if ($data['vartype'][$varno] == 1 &&  !$isvalidvar) {
                     $errors["varname[$varno]"] =
-                            get_string('expectingvariablename', 'qtype_varnumeric');
+                            get_string('expectingvariablename', 'qtype_varnumericset');
                 }
                 if ($data['vartype'][$varno] == 0) {
                     if (!$isvalidassignment) {
                         $errors["varname[$varno]"] =
-                            get_string('expectingassignment', 'qtype_varnumeric');
+                            get_string('expectingassignment', 'qtype_varnumericset');
                     }
                 }
                 if ($data['vartype'][$varno] == 1 && empty($data['variant0'][$varno])) {
                     $errors["variant0[$varno]"] =
-                            get_string('youmustprovideavalueforfirstvariant', 'qtype_varnumeric');
+                            get_string('youmustprovideavalueforfirstvariant', 'qtype_varnumericset');
                 }
             }
         }
         if (count($errors) == 0) {
-            $calculator = new qtype_varnumeric_calculator();
+            $calculator = new qtype_varnumericset_calculator();
             //don't need to bother setting the random seed here as the
             //results of the evaluation are not important, we are just seeing
             //if the expressions evaluate without errors.
@@ -286,7 +286,7 @@ class qtype_varnumeric_edit_form extends question_edit_form {
             $errors = $calculator->get_errors();
         }
         if ($answercount==0) {
-            $errors['answer[0]'] = get_string('notenoughanswers', 'qtype_varnumeric', 1);
+            $errors['answer[0]'] = get_string('notenoughanswers', 'qtype_varnumericset', 1);
         }
         if ($maxgrade == false) {
             $errors['fraction[0]'] = get_string('fractionsnomax', 'question');
@@ -295,6 +295,6 @@ class qtype_varnumeric_edit_form extends question_edit_form {
     }
 
     public function qtype() {
-        return 'varnumeric';
+        return 'varnumericset';
     }
 }

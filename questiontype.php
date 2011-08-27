@@ -18,7 +18,7 @@
  * Question type class for the short answer question type.
  *
  * @package    qtype
- * @subpackage varnumeric
+ * @subpackage varnumericset
  * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -28,9 +28,9 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir . '/questionlib.php');
 require_once($CFG->dirroot . '/question/engine/lib.php');
-require_once($CFG->dirroot . '/question/type/varnumeric/question.php');
+require_once($CFG->dirroot . '/question/type/varnumericset/question.php');
 require_once($CFG->libdir . '/evalmath/evalmath.class.php');
-require_once($CFG->dirroot . '/question/type/varnumeric/calculator.php');
+require_once($CFG->dirroot . '/question/type/varnumericset/calculator.php');
 
 
 /**
@@ -39,14 +39,14 @@ require_once($CFG->dirroot . '/question/type/varnumeric/calculator.php');
  * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class qtype_varnumeric extends question_type {
+class qtype_varnumericset extends question_type {
     public function extra_question_fields() {
-        return array('qtype_varnumeric', 'randomseed',
+        return array('qtype_varnumericset', 'randomseed',
                                 'recalculateeverytime', 'requirescinotation');
     }
 
     protected function extra_answer_fields() {
-        return array('qtype_varnumeric_answers',
+        return array('qtype_varnumericset_answers',
                         'sigfigs',
                         'error',
                         'syserrorpenalty',
@@ -72,14 +72,14 @@ class qtype_varnumeric extends question_type {
 
     public function delete_question($questionid, $contextid) {
         global $DB;
-        $DB->delete_records('qtype_varnumeric', array('questionid' => $questionid));
-        $DB->execute("DELETE FROM {qtype_varnumeric_answers} AS qva USING {question_answers} AS qa".
+        $DB->delete_records('qtype_varnumericset', array('questionid' => $questionid));
+        $DB->execute("DELETE FROM {qtype_varnumericset_answers} AS qva USING {question_answers} AS qa".
                        " WHERE qa.id = qva.answerid AND qa.question = ?", array($questionid));
 
-        $DB->execute("DELETE FROM {qtype_varnumeric_variants} AS va ".
-                       "USING {qtype_varnumeric_vars} AS v ".
+        $DB->execute("DELETE FROM {qtype_varnumericset_variants} AS va ".
+                       "USING {qtype_varnumericset_vars} AS v ".
                        "WHERE va.varid = v.id AND v.questionid = ?", array($questionid));
-        $DB->delete_records('qtype_varnumeric_vars', array('questionid' => $questionid));
+        $DB->delete_records('qtype_varnumericset_vars', array('questionid' => $questionid));
 
         parent::delete_question($questionid, $contextid);
     }
@@ -96,7 +96,7 @@ class qtype_varnumeric extends question_type {
         if (!empty($oldanswers)) {
             $oldanswerids = array_keys($oldanswers);
             list($oldansweridsql, $oldansweridparams) = $DB->get_in_or_equal($oldanswerids);
-            $DB->delete_records_select('qtype_varnumeric_answers', "answerid $oldansweridsql",
+            $DB->delete_records_select('qtype_varnumericset_answers', "answerid $oldansweridsql",
                                                                         $oldansweridparams);
         } else {
             $oldanswers = array();
@@ -134,16 +134,16 @@ class qtype_varnumeric extends question_type {
             if ($form->fraction[$key] > $maxfraction) {
                 $maxfraction = $form->fraction[$key];
             }
-            $varnumericanswer = new stdClass();
-            $varnumericanswer->answerid = $answer->id;
-            $varnumericanswer->sigfigs = $form->sigfigs[$key];
-            $varnumericanswer->error = $form->error[$key];
-            $varnumericanswer->syserrorpenalty = $form->syserrorpenalty[$key];
-            $varnumericanswer->checknumerical = $form->checknumerical[$key];
-            $varnumericanswer->checkscinotation = $form->checkscinotation[$key];
-            $varnumericanswer->checkpowerof10 = $form->checkpowerof10[$key];
-            $varnumericanswer->checkrounding = $form->checkrounding[$key];
-            $DB->insert_record('qtype_varnumeric_answers', $varnumericanswer);
+            $varnumericsetanswer = new stdClass();
+            $varnumericsetanswer->answerid = $answer->id;
+            $varnumericsetanswer->sigfigs = $form->sigfigs[$key];
+            $varnumericsetanswer->error = $form->error[$key];
+            $varnumericsetanswer->syserrorpenalty = $form->syserrorpenalty[$key];
+            $varnumericsetanswer->checknumerical = $form->checknumerical[$key];
+            $varnumericsetanswer->checkscinotation = $form->checkscinotation[$key];
+            $varnumericsetanswer->checkpowerof10 = $form->checkpowerof10[$key];
+            $varnumericsetanswer->checkrounding = $form->checkrounding[$key];
+            $DB->insert_record('qtype_varnumericset_answers', $varnumericsetanswer);
         }
 
         list ($varschanged, $varnotovarid, $assignments, $predefined) =
@@ -161,7 +161,7 @@ class qtype_varnumeric extends question_type {
         if ($form->recalculateeverytime) {
             //remove any old variants in the db that are calculated
             list($varidsql, $varids) = $DB->get_in_or_equal($assignments);
-            $DB->delete_records_select('qtype_varnumeric_variants', 'varid '.$varidsql, $varids);
+            $DB->delete_records_select('qtype_varnumericset_variants', 'varid '.$varidsql, $varids);
         }
         $definedvariantschanged = $this->save_variants($predefined, $variants, $varnotovarid);
 
@@ -172,7 +172,7 @@ class qtype_varnumeric extends question_type {
                 ((!empty($form->recalculatenow)) // the recalculate now option
                 || $definedvariantschanged || $varschanged)) {
             //precalculate variant values
-            $calculator = new qtype_varnumeric_calculator();
+            $calculator = new qtype_varnumericset_calculator();
             if (empty($form->randomseed)) {
                 $questionstamp = $DB->get_field('question', 'stamp', array('id' => $form->id));
             } else {
@@ -212,7 +212,7 @@ class qtype_varnumeric extends question_type {
      * @param array varidstoprocess only save variants for variables with these ids
      * @param integer questionid
      * @param array variants data from form
-     * @param array varnotovarid index is varno and values are qtype_varnumeric_vars.id
+     * @param array varnotovarid index is varno and values are qtype_varnumericset_vars.id
      */
     protected function save_variants($varidstoprocess, $variants, $varnotovarid) {
         global $DB;
@@ -222,7 +222,7 @@ class qtype_varnumeric extends question_type {
         $changed = false;
         list($varidsql, $varids) = $DB->get_in_or_equal($varidstoprocess);
         $oldvariants =
-                $DB->get_records_select('qtype_varnumeric_variants', 'varid '.$varidsql, $varids);
+                $DB->get_records_select('qtype_varnumericset_variants', 'varid '.$varidsql, $varids);
         //variants are indexed by variantno and then var no
         foreach ($variants as $variantno => $variant) {
             foreach ($variant as $varno => $value) {
@@ -244,12 +244,12 @@ class qtype_varnumeric extends question_type {
                     $variantrec->varid = $varnotovarid[$varno];
                     $variantrec->variantno = $variantno;
                     $variantrec->value = $value;
-                    $variantrec->id = $DB->insert_record('qtype_varnumeric_variants', $variantrec);
+                    $variantrec->id = $DB->insert_record('qtype_varnumericset_variants', $variantrec);
                     $changed = true;
                 } else {
                     if ($variantrec->value != $value) {
                         $variantrec->value = $value;
-                        $DB->update_record('qtype_varnumeric_variants', $variantrec);
+                        $DB->update_record('qtype_varnumericset_variants', $variantrec);
                         $changed = true;
                     }
                 }
@@ -260,7 +260,7 @@ class qtype_varnumeric extends question_type {
             $changed = true;
             list($oldvariantsidsql, $oldvariantsids) =
                                                 $DB->get_in_or_equal(array_keys($oldvariants));
-            $DB->delete_records_select('qtype_varnumeric_variants',
+            $DB->delete_records_select('qtype_varnumericset_variants',
                                             'id '.$oldvariantsidsql,
                                             $oldvariantsids);
         }
@@ -276,7 +276,7 @@ class qtype_varnumeric extends question_type {
     protected function save_vars($questionid, $varnames) {
         global $DB;
         $changed = false;
-        $oldvars = $DB->get_records('qtype_varnumeric_vars',
+        $oldvars = $DB->get_records('qtype_varnumericset_vars',
                                        array('questionid' => $questionid),
                                        'id ASC');
         $varnotovarid = array();
@@ -301,19 +301,19 @@ class qtype_varnumeric extends question_type {
                 $var->questionid = $questionid;
                 $var->varno = $varno;
                 $var->nameorassignment = $varname;
-                $var->id = $DB->insert_record('qtype_varnumeric_vars', $var);
+                $var->id = $DB->insert_record('qtype_varnumericset_vars', $var);
                 $varid = $var->id;
                 $changed = true;
             } else {
                 if ($varfromdb->nameorassignment != $varname) {
                     $varfromdb->nameorassignment = $varname;
-                    $DB->update_record('qtype_varnumeric_vars', $varfromdb);
+                    $DB->update_record('qtype_varnumericset_vars', $varfromdb);
                     $changed = true;
                 }
                 $varid = $varfromdb->id;
             }
             $varnotovarid[$varno] = $varid;
-            if (qtype_varnumeric_calculator::is_assignment($varname)) {
+            if (qtype_varnumericset_calculator::is_assignment($varname)) {
                 $assignments[] = $varid;
             } else {
                 $predefined[] = $varid;
@@ -327,7 +327,7 @@ class qtype_varnumeric extends question_type {
                 $oldvarids[] = $oldvar->id;
             }
             list($oldvaridsql, $oldvaridslist) = $DB->get_in_or_equal($oldvarids);
-            $DB->delete_records_select('qtype_varnumeric_vars', 'id '.$oldvaridsql, $oldvaridslist);
+            $DB->delete_records_select('qtype_varnumericset_vars', 'id '.$oldvaridsql, $oldvaridslist);
             $changed = true;
         }
         return array($changed, $varnotovarid, $assignments, $predefined);
@@ -349,12 +349,12 @@ class qtype_varnumeric extends question_type {
     }
     protected static function load_var_and_variants_from_db($questionid) {
         global $DB;
-        $vars = $DB->get_records('qtype_varnumeric_vars',
+        $vars = $DB->get_records('qtype_varnumericset_vars',
                                         array('questionid' => $questionid),
                                         'id ASC', 'id, nameorassignment, varno');
         if ($vars) {
             list($varidsql, $varids) = $DB->get_in_or_equal(array_keys($vars));
-            $variants = $DB->get_records_select('qtype_varnumeric_variants',
+            $variants = $DB->get_records_select('qtype_varnumericset_variants',
                                                     'varid '.$varidsql, $varids);
             if (!$variants){
                 $variants = array();
@@ -368,7 +368,7 @@ class qtype_varnumeric extends question_type {
     protected function initialise_question_vars_and_variants(question_definition $question,
                                                                                 $questiondata) {
         global $DB;
-        $question->calculator = new qtype_varnumeric_calculator();
+        $question->calculator = new qtype_varnumericset_calculator();
         $question->calculator->set_random_seed($questiondata->options->randomseed,
                                                 $questiondata->stamp);
         $question->calculator->set_recalculate_rand($questiondata->options->recalculateeverytime);
@@ -388,7 +388,7 @@ class qtype_varnumeric extends question_type {
             return;
         }
         foreach ($questiondata->options->answers as $a) {
-            $question->answers[$a->id] = new qtype_varnumeric_answer($a->id, $a->answer,
+            $question->answers[$a->id] = new qtype_varnumericset_answer($a->id, $a->answer,
                     $a->fraction, $a->feedback, $a->feedbackformat, $a->sigfigs, $a->error,
                     $a->syserrorpenalty, $a->checknumerical, $a->checkscinotation,
                     $a->checkpowerof10, $a->checkrounding);
@@ -435,7 +435,7 @@ class qtype_varnumeric extends question_type {
             $varno = $format->getpath($var, array('#', 'varno', 0, '#'), false);
             $qo->varname[$varno] =
                 $format->getpath($var, array('#', 'nameorassignment', 0, '#'), false);
-            if (qtype_varnumeric_calculator::is_assignment($qo->varname[$varno])) {
+            if (qtype_varnumericset_calculator::is_assignment($qo->varname[$varno])) {
                 $qo->vartype[$varno] = 0;
             } else {
                 $qo->vartype[$varno] = 1;

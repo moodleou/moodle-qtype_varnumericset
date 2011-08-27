@@ -17,7 +17,7 @@
 /**
  *
  * @package    qtype
- * @subpackage varnumeric
+ * @subpackage varnumericset
  * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -34,7 +34,7 @@ require_once($CFG->libdir . '/evalmath/evalmath.class.php');
  * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class qtype_varnumeric_evalmath_test extends UnitTestCase {
+class qtype_varnumericset_evalmath_test extends UnitTestCase {
     public function test_basic_expressions() {
         $ev = new EvalMath(true, true);
 

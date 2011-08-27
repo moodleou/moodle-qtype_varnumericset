@@ -27,12 +27,12 @@ defined('MOODLE_INTERNAL') || die();
 
 /**
  * restore plugin class that provides the necessary information
- * needed to restore one varnumeric qtype plugin
+ * needed to restore one varnumericset qtype plugin
  *
  * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class restore_qtype_varnumeric_plugin extends restore_qtype_plugin {
+class restore_qtype_varnumericset_plugin extends restore_qtype_plugin {
 
     /**
      * Returns the paths to be handled by the plugin at question level
@@ -44,10 +44,10 @@ class restore_qtype_varnumeric_plugin extends restore_qtype_plugin {
         // This qtype uses question_answers, add them
         $this->add_question_question_answers($paths);
 
-        $elements = array('qtype_varnumeric' => '/varnumeric',
-                            'qtype_varnumeric_answer' => '/varnumeric_answers/varnumeric_answer',
-                            'qtype_varnumeric_var' => '/vars/var',
-                            'qtype_varnumeric_variant' => '/vars/var/variants/variant');
+        $elements = array('qtype_varnumericset' => '/varnumericset',
+                            'qtype_varnumericset_answer' => '/varnumericset_answers/varnumericset_answer',
+                            'qtype_varnumericset_var' => '/vars/var',
+                            'qtype_varnumericset_variant' => '/vars/var/variants/variant');
         foreach ($elements as $elename => $path) {
             $elepath = $this->get_pathfor($path);
             $paths[] = new restore_path_element($elename, $elepath);
@@ -58,9 +58,9 @@ class restore_qtype_varnumeric_plugin extends restore_qtype_plugin {
 
 
     /**
-     * Process the qtype/varnumeric element
+     * Process the qtype/varnumericset element
      */
-    public function process_qtype_varnumeric($data) {
+    public function process_qtype_varnumericset($data) {
         global $DB;
 
         $data = (object)$data;
@@ -72,22 +72,22 @@ class restore_qtype_varnumeric_plugin extends restore_qtype_plugin {
         $questioncreated = $this->get_mappingid('question_created', $oldquestionid) ? true : false;
 
         // If the question has been created by restore, we need to create its
-        // question_varnumeric too
+        // question_varnumericset too
         if ($questioncreated) {
             // Adjust some columns
             $data->questionid = $newquestionid;
 
             // Insert record
-            $newitemid = $DB->insert_record('qtype_varnumeric', $data);
+            $newitemid = $DB->insert_record('qtype_varnumericset', $data);
             // Create mapping
-            $this->set_mapping('qtype_varnumeric', $oldid, $newitemid);
+            $this->set_mapping('qtype_varnumericset', $oldid, $newitemid);
         }
     }
 
     /**
-     * Process the qtype/varnumeric_answer element
+     * Process the qtype/varnumericset_answer element
      */
-    public function process_qtype_varnumeric_answer($data) {
+    public function process_qtype_varnumericset_answer($data) {
         global $DB;
 
         $data = (object)$data;
@@ -99,12 +99,12 @@ class restore_qtype_varnumeric_plugin extends restore_qtype_plugin {
         $questioncreated = $this->get_mappingid('question_created', $oldquestionid) ? true : false;
         if ($questioncreated) {
             // Insert record
-            $newitemid = $DB->insert_record('qtype_varnumeric_answers', $data);
+            $newitemid = $DB->insert_record('qtype_varnumericset_answers', $data);
             // Create mapping
-            $this->set_mapping('qtype_varnumeric_answer', $data->id, $newitemid);
+            $this->set_mapping('qtype_varnumericset_answer', $data->id, $newitemid);
         }
     }
-    public function process_qtype_varnumeric_var($data) {
+    public function process_qtype_varnumericset_var($data) {
         global $DB;
 
         $data = (object)$data;
@@ -116,18 +116,18 @@ class restore_qtype_varnumeric_plugin extends restore_qtype_plugin {
         if ($questioncreated) {
             $data->questionid = $newquestionid;
             // Insert record
-            $newitemid = $DB->insert_record('qtype_varnumeric_vars', $data);
+            $newitemid = $DB->insert_record('qtype_varnumericset_vars', $data);
             // Create mapping
-            $this->set_mapping('qtype_varnumeric_var', $data->id, $newitemid);
+            $this->set_mapping('qtype_varnumericset_var', $data->id, $newitemid);
         }
     }
 
-    public function process_qtype_varnumeric_variant($data) {
+    public function process_qtype_varnumericset_variant($data) {
         global $DB;
 
         $data = (object)$data;
 
-        $data->varid = $this->get_new_parentid('qtype_varnumeric_var');
+        $data->varid = $this->get_new_parentid('qtype_varnumericset_var');
 
         // Detect if the question is created
         $oldquestionid   = $this->get_old_parentid('question');
@@ -135,9 +135,9 @@ class restore_qtype_varnumeric_plugin extends restore_qtype_plugin {
         if ($questioncreated) {
 
             // Insert record
-            $newitemid = $DB->insert_record('qtype_varnumeric_variants', $data);
+            $newitemid = $DB->insert_record('qtype_varnumericset_variants', $data);
             // Create mapping
-            $this->set_mapping('qtype_varnumeric_variant', $data->id, $newitemid);
+            $this->set_mapping('qtype_varnumericset_variant', $data->id, $newitemid);
         }
     }
 

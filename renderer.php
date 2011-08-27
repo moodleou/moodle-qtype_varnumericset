@@ -18,7 +18,7 @@
  * Short answer question renderer class.
  *
  * @package    qtype
- * @subpackage varnumeric
+ * @subpackage varnumericset
  * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -33,7 +33,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class qtype_varnumeric_renderer extends qtype_renderer {
+class qtype_varnumericset_renderer extends qtype_renderer {
     public function formulation_and_controls(question_attempt $qa,
             question_display_options $options) {
 
@@ -83,7 +83,7 @@ class qtype_varnumeric_renderer extends qtype_renderer {
 
         if (!$placeholder) {
             $result .= html_writer::start_tag('div', array('class' => 'ablock'));
-            $result .= get_string('answer', 'qtype_varnumeric',
+            $result .= get_string('answer', 'qtype_varnumericset',
                     html_writer::tag('div', $input, array('class' => 'answer')));
             $result .= html_writer::end_tag('div');
         }
@@ -117,6 +117,6 @@ class qtype_varnumeric_renderer extends qtype_renderer {
             return '';
         }
 
-        return get_string('correctansweris', 'qtype_varnumeric', $answer->answer);
+        return get_string('correctansweris', 'qtype_varnumericset', $answer->answer);
     }
 }

@@ -15,17 +15,17 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Strings for component 'qtype_varnumeric', language 'en', branch 'MOODLE_20_STABLE'
+ * Strings for component 'qtype_varnumericset', language 'en', branch 'MOODLE_20_STABLE'
  *
  * @package    qtype
- * @subpackage varnumeric
+ * @subpackage varnumericset
  * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 $string['addmorevariants'] = 'Add {$a} More Blanks for More Variants';
 $string['addmorevars'] = 'Add {no} More Blanks for Variables';
-$string['addingvarnumeric'] = 'Adding a Variable Numeric Question';
+$string['addingvarnumericset'] = 'Adding a Variable Numeric Set Question';
 $string['addmoreanswerblanks'] = 'Blanks for {no} More Answers';
 $string['ae_numericallycorrect'] = 'Your answer is almost correct. You have the correct value and it is rounded correctly.';
 $string['ae_numericallycorrectandwrongformat'] = 'Your answer is almost correct. You have the correct value and it is rounded correctly but it is not in scientific notation.';
@@ -50,7 +50,7 @@ $string['correctansweris'] = 'The correct answer is: {$a}';
 $string['correctansweriserror'] = '{$a->answer} <sup>+</sup>/<sub>-</sub> {$a->error}';
 $string['correctanswerissigfigs'] = '{$a->answer} ({$a->sigfigs} significant figures)';
 $string['correctanswers'] = 'Correct answers';
-$string['editingvarnumeric'] = 'Editing a Variable Numeric Question';
+$string['editingvarnumericset'] = 'Editing a Variable Numeric Set Question';
 $string['error'] = 'Accepted Error +/-';
 $string['expectingassignment'] = 'You must use a mathematical expression to assign a value to a \'Calculated Variable\'.';
 $string['expectingvariablename'] = 'Expecting a variable name here';
@@ -97,10 +97,10 @@ $string['varname'] = 'Name or assignment';
 $string['varname_help'] = 'For a \'Predefined Variable\' you enter only a variable name here e.g. \'a\'. Then enter the values for this variable for each question variant below.
 
 Or for a \'Calculated Variable\' enter a variable name and assign it a value from an expression e.g. \'b = a^4\' (where \'a\' is a previously defined variable).';
-$string['varnumeric'] = 'Variable Numeric';
-$string['varnumeric_help'] = 'In response to a question the respondent types a number. Numbers used in the question and used to calculate the answer are chosen from predefined sets or randomly generated on the fly.';
-$string['varnumeric_link'] = 'question/type/varnumeric';
-$string['varnumericsummary'] = 'Allows a numeric response';
+$string['varnumericset'] = 'Variable Numeric Set';
+$string['varnumericset_help'] = 'In response to a question the respondent types a number. Numbers used in the question and used to calculate the answer are chosen from predefined sets which can be precalculated from mathematical expressions.';
+$string['varnumericset_link'] = 'question/type/varnumericset';
+$string['varnumericsetsummary'] = 'Allows a numeric response';
 $string['vartypecalculated'] = 'Calculated Variable';
 $string['vartypepredefined'] = 'Predefined Variable';
 $string['youmustprovideavalueforfirstvariant'] = 'You must provide a value for at least the first variant for a \'Predefined Variable\'';

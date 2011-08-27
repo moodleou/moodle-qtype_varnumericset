@@ -15,16 +15,16 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Class for evaluating variants for varnumeric question type.
+ * Class for evaluating variants for varnumericset question type.
  *
  * @package    qtype
- * @subpackage varnumeric
+ * @subpackage varnumericset
  * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 
-class qtype_varnumeric_calculator {
+class qtype_varnumericset_calculator {
 
     /** @var boolean whether assignments to variables should be evaluated on each question load. */
     protected $recalculateeverytime = false;
@@ -146,7 +146,7 @@ class qtype_varnumeric_calculator {
                     if (self::is_assignment($answer->{$prop})) {
                         //this is an assignment not legal here
                         $this->errors["{$prop}[{$answerno}]"] =
-                                get_string('expressionmustevaluatetoanumber', 'qtype_varnumeric');
+                                get_string('expressionmustevaluatetoanumber', 'qtype_varnumericset');
                     } else {
                         $this->evaluate($answer->{$prop}, "{$prop}[{$answerno}]");
                     }
@@ -164,13 +164,13 @@ class qtype_varnumeric_calculator {
         $error = '';
         if ($result === false) {
             $error = get_string('errorreportedbyexpressionevaluator',
-                                                        'qtype_varnumeric', $this->ev->last_error);
+                                                        'qtype_varnumericset', $this->ev->last_error);
         }
         if (is_nan($result)) {
-            $error = get_string('expressionevaluatesasnan', 'qtype_varnumeric');
+            $error = get_string('expressionevaluatesasnan', 'qtype_varnumericset');
         }
         if (is_infinite($result)) {
-            $error = get_string('expressionevaluatesasinfinite', 'qtype_varnumeric');
+            $error = get_string('expressionevaluatesasinfinite', 'qtype_varnumericset');
         }
         if (!empty($error) && !is_null($placetoputanyerror)) {
             $this->errors[$placetoputanyerror] = $error;
@@ -382,7 +382,7 @@ class qtype_varnumeric_calculator {
             if (self::is_assignment($variableorexpression)) {
                 //this is an assignment, not legal here
                 $this->errors[$wheretoputerror] =
-                        get_string('expressionmustevaluatetoanumber', 'qtype_varnumeric');
+                        get_string('expressionmustevaluatetoanumber', 'qtype_varnumericset');
             } else {
                 $evaluated = $this->evaluate($variableorexpression, $wheretoputerror);
             }

@@ -15,10 +15,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Unit tests for the varnumeric question type class.
+ * Unit tests for the varnumericset question type class.
  *
  * @package    qtype
- * @subpackage varnumeric
+ * @subpackage varnumericset
  * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -26,25 +26,25 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot . '/question/type/varnumeric/questiontype.php');
+require_once($CFG->dirroot . '/question/type/varnumericset/questiontype.php');
 
 
 /**
- * Unit tests for the varnumeric question type class.
+ * Unit tests for the varnumericset question type class.
  *
  * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class qtype_varnumeric_test extends UnitTestCase {
+class qtype_varnumericset_test extends UnitTestCase {
     public static $includecoverage = array(
         'question/type/questiontype.php',
-        'question/type/varnumeric/questiontype.php',
+        'question/type/varnumericset/questiontype.php',
     );
 
     protected $qtype;
 
     public function setUp() {
-        $this->qtype = new qtype_varnumeric();
+        $this->qtype = new qtype_varnumericset();
     }
 
     public function tearDown() {
@@ -61,7 +61,7 @@ class qtype_varnumeric_test extends UnitTestCase {
     }
 
     public function test_name() {
-        $this->assertEqual($this->qtype->name(), 'varnumeric');
+        $this->assertEqual($this->qtype->name(), 'varnumericset');
     }
 
     public function test_can_analyse_responses() {

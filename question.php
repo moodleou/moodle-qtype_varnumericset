@@ -15,10 +15,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * varnumeric question definition class.
+ * varnumericset question definition class.
  *
  * @package    qtype
- * @subpackage varnumeric
+ * @subpackage varnumericset
  * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -33,15 +33,15 @@ define('QTYPE_VARNUMERIC_DECIMAL_SEP', '.');
 
 
 /**
- * Represents a varnumeric question.
+ * Represents a varnumericset question.
  *
  * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class qtype_varnumeric_question extends question_graded_automatically_with_countback {
+class qtype_varnumericset_question extends question_graded_automatically_with_countback {
 
 
-    /** @var qtype_varnumeric_calculator calculator to deal with expressions,
+    /** @var qtype_varnumericset_calculator calculator to deal with expressions,
      *                                    variable and variants.
      */
     public $calculator;
@@ -84,18 +84,18 @@ class qtype_varnumeric_question extends question_graded_automatically_with_count
 
     public function get_validation_error(array $response) {
         if ($this->is_no_response($response)) {
-            return get_string('pleaseenterananswer', 'qtype_varnumeric');
+            return get_string('pleaseenterananswer', 'qtype_varnumericset');
         }
         if (false !== strpos($response['answer'], QTYPE_VARNUMERIC_THOUSAND_SEP)) {
             $a = new stdClass();
             $a->thousandssep = QTYPE_VARNUMERIC_THOUSAND_SEP;
             $a->decimalsep = QTYPE_VARNUMERIC_DECIMAL_SEP;
-            return get_string('illegalthousandseparator', 'qtype_varnumeric', $a);
+            return get_string('illegalthousandseparator', 'qtype_varnumericset', $a);
         }
         $string = self::normalize_number_format($response['answer'], $this->requirescinotation);
 
         if (self::is_valid_normalized_number_string($string)) {
-            return get_string('notvalidnumber', 'qtype_varnumeric');
+            return get_string('notvalidnumber', 'qtype_varnumericset');
         }
         return '';
     }
@@ -156,13 +156,13 @@ class qtype_varnumeric_question extends question_graded_automatically_with_count
             $evaluated = $this->calculator->evaluate($answer->answer);
             $answer->answer =
                     $this->round_to($evaluated, $answer->sigfigs, $this->requirescinotation);
-            $answer->answer = qtype_varnumeric_calculator::htmlize_exponent($answer->answer);
+            $answer->answer = qtype_varnumericset_calculator::htmlize_exponent($answer->answer);
             if ($answer->error != '') {
                 $answer->error = $this->calculator->evaluate($answer->error);
-                $answer->answer = get_string('correctansweriserror', 'qtype_varnumeric', $answer);
+                $answer->answer = get_string('correctansweriserror', 'qtype_varnumericset', $answer);
             }
             if ($answer->sigfigs != 0) {
-                $answer->answer = get_string('correctanswerissigfigs', 'qtype_varnumeric', $answer);
+                $answer->answer = get_string('correctanswerissigfigs', 'qtype_varnumericset', $answer);
             }
             return $answer;
         } else {
@@ -196,7 +196,7 @@ class qtype_varnumeric_question extends question_graded_automatically_with_count
         }
     }
 
-    protected function compare_num_as_string_with_answer($string, qtype_varnumeric_answer $answer) {
+    protected function compare_num_as_string_with_answer($string, qtype_varnumericset_answer $answer) {
         $autofireerrorfeedback = '';
         $evaluated = $this->calculator->evaluate($answer->answer);
         $rounded = (float)self::round_to($evaluated, $answer->sigfigs, true);
@@ -241,7 +241,7 @@ class qtype_varnumeric_question extends question_graded_automatically_with_count
             $autofireerrors ++;
         }
         $penalty = ($answer->syserrorpenalty * $autofireerrors);
-        return array($penalty, get_string('ae_'.$autofireerrorfeedback, 'qtype_varnumeric'));
+        return array($penalty, get_string('ae_'.$autofireerrorfeedback, 'qtype_varnumericset'));
     }
 
     public static function num_within_allowed_error($string, $answer, $allowederror) {
@@ -507,7 +507,7 @@ class qtype_varnumeric_question extends question_graded_automatically_with_count
             return array($this->id => question_classified_response::no_response());
         }
         $responsenormalized = self::normalize_number_format($response['answer'], true);
-        $responsehtmlized = qtype_varnumeric_calculator::htmlize_exponent($responsenormalized);
+        $responsehtmlized = qtype_varnumericset_calculator::htmlize_exponent($responsenormalized);
         return array($this->id => new question_classified_response(
                 $ans->id, $responsehtmlized, $ans->fraction));
     }
@@ -520,7 +520,7 @@ class qtype_varnumeric_question extends question_graded_automatically_with_count
  * @copyright  2009 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class qtype_varnumeric_answer extends question_answer {
+class qtype_varnumericset_answer extends question_answer {
     public $sigfigs;
     public $error;
     public $syserrorpenalty;

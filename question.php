@@ -46,6 +46,7 @@ class qtype_varnumericset_question extends question_graded_automatically_with_co
      */
     public $calculator;
 
+
     /**
      *
      * Whether to require scientific notation and whether to allow use of superscript.

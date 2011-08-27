@@ -107,20 +107,10 @@ class qtype_varnumericset_edit_form extends question_edit_form {
         $mform->setConstant('noofvariants', $noofvariants);
         $mform->setType('noofvariants', PARAM_INT);
 
-        $mform->addElement('header', 'calculatewhen',
-                                        get_string('calculatewhen', 'qtype_varnumericset'));
-
-        $menu = array(
-            get_string('recalculateeverytimeno', 'qtype_varnumericset'),
-            get_string('recalculateeverytimeyes', 'qtype_varnumericset')
-        );
-        $mform->addElement('select', 'recalculateeverytime',
-                                get_string('recalculateeverytime', 'qtype_varnumericset'), $menu);
-        $mform->addHelpButton('recalculateeverytime', 'recalculateeverytime', 'qtype_varnumericset');
 
         $mform->addElement('submit', 'recalculatenow',
                                         get_string('recalculatenow', 'qtype_varnumericset', 2));
-        $mform->disabledIf('recalculatenow', 'recalculateeverytime', 'eq', 1);
+        $mform->closeHeaderBefore('recalculatenow');
 
         //we are using a hook in questiontype to resdisplay the form and it expects a parameter
         //wizard, which we won't actually use but we need to pass it to avoid an error message.
@@ -202,8 +192,8 @@ class qtype_varnumericset_edit_form extends question_edit_form {
         if (isset($question->id)) {
             $calculator = new qtype_varnumericset_calculator();
             $calculator->set_random_seed($question->options->randomseed, $question->stamp);
-            $calculator->set_recalculate_rand($question->options->recalculateeverytime);
             $qtypeobj = question_bank::get_qtype($this->qtype());
+            $calculator->set_recalculate_rand($qtypeobj->recalculate_every_time());
             list($vars, $variants) = $qtypeobj->load_var_and_variants_from_db($question->id);
             $calculator->load_data_from_database($vars, $variants);
 

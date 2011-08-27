@@ -71,14 +71,6 @@ Anything enclosed in double square brackets will be evaluated before being displ
 
 You can also specify how to display the result using printf codes. For example [[a,.3e]] will display the value of a in scientific notation with 4 significant figures.';
 $string['randomseed'] = 'String To Act As a Seed For Randomisation';
-$string['recalculateeverytime'] = 'Recalculate Values for Expressions';
-$string['recalculateeverytimeno'] = 'only when there are changes or when \'Recalculate Now\' button is pressed';
-$string['recalculateeverytimeyes'] = 'every time this form is displayed or the question is attempted';
-$string['recalculateeverytime_help'] = 'This setting controls when calculated values are recalculated.
-
-You can select to only calculate calculated values when the defined values or any variables are changed, or when the recalculate button is pressed. Then any random values will be the same for all users.
-
-Or you can recalculate the calculated values every time this form or the question is displayed, then any random values will be different for every user.';
 $string['recalculatenow'] = 'Recalculate Now';
 $string['requirescinotation'] = 'Require Scientific Notation';
 $string['sigfigs'] = 'Significant Figures';

@@ -58,7 +58,7 @@ class backup_qtype_varnumericset_plugin extends backup_qtype_plugin {
 
         // Now create the qtype own structures
         $varnumericset = new backup_nested_element('varnumericset', array('id'), array(
-            'randomseed', 'recalculateeverytime', 'requirescinotation'));
+            'randomseed', 'requirescinotation'));
 
         // Now the own qtype tree
         $pluginwrapper->add_child($varnumericset);

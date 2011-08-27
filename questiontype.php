@@ -40,9 +40,13 @@ require_once($CFG->dirroot . '/question/type/varnumericset/calculator.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_varnumericset extends question_type {
+
+    public function recalculate_every_time() {
+        return false;
+    }
+
     public function extra_question_fields() {
-        return array('qtype_varnumericset', 'randomseed',
-                                'recalculateeverytime', 'requirescinotation');
+        return array('qtype_varnumericset', 'randomseed', 'requirescinotation');
     }
 
     protected function extra_answer_fields() {
@@ -158,7 +162,7 @@ class qtype_varnumericset extends question_type {
         }
 
         //process variants
-        if ($form->recalculateeverytime) {
+        if ($this->recalculate_every_time()) {
             //remove any old variants in the db that are calculated
             list($varidsql, $varids) = $DB->get_in_or_equal($assignments);
             $DB->delete_records_select('qtype_varnumericset_variants', 'varid '.$varidsql, $varids);
@@ -168,7 +172,7 @@ class qtype_varnumericset extends question_type {
         //on save don't ever calculate calculated variants if the recalculate every time option
         //is selected but if it is not recalculate whenever there is a change of predefined variants
         //or any variable or when recalculate button is pressed.
-        if ((!$form->recalculateeverytime) && // the recalculate every time option
+        if ((!$this->recalculate_every_time()) && // the recalculate every time option
                 ((!empty($form->recalculatenow)) // the recalculate now option
                 || $definedvariantschanged || $varschanged)) {
             //precalculate variant values
@@ -371,7 +375,7 @@ class qtype_varnumericset extends question_type {
         $question->calculator = new qtype_varnumericset_calculator();
         $question->calculator->set_random_seed($questiondata->options->randomseed,
                                                 $questiondata->stamp);
-        $question->calculator->set_recalculate_rand($questiondata->options->recalculateeverytime);
+        $question->calculator->set_recalculate_rand($this->recalculate_every_time());
 
         list($vars, $variants) = $this->load_var_and_variants_from_db($question->id);
         $question->calculator->load_data_from_database($vars, $variants);

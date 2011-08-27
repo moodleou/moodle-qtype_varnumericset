@@ -331,7 +331,6 @@ class qtype_varnumericset_calculator {
         if ($this->recalculateeverytime) {
             $this->evaluate_all(true);
         }
-        $dataforform->recalculateeverytime = $this->recalculateeverytime;
         $dataforform->randomseed = $dataforform->options->randomseed;
         $dataforform->vartype = $this->vartypes;
         $dataforform->varname = $this->variables;

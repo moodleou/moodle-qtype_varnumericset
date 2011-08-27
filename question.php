@@ -28,8 +28,8 @@ defined('MOODLE_INTERNAL') || die();
 
 
 //these only affect how student input is processed, not how values are displayed.
-define('QTYPE_VARNUMERIC_THOUSAND_SEP', ',');
-define('QTYPE_VARNUMERIC_DECIMAL_SEP', '.');
+define('QTYPE_VARNUMERICSET_THOUSAND_SEP', ',');
+define('QTYPE_VARNUMERICSET_DECIMAL_SEP', '.');
 
 
 /**
@@ -86,10 +86,10 @@ class qtype_varnumericset_question extends question_graded_automatically_with_co
         if ($this->is_no_response($response)) {
             return get_string('pleaseenterananswer', 'qtype_varnumericset');
         }
-        if (false !== strpos($response['answer'], QTYPE_VARNUMERIC_THOUSAND_SEP)) {
+        if (false !== strpos($response['answer'], QTYPE_VARNUMERICSET_THOUSAND_SEP)) {
             $a = new stdClass();
-            $a->thousandssep = QTYPE_VARNUMERIC_THOUSAND_SEP;
-            $a->decimalsep = QTYPE_VARNUMERIC_DECIMAL_SEP;
+            $a->thousandssep = QTYPE_VARNUMERICSET_THOUSAND_SEP;
+            $a->decimalsep = QTYPE_VARNUMERICSET_DECIMAL_SEP;
             return get_string('illegalthousandseparator', 'qtype_varnumericset', $a);
         }
         $string = self::normalize_number_format($response['answer'], $this->requirescinotation);
@@ -273,8 +273,8 @@ class qtype_varnumericset_question extends question_graded_automatically_with_co
             $string = preg_replace('!\s*[x*]\s*10\s*<sup>\s*([+-]?[0-9])+\s*</sup>\s*!i', 'e$1',
                                     $string, 1);
         }
-        if (QTYPE_VARNUMERIC_DECIMAL_SEP != '.') {
-            $string = str_replace(QTYPE_VARNUMERIC_DECIMAL_SEP, '.', $string);
+        if (QTYPE_VARNUMERICSET_DECIMAL_SEP != '.') {
+            $string = str_replace(QTYPE_VARNUMERICSET_DECIMAL_SEP, '.', $string);
         }
         //remove any redundant characters
         $string = str_replace(array(' ', '+'), '', $string);//remove all spaces and any + signs.

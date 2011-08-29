@@ -94,8 +94,8 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
             if ($i == 0) {
                 $repeatedoptions["variant$i"]['helpbutton'] = array('variants', 'qtype_varnumericset');
             }
+            $mform->setType("variant$i", PARAM_RAW_TRIMMED);
         }
-        $mform->setType('variant', PARAM_RAW_TRIMMED);
 
         $this->repeat_elements($repeated, $noofvarsatstart, $repeatedoptions,
                 'novars', 'addvars', 2, get_string('addmorevars', 'qtype_varnumericset'));

@@ -44,11 +44,6 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
         $mform->addElement('text', 'randomseed', get_string('randomseed', 'qtype_varnumericset'));
         $mform->setType('randomseed', PARAM_RAW);
 
-        $noofvariants = optional_param('noofvariants', 0, PARAM_INT);
-        $addvariants = optional_param('addvariants', '', PARAM_TEXT);
-        if ($addvariants) {
-            $noofvariants += 2;
-        }
         $answersoption = '';
 
         $typemenu = array(0 => get_string('vartypecalculated', 'qtype_varnumericset'),
@@ -65,48 +60,27 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
         $mform->setType('varname', PARAM_RAW_TRIMMED);
         $repeatedoptions['varname']['helpbutton'] = array('varname', 'qtype_varnumericset');
 
+        list($repeated, $repeatedoptions) =
+                                $this->add_value_form_fields($mform, $repeated, $repeatedoptions);
+
         if (isset($this->question->id)) {
             $prefix = $this->db_table_prefix();
-            $sql = 'SELECT MAX(vari.variantno)+1 '.
-                    "FROM {{$prefix}_variants} vari, {qtype_varnumericset_vars} vars ".
-                    'WHERE vars.questionid = ? AND vars.id = vari.varid';
-            $noofvariantsindb = $DB->get_field_sql($sql, array($this->question->id));
             $sql = 'SELECT MAX(varno)+1 '.
                     "FROM {{$prefix}_vars} vars ".
                     'WHERE questionid = ?';
             $noofvarsindb = $DB->get_field_sql($sql, array($this->question->id));
         } else {
-            $noofvariantsindb = 0;
             $noofvarsindb = 0;
         }
 
         if ($this->question->formoptions->repeatelements) {
-            $noofvariants = max($noofvariants, 5, $noofvariantsindb + 2);
             $noofvarsatstart = max($noofvarsindb + 2, 5);
         } else {
-            $noofvariants = max(5, $noofvariantsindb);
             $noofvarsatstart = $noofvarsindb;
-        }
-        for ($i=0; $i < $noofvariants; $i++) {
-            $repeated[] = $mform->createElement('text', "variant$i",
-                    get_string('variant', 'qtype_varnumericset', $i+1), array('size' => 40));
-            $repeatedoptions["variant$i"]['disabledif'] = array('vartype', 'eq', 0);
-            if ($i == 0) {
-                $repeatedoptions["variant$i"]['helpbutton'] = array('variants', 'qtype_varnumericset');
-            }
-            $mform->setType("variant$i", PARAM_RAW_TRIMMED);
         }
 
         $this->repeat_elements($repeated, $noofvarsatstart, $repeatedoptions,
                 'novars', 'addvars', 2, get_string('addmorevars', 'qtype_varnumericset'));
-
-        $mform->registerNoSubmitButton('addvariants');
-        $addvariantel = $mform->createElement('submit', 'addvariants',
-                                        get_string('addmorevariants', 'qtype_varnumericset', 2));
-        $mform->insertElementBefore($addvariantel, 'varhdr[1]');
-        $mform->addElement('hidden', 'noofvariants', $noofvariants);
-        $mform->setConstant('noofvariants', $noofvariants);
-        $mform->setType('noofvariants', PARAM_INT);
 
 
         $mform->addElement('submit', 'recalculatenow',
@@ -130,8 +104,11 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
         $this->add_per_answer_fields($mform, get_string('answerno', 'qtype_varnumericset', '{no}'),
                 question_bank::fraction_options());
 
-        $this->add_interactive_settings();
+        $this->add_interactive_settings($mform, $repeated, $repeatedoptions);
     }
+
+    abstract protected function add_value_form_fields($mform, $repeated, $repeatedoptions);
+
     protected function get_per_answer_fields(&$mform, $label, $gradeoptions,
             &$repeatedoptions, &$answersoption) {
         $parentansweroptions = parent::get_per_answer_fields($mform, $label, $gradeoptions,

@@ -38,4 +38,51 @@ class qtype_varnumericset_edit_form extends qtype_varnumeric_edit_form_base {
     public function qtype() {
         return 'varnumericset';
     }
+
+    protected function add_value_form_fields($mform, $repeated, $repeatedoptions) {
+        global $DB;
+        $noofvariants = optional_param('noofvariants', 0, PARAM_INT);
+        $addvariants = optional_param('addvariants', '', PARAM_TEXT);
+        if ($addvariants) {
+            $noofvariants += 2;
+        }
+        if (isset($this->question->id)) {
+            $prefix = $this->db_table_prefix();
+            $sql = 'SELECT MAX(vari.variantno)+1 '.
+                    "FROM {{$prefix}_variants} vari, {qtype_varnumericset_vars} vars ".
+                    'WHERE vars.questionid = ? AND vars.id = vari.varid';
+            $noofvariantsindb = $DB->get_field_sql($sql, array($this->question->id));
+        } else {
+            $noofvariantsindb = 0;
+        }
+
+        if ($this->question->formoptions->repeatelements) {
+            $noofvariants = max($noofvariants, 5, $noofvariantsindb + 2);
+        } else {
+            $noofvariants = max(5, $noofvariantsindb);
+        }
+        for ($i=0; $i < $noofvariants; $i++) {
+            $repeated[] = $mform->createElement('text', "variant$i",
+                    get_string('variant', 'qtype_varnumericset', $i+1), array('size' => 40));
+            $repeatedoptions["variant$i"]['disabledif'] = array('vartype', 'eq', 0);
+            if ($i == 0) {
+                $repeatedoptions["variant$i"]['helpbutton']
+                                                        = array('variants', 'qtype_varnumericset');
+            }
+            $mform->setType("variant$i", PARAM_RAW_TRIMMED);
+        }
+        $mform->addElement('hidden', 'noofvariants', $noofvariants);
+        $mform->setConstant('noofvariants', $noofvariants);
+        $mform->setType('noofvariants', PARAM_INT);
+        return array($repeated, $repeatedoptions);
+    }
+
+    protected function definition_inner($mform) {
+        parent::definition_inner($mform);
+        //add a button to add more form fields for variants
+        $mform->registerNoSubmitButton('addvariants');
+        $addvariantel = $mform->createElement('submit', 'addvariants',
+                                        get_string('addmorevariants', 'qtype_varnumericset', 2));
+        $mform->insertElementBefore($addvariantel, 'varhdr[1]');
+    }
 }

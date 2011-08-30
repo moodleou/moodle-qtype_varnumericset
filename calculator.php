@@ -25,5 +25,11 @@ require_once($CFG->dirroot . '/question/type/varnumericset/calculatorbase.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_varnumericset_calculator extends qtype_varnumeric_calculator_base {
-
+    public function get_num_variants() {
+        if ($this->noofvariants == 0) {
+            //if there are no predefined variables at all then have a set ammount of 5 variants
+            return 5;
+        }
+        return $this->noofvariants;
+    }
 }

@@ -25,7 +25,7 @@ require_once($CFG->libdir . '/evalmath/evalmath.class.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-class qtype_varnumeric_calculator_base {
+abstract class qtype_varnumeric_calculator_base {
 
     /** @var boolean whether assignments to variables should be evaluated on each question load. */
     protected $recalculateeverytime = false;
@@ -105,9 +105,7 @@ class qtype_varnumeric_calculator_base {
         $this->textswithembeddedvars[$fromformfield] = $value;
     }
 
-    public function get_num_variants() {
-        return $this->noofvariants;
-    }
+    abstract public function get_num_variants();
 
     public function get_errors() {
         return $this->errors;
@@ -135,7 +133,7 @@ class qtype_varnumeric_calculator_base {
      * @param boolean $forcerecalculate
      */
     public function evaluate_all($forcerecalculate = false) {
-        for ($variantno = 0; $variantno < $this->noofvariants; $variantno++) {
+        for ($variantno = 0; $variantno < $this->get_num_variants(); $variantno++) {
             $this->evaluate_variant($variantno, $forcerecalculate);
             $this->calculatedvariants[$variantno]
                             = $this->calculate_calculated_variant_values($variantno);
@@ -258,10 +256,6 @@ class qtype_varnumeric_calculator_base {
                 }
             }
         }
-        if ($this->noofvariants == 0) {
-            //if there are no predefined variables at all then have a set ammount of 5 variants
-            $this->noofvariants = 5;
-        }
         foreach ($formdata['answer'] as $answerno => $answer) {
             if (!empty($answer) && '*' != $answer) {
                 $this->add_answer($answerno, $answer, $formdata['error'][$answerno]);
@@ -321,10 +315,6 @@ class qtype_varnumeric_calculator_base {
             $this->add_defined_variant($varidtovarno[$variant->varid],
                                         $variant->variantno, $variant->value);
         }
-        if ($this->noofvariants == 0) {
-            //if there are no predefined variables at all then have a set ammount of 5 variants
-            $this->noofvariants = 5;
-        }
     }
     public function get_data_for_form($dataforform) {
         if ($this->recalculateeverytime) {
@@ -333,7 +323,7 @@ class qtype_varnumeric_calculator_base {
         $dataforform->randomseed = $dataforform->options->randomseed;
         $dataforform->vartype = $this->vartypes;
         $dataforform->varname = $this->variables;
-        for ($variantno=0; $variantno < $this->noofvariants; $variantno++) {
+        for ($variantno=0; $variantno < $this->get_num_variants(); $variantno++) {
             $propname = 'variant'.$variantno;
             $dataforform->{$propname} = array();
             if (isset($this->predefinedvariants[$variantno])) {

@@ -228,7 +228,7 @@ class qtype_varnumericset_calculator {
     public function save_state_as_qt_data($step) {
         foreach ($this->variables as $varno => $variablenameorassignment) {
             $varname = self::var_in_assignment($variablenameorassignment);
-            $step->set_qt_var("_var$varno", $this->evaluate($varname));
+            $step->set_qt_var("_var$varname", $this->evaluate($varname));
         }
     }
 
@@ -236,7 +236,7 @@ class qtype_varnumericset_calculator {
         $this->ev = new EvalMath(true, true);
         foreach ($this->variables as $varno => $variablenameorassignment) {
             $varname = self::var_in_assignment($variablenameorassignment);
-            $this->evaluate("$varname=".$step->get_qt_var("_var$varno"));
+            $this->evaluate("$varname=".$step->get_qt_var("_var$varname"));
         }
     }
 

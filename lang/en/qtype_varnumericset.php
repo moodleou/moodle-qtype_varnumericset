@@ -82,9 +82,9 @@ $string['variant'] = 'Value for Variant {$a}';
 $string['variants'] = 'Value for Variants';
 $string['variants_help'] = 'Enter values for \'Predefined Variables\' here or you will see calculated values displayed here for a \'Calculated Variable\'.
 
-For a predefined variable you must enter a value for the first variant. For other variants if you do not enter a value then the last entered variant value will be used. Ie. if you enter 2.5 for variant 1 but don\'t enter a value for variant 2 or 3 then variants 2 and 3 will have a value of 1.
+For a predefined variable you must enter a value for the first variant. For other variants if you do not enter a value then this is asumed to mean \'ditto the value above for this variable\'. Ie. if you enter 2.5 for variant 1 but don\'t enter a value for variant 2 or 3 then variants 2 and 3 will have an assumed value of 2.5.
 
-Moodle will determine how many variants are required by looking at the greatest variant no of the predefined values entered. Ie. if one variable has a value for variant 6, then there must be 6 variants and if the other variables\' variant values have not been entered, they will be assumed to be the same as the last value entered.';
+You might ask then, how do we know how many variants total there are for a question. Moodle will determine how many variants are required by looking at the greatest variant no of the predefined values entered. Ie. if one variable has a predefined value for variant 6, then there must be 6 variants and if the other variables\' variant values have not been entered, they will be assumed to be the same as the last value entered.';
 $string['varname'] = 'Name or assignment';
 $string['varname_help'] = 'For a \'Predefined Variable\' you enter only a variable name here e.g. \'a\'. Then enter the values for this variable for each question variant below.
 

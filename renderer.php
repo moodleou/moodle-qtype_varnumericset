@@ -26,6 +26,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+require_once($CFG->dirroot . '/question/type/varnumericset/rendererbase.php');
 
 /**
  * Generates the output for variable numeric set question type.

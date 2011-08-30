@@ -168,7 +168,9 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
         $question = $this->data_preprocessing_hints($question, true);
 
         if (isset($question->id)) {
-            $calculator = new qtype_varnumericset_calculator();
+            $qtypeobj = $this->qtype_obj();
+            $calculatorname = $qtypeobj->calculator_name();
+            $calculator = new $calculatorname();
             $calculator->set_random_seed($question->options->randomseed, $question->stamp);
             $qtypeobj = $this->qtype_obj();
             $calculator->set_recalculate_rand($qtypeobj->recalculate_every_time());
@@ -209,6 +211,8 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
 
 
     public function validation($data, $files) {
+        $qtypeobj = $this->qtype_obj();
+        $calculatorname = $qtypeobj->calculator_name();
         $errors = parent::validation($data, $files);
         $answers = $data['answer'];
         $answercount = 0;
@@ -229,7 +233,7 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
         foreach ($data['varname'] as $varno => $varname) {
             if ($varname!=='') {
                 $isvalidvar =  EvalMath::is_valid_var_or_func_name($varname);
-                $isvalidassignment = qtype_varnumericset_calculator::is_assignment($varname);
+                $isvalidassignment = $calculatorname::is_assignment($varname);
                 if ($data['vartype'][$varno] == 1 &&  !$isvalidvar) {
                     $errors["varname[$varno]"] =
                             get_string('expectingvariablename', 'qtype_varnumericset');
@@ -247,7 +251,7 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
             }
         }
         if (count($errors) == 0) {
-            $calculator = new qtype_varnumericset_calculator();
+            $calculator = new $calculatorname();
             //don't need to bother setting the random seed here as the
             //results of the evaluation are not important, we are just seeing
             //if the expressions evaluate without errors.

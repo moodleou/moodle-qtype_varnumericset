@@ -48,6 +48,10 @@ abstract class qtype_varnumeric_base extends question_type {
 
     public abstract function db_table_prefix();
 
+    public function calculator_name() {
+        return $this->db_table_prefix().'_calculator';
+    }
+
     public function extra_question_fields() {
         return array($this->db_table_prefix(), 'randomseed', 'requirescinotation');
     }
@@ -181,7 +185,8 @@ abstract class qtype_varnumeric_base extends question_type {
                 ((!empty($form->recalculatenow)) // the recalculate now option
                 || $definedvariantschanged || $varschanged)) {
             //precalculate variant values
-            $calculator = new qtype_varnumericset_calculator();
+            $calculatorname = $this->calculator_name();
+            $calculator = new $calculatorname();
             if (empty($form->randomseed)) {
                 $questionstamp = $DB->get_field('question', 'stamp', array('id' => $form->id));
             } else {
@@ -323,7 +328,8 @@ abstract class qtype_varnumeric_base extends question_type {
                 $varid = $varfromdb->id;
             }
             $varnotovarid[$varno] = $varid;
-            if (qtype_varnumericset_calculator::is_assignment($varname)) {
+            $calculatorname = $this->calculator_name();
+            if ($calculatorname::is_assignment($varname)) {
                 $assignments[] = $varid;
             } else {
                 $predefined[] = $varid;
@@ -378,7 +384,8 @@ abstract class qtype_varnumeric_base extends question_type {
     protected function initialise_question_vars_and_variants(question_definition $question,
                                                                                 $questiondata) {
         global $DB;
-        $question->calculator = new qtype_varnumericset_calculator();
+        $calculatorname = $this->calculator_name();
+        $question->calculator = new $calculatorname();
         $question->calculator->set_random_seed($questiondata->options->randomseed,
                                                 $questiondata->stamp);
         $question->calculator->set_recalculate_rand($this->recalculate_every_time());
@@ -445,7 +452,8 @@ abstract class qtype_varnumeric_base extends question_type {
             $varno = $format->getpath($var, array('#', 'varno', 0, '#'), false);
             $qo->varname[$varno] =
                 $format->getpath($var, array('#', 'nameorassignment', 0, '#'), false);
-            if (qtype_varnumericset_calculator::is_assignment($qo->varname[$varno])) {
+                $calculatorname = $this->calculator_name();
+                if ($calculatorname::is_assignment($qo->varname[$varno])) {
                 $qo->vartype[$varno] = 0;
             } else {
                 $qo->vartype[$varno] = 1;

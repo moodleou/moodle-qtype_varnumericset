@@ -41,7 +41,7 @@ define('QTYPE_VARNUMERICSET_DECIMAL_SEP', '.');
 class qtype_varnumeric_question_base extends question_graded_automatically_with_countback {
 
 
-    /** @var qtype_varnumericset_calculator calculator to deal with expressions,
+    /** @var qtype_varnumeric_calculator_base calculator to deal with expressions,
      *                                    variable and variants.
      */
     public $calculator;
@@ -157,7 +157,8 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
             $evaluated = $this->calculator->evaluate($answer->answer);
             $answer->answer =
                     $this->round_to($evaluated, $answer->sigfigs, $this->requirescinotation);
-            $answer->answer = qtype_varnumericset_calculator::htmlize_exponent($answer->answer);
+            $calculatorname = $this->qtype->calculator_name();
+            $answer->answer = $calculatorname::htmlize_exponent($answer->answer);
             if ($answer->error != '') {
                 $answer->error = $this->calculator->evaluate($answer->error);
                 $answer->answer = get_string('correctansweriserror', 'qtype_varnumericset', $answer);
@@ -508,7 +509,8 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
             return array($this->id => question_classified_response::no_response());
         }
         $responsenormalized = self::normalize_number_format($response['answer'], true);
-        $responsehtmlized = qtype_varnumericset_calculator::htmlize_exponent($responsenormalized);
+        $calculatorname = $this->qtype->calculator_name();
+        $responsehtmlized = $calculatorname::htmlize_exponent($responsenormalized);
         return array($this->id => new question_classified_response(
                 $ans->id, $responsehtmlized, $ans->fraction));
     }

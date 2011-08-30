@@ -40,6 +40,7 @@ $string['answermustbegiven'] = 'You must enter an answer if there is a grade or 
 $string['answerno'] = 'Answer {$a}';
 $string['autofirehdr'] = 'Give feedback and partial credit where answer {$a} is partially wrong';
 $string['calculatewhen'] = 'When to calculate calculated values';
+$string['cannotrecalculate'] = 'Cannot recalculate values for calculated variables as there are errors in the form, sorry. Please fix them then recalculate the values.';
 $string['checknumerical'] = 'If Numerically Correct';
 $string['checkpowerof10'] = 'If Power of 10 is Off';
 $string['checkrounding'] = 'If Rounding Incorrect';

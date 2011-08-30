@@ -266,6 +266,9 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
         if ($maxgrade == false) {
             $errors['fraction[0]'] = get_string('fractionsnomax', 'question');
         }
+        if (!empty($data['recalculatenow']) && count($errors)) {
+            $errors['recalculatenow'] = get_string('cannotrecalculate', 'qtype_varnumericset');
+        }
         return $errors;
     }
 

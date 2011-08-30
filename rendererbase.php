@@ -41,17 +41,11 @@ class qtype_varnumeric_renderer_base extends qtype_renderer {
         $currentanswer = $qa->get_last_qt_var('answer');
 
         $inputname = $qa->get_qt_field_name('answer');
-        $inputattributes = array(
-            'type' => 'text',
-            'name' => $inputname,
-            'value' => $currentanswer,
+        $generalattributes = array(
             'id' => $inputname,
-            'size' => 80,
         );
 
-        if ($options->readonly) {
-            $inputattributes['readonly'] = 'readonly';
-        }
+        $size = 40;
 
         $feedbackimg = '';
         if ($options->correctness) {
@@ -61,7 +55,7 @@ class qtype_varnumeric_renderer_base extends qtype_renderer {
             } else {
                 $fraction = 0;
             }
-            $inputattributes['class'] = $this->feedback_class($fraction);
+            $generalattributes['class'] = $this->feedback_class($fraction);
             $feedbackimg = $this->feedback_image($fraction);
         }
 
@@ -69,10 +63,40 @@ class qtype_varnumeric_renderer_base extends qtype_renderer {
         $placeholder = false;
         if (preg_match('/_____+/', $questiontext, $matches)) {
             $placeholder = $matches[0];
-            $inputattributes['size'] = round(strlen($placeholder) * 1.1);
+            $size = round(strlen($placeholder) * 1.1);
         }
 
-        $input = html_writer::empty_tag('input', $inputattributes) . $feedbackimg;
+        $usehtml = false;
+        if ($question->requirescinotation) {
+            $editor = get_texteditor('supsub');
+            if ($editor !== false) {
+                $usehtml = true;
+            }
+        }
+
+        if ($usehtml && $options->readonly) {
+            $input = html_writer::tag('span', $currentanswer, $generalattributes);
+        } else if ($usehtml) {
+            $textareaattributes = array('name' => $inputname, 'rows' => 2, 'cols' => $size);
+            $input = html_writer::tag('div', html_writer::tag('textarea', $currentanswer,
+                    $textareaattributes + $generalattributes));
+            $supsuboptions = array(
+                'supsub' => 'sup'
+            );
+            $editor->use_editor($generalattributes['id'], $supsuboptions);
+        } else {
+            $inputattributes = array(
+                'type' => 'text',
+                'size' => $size,
+                'name' => $inputname,
+                'value' => $currentanswer
+            );
+            if ($options->readonly) {
+                $inputattributes['readonly'] = 'readonly';
+            }
+            $input = html_writer::empty_tag('input', $inputattributes + $generalattributes);
+        }
+        $input .= $feedbackimg;
 
         if ($placeholder) {
             $questiontext = substr_replace($questiontext, $input,

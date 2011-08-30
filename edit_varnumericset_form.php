@@ -49,7 +49,7 @@ class qtype_varnumericset_edit_form extends qtype_varnumeric_edit_form_base {
         if (isset($this->question->id)) {
             $prefix = $this->db_table_prefix();
             $sql = 'SELECT MAX(vari.variantno)+1 '.
-                    "FROM {{$prefix}_variants} vari, {qtype_varnumericset_vars} vars ".
+                    "FROM {{$prefix}_variants} vari, {{$prefix}_vars} vars ".
                     'WHERE vars.questionid = ? AND vars.id = vari.varid';
             $noofvariantsindb = $DB->get_field_sql($sql, array($this->question->id));
         } else {

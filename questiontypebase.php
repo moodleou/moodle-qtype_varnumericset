@@ -155,7 +155,7 @@ abstract class qtype_varnumeric_base extends question_type {
             $varnumericanswer->checkscinotation = $form->checkscinotation[$key];
             $varnumericanswer->checkpowerof10 = $form->checkpowerof10[$key];
             $varnumericanswer->checkrounding = $form->checkrounding[$key];
-            $DB->insert_record('qtype_varnumericset_answers', $varnumericanswer);
+            $DB->insert_record($this->db_table_prefix().'_answers', $varnumericanswer);
         }
 
         list ($varschanged, $varnotovarid, $assignments, $predefined) =

@@ -343,7 +343,9 @@ abstract class qtype_varnumeric_base extends question_type {
                 $oldvarids[] = $oldvar->id;
             }
             list($oldvaridsql, $oldvaridslist) = $DB->get_in_or_equal($oldvarids);
-            $DB->delete_records_select($this->db_table_prefix().'_vars', 'id '.$oldvaridsql, $oldvaridslist);
+            $DB->delete_records_select($this->db_table_prefix().'_vars',
+                                        'id '.$oldvaridsql,
+                                        $oldvaridslist);
             $changed = true;
         }
         return array($changed, $varnotovarid, $assignments, $predefined);
@@ -372,7 +374,7 @@ abstract class qtype_varnumeric_base extends question_type {
             list($varidsql, $varids) = $DB->get_in_or_equal(array_keys($vars));
             $variants = $DB->get_records_select($this->db_table_prefix().'_variants',
                                                     'varid '.$varidsql, $varids);
-            if (!$variants){
+            if (!$variants) {
                 $variants = array();
             }
         } else {
@@ -452,8 +454,8 @@ abstract class qtype_varnumeric_base extends question_type {
             $varno = $format->getpath($var, array('#', 'varno', 0, '#'), false);
             $qo->varname[$varno] =
                 $format->getpath($var, array('#', 'nameorassignment', 0, '#'), false);
-                $calculatorname = $this->calculator_name();
-                if ($calculatorname::is_assignment($qo->varname[$varno])) {
+            $calculatorname = $this->calculator_name();
+            if ($calculatorname::is_assignment($qo->varname[$varno])) {
                 $qo->vartype[$varno] = 0;
             } else {
                 $qo->vartype[$varno] = 1;
@@ -488,7 +490,7 @@ abstract class qtype_varnumeric_base extends question_type {
                 $expout .= "      <$field>{$exportedvalue}</$field>\n";
             }
             foreach ($variants as $variant) {
-                if ($variant->varid == $var->id){
+                if ($variant->varid == $var->id) {
                     $expout .= "      <variant>\n";
                     foreach (array('variantno', 'value') as $field) {
                         $exportedvalue = self::wrap_html_special_chars($variant->$field);

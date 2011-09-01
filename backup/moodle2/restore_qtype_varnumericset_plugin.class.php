@@ -45,9 +45,9 @@ class restore_qtype_varnumericset_plugin extends restore_qtype_plugin {
         $this->add_question_question_answers($paths);
 
         $elements = array('qtype_varnumericset' => '/varnumericset',
-                            'qtype_varnumericset_answer' => '/varnumericset_answers/varnumericset_answer',
-                            'qtype_varnumericset_var' => '/vars/var',
-                            'qtype_varnumericset_variant' => '/vars/var/variants/variant');
+                    'qtype_varnumericset_answer' => '/varnumericset_answers/varnumericset_answer',
+                    'qtype_varnumericset_var' => '/vars/var',
+                    'qtype_varnumericset_variant' => '/vars/var/variants/variant');
         foreach ($elements as $elename => $path) {
             $elepath = $this->get_pathfor($path);
             $paths[] = new restore_path_element($elename, $elepath);

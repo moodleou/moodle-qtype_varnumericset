@@ -143,7 +143,7 @@ abstract class qtype_varnumeric_calculator_base {
                     if (self::is_assignment($answer->{$prop})) {
                         //this is an assignment not legal here
                         $this->errors["{$prop}[{$answerno}]"] =
-                                get_string('expressionmustevaluatetoanumber', 'qtype_varnumericset');
+                            get_string('expressionmustevaluatetoanumber', 'qtype_varnumericset');
                     } else {
                         $this->evaluate($answer->{$prop}, "{$prop}[{$answerno}]");
                     }
@@ -161,7 +161,7 @@ abstract class qtype_varnumeric_calculator_base {
         $error = '';
         if ($result === false) {
             $error = get_string('errorreportedbyexpressionevaluator',
-                                                        'qtype_varnumericset', $this->ev->last_error);
+                                                    'qtype_varnumericset', $this->ev->last_error);
         }
         if (is_nan($result)) {
             $error = get_string('expressionevaluatesasnan', 'qtype_varnumericset');

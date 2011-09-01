@@ -161,10 +161,12 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
             $answer->answer = $calculatorname::htmlize_exponent($answer->answer);
             if ($answer->error != '') {
                 $answer->error = $this->calculator->evaluate($answer->error);
-                $answer->answer = get_string('correctansweriserror', 'qtype_varnumericset', $answer);
+                $answer->answer =
+                            get_string('correctansweriserror', 'qtype_varnumericset', $answer);
             }
             if ($answer->sigfigs != 0) {
-                $answer->answer = get_string('correctanswerissigfigs', 'qtype_varnumericset', $answer);
+                $answer->answer =
+                            get_string('correctanswerissigfigs', 'qtype_varnumericset', $answer);
             }
             return $answer;
         } else {
@@ -198,7 +200,8 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         }
     }
 
-    protected function compare_num_as_string_with_answer($string, qtype_varnumericset_answer $answer) {
+    protected function compare_num_as_string_with_answer($string,
+                                                            qtype_varnumericset_answer $answer) {
         $autofireerrorfeedback = '';
         $evaluated = $this->calculator->evaluate($answer->answer);
         $rounded = (float)self::round_to($evaluated, $answer->sigfigs, true);

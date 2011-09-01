@@ -44,7 +44,7 @@ class qtype_varnumericset extends qtype_varnumeric_base {
         return false;
     }
 
-    public function db_table_prefix(){
+    public function db_table_prefix() {
         return 'qtype_varnumericset';
     }
 }

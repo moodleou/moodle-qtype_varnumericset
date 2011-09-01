@@ -75,7 +75,8 @@ class backup_qtype_varnumericset_plugin extends backup_qtype_plugin {
     protected function add_question_qtype_varnumericset_vars($element) {
         // Check $element is one nested_backup_element
         if (! $element instanceof backup_nested_element) {
-            throw new backup_step_exception('qtype_varnumericset_vars_bad_parent_element', $element);
+            throw new
+                    backup_step_exception('qtype_varnumericset_vars_bad_parent_element', $element);
         }
 
         // Define the elements

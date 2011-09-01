@@ -82,7 +82,6 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
         $this->repeat_elements($repeated, $noofvarsatstart, $repeatedoptions,
                 'novars', 'addvars', 2, get_string('addmorevars', 'qtype_varnumericset'));
 
-
         $mform->addElement('submit', 'recalculatenow',
                                         get_string('recalculatenow', 'qtype_varnumericset', 2));
         $mform->closeHeaderBefore('recalculatenow');
@@ -129,21 +128,21 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
         $answeroptions[] = $parentansweroptions[3]; // feedback
 
         $answeroptions[] = $mform->createElement('header', 'autofirehdr',
-                                get_string('autofirehdr', 'qtype_varnumericset', '{no}'));
+                            get_string('autofirehdr', 'qtype_varnumericset', '{no}'));
         $answeroptions[] = $mform->createElement('selectyesno', 'checknumerical',
-                                get_string('checknumerical', 'qtype_varnumericset'));
+                            get_string('checknumerical', 'qtype_varnumericset'));
         $checkpowerof10options = array(0 => get_string('no'),
                                 1 => '+/- 1', 2 => '+/- 2', 3 => '+/- 3',
                                 4 => '+/- 4', 5 => '+/- 5', 6 => '+/- 6');
         $answeroptions[] = $mform->createElement('selectyesno', 'checkscinotation',
-                                get_string('checkscinotation', 'qtype_varnumericset'));
+                            get_string('checkscinotation', 'qtype_varnumericset'));
         $answeroptions[] = $mform->createElement('select', 'checkpowerof10',
-                                get_string('checkpowerof10', 'qtype_varnumericset'),
-                                $checkpowerof10options);
+                            get_string('checkpowerof10', 'qtype_varnumericset'),
+                            $checkpowerof10options);
         $answeroptions[] = $mform->createElement('selectyesno', 'checkrounding',
-                                get_string('checkrounding', 'qtype_varnumericset'));
+                            get_string('checkrounding', 'qtype_varnumericset'));
         $answeroptions[] = $mform->createElement('select', 'syserrorpenalty',
-                                get_string('syserrorpenalty', 'qtype_varnumericset'), $gradeoptions);
+                            get_string('syserrorpenalty', 'qtype_varnumericset'), $gradeoptions);
         $repeatedoptions['syserrorpenalty']['default'] = '0.1';
                                 return $answeroptions;
     }
@@ -154,8 +153,8 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
         list($repeated, $repeatedoptions) =
                             parent::get_hint_fields($withclearwrong, $withshownumpartscorrect);
         $repeated[] = $mform->createElement('advcheckbox', 'hintclearwrong',
-                                get_string('options', 'qtype_varnumericset'),
-                                get_string('hintoverride', 'qtype_varnumericset'), null, array(0, 1));
+                            get_string('options', 'qtype_varnumericset'),
+                            get_string('hintoverride', 'qtype_varnumericset'), null, array(0, 1));
         $repeatedoptions['hintclearwrong']['type'] = PARAM_BOOL;
 
         return array($repeated, $repeatedoptions);
@@ -263,7 +262,7 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
             foreach ($data['varname'] as $varno => $varname) {
                 if ($data['vartype'][$varno] == 1 && trim($varname) !=='') {
                     for ($variantno = 1; $variantno <= $maxvariantno; $variantno++) {
-                        if (empty($data["variant{$variantno}"][$varno])){
+                        if (empty($data["variant{$variantno}"][$varno])) {
                             $errors["variant{$variantno}[{$varno}]"] =
                                 get_string('youmustprovideavalueforallvariants',
                                                                 'qtype_varnumericset');

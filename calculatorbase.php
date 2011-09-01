@@ -116,11 +116,9 @@ abstract class qtype_varnumeric_calculator_base {
     }
 
     protected function get_defined_variant($varno, $variantno) {
-        while (!isset($this->predefinedvariants[$variantno][$varno])) {
-            $variantno--;
-            if ($variantno < 0) {
-                throw new coding_exception('Predefined variants have not been loaded.');
-            }
+        if (!isset($this->predefinedvariants[$variantno][$varno])) {
+            throw new coding_exception(
+                'Predefined variant no {$variantno} for var no {$varno} has not been loaded!');
         }
         return $this->predefinedvariants[$variantno][$varno];
     }

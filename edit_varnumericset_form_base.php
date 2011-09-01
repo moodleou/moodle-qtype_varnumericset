@@ -230,8 +230,9 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
                 $answercount++;
             }
         }
+        $maxvariantno = -1;
         foreach ($data['varname'] as $varno => $varname) {
-            if ($varname!=='') {
+            if (trim($varname) !=='') {
                 $isvalidvar =  EvalMath::is_valid_var_or_func_name($varname);
                 $isvalidassignment = $calculatorname::is_assignment($varname);
                 if ($data['vartype'][$varno] == 1 &&  !$isvalidvar) {
@@ -246,7 +247,28 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
                 }
                 if ($data['vartype'][$varno] == 1 && empty($data['variant0'][$varno])) {
                     $errors["variant0[$varno]"] =
-                            get_string('youmustprovideavalueforfirstvariant', 'qtype_varnumericset');
+                                get_string('youmustprovideavalueforatleastonevariant',
+                                                                'qtype_varnumericset');
+                }
+                if ($data['vartype'][$varno] == 1) {
+                    for ($i = 0; $i < $data['noofvariants']; $i++) {
+                        if (!empty($data["variant{$i}"][$varno])) {
+                            $maxvariantno = max($maxvariantno, $i);
+                        }
+                    }
+                }
+            }
+        }
+        if ($maxvariantno !== -1) {
+            foreach ($data['varname'] as $varno => $varname) {
+                if ($data['vartype'][$varno] == 1 && trim($varname) !=='') {
+                    for ($variantno = 1; $variantno <= $maxvariantno; $variantno++) {
+                        if (empty($data["variant{$variantno}"][$varno])){
+                            $errors["variant{$variantno}[{$varno}]"] =
+                                get_string('youmustprovideavalueforallvariants',
+                                                                'qtype_varnumericset');
+                        }
+                    }
                 }
             }
         }

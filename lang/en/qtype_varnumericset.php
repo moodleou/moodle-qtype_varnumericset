@@ -40,7 +40,7 @@ $string['answermustbegiven'] = 'You must enter an answer if there is a grade or 
 $string['answerno'] = 'Answer {$a}';
 $string['autofirehdr'] = 'Give feedback and partial credit where answer {$a} is partially wrong';
 $string['calculatewhen'] = 'When to calculate calculated values';
-$string['cannotrecalculate'] = 'Cannot recalculate values for calculated variables as there are errors in the form, sorry. Please fix them then recalculate the values.';
+$string['cannotrecalculate'] = 'Cannot recalculate values for calculated variables as there are errors in the form, sorry. Please fix the errors then you can recalculate the values.';
 $string['checknumerical'] = 'If Numerically Correct';
 $string['checkpowerof10'] = 'If Power of 10 is Off';
 $string['checkrounding'] = 'If Rounding Incorrect';
@@ -81,19 +81,26 @@ $string['usesuperscript'] = 'Use Superscript Entry';
 $string['varheader'] = 'Variable {no}';
 $string['variant'] = 'Value for Variant {$a}';
 $string['variants'] = 'Value for Variants';
-$string['variants_help'] = 'Enter values for \'Predefined Variables\' here or you will see calculated values displayed here for a \'Calculated Variable\'.
+$string['variants_help'] = 'Enter values for \'Predefined Variables\' here OR if this is a \'Calculated Variable\' you will see calculated values displayed here.
 
-For a predefined variable you must enter a value for the first variant. For other variants if you do not enter a value then this is asumed to mean \'ditto the value above for this variable\'. Ie. if you enter 2.5 for variant 1 but don\'t enter a value for variant 2 or 3 then variants 2 and 3 will have an assumed value of 2.5.
+For a predefined variable you must enter a value for at least one question variant and for all predefined variables you must fill in an equal number of boxes.
 
-You might ask then, how do we know how many variants total there are for a question. Moodle will determine how many variants are required by looking at the greatest variant no of the predefined values entered. Ie. if one variable has a predefined value for variant 6, then there must be 6 variants and if the other variables\' variant values have not been entered, they will be assumed to be the same as the last value entered.';
+Moodle automatically determines how many variants a question has by seeing how many variant values for predefined variables have been filled in, or if there are no predefined variables only calculated ones then we assume 5 question variants. You do not have to fill in the last blanks, they are there for you to add more values for variants to the question, if required.';
 $string['varname'] = 'Name or assignment';
 $string['varname_help'] = 'For a \'Predefined Variable\' you enter only a variable name here e.g. \'a\'. Then enter the values for this variable for each question variant below.
 
-Or for a \'Calculated Variable\' enter a variable name and assign it a value from an expression e.g. \'b = a^4\' (where \'a\' is a previously defined variable).';
+Or for a \'Calculated Variable\' enter a variable name and assign it a value from an expression e.g. \'b = a^4\' (where \'a\' is a previously defined variable).
+
+If you leave this field blank then any values below will just be ignored.';
 $string['varnumericset'] = 'Variable Numeric Set';
-$string['varnumericset_help'] = 'In response to a question the respondent types a number. Numbers used in the question and used to calculate the answer are chosen from predefined sets which can be precalculated from mathematical expressions.';
+$string['varnumericset_help'] = 'In response to a question the respondent types a number.
+
+Numbers used in the question and used to calculate the answer are chosen from predefined sets which can be precalculated from mathematical expressions.
+
+All expressions are calculated at the time of question creation and values from random functions are the same for all users. For a question without variants, with expressions calculated on the fly and with random values different for each user see the \'variable numeric\' question type.';
 $string['varnumericset_link'] = 'question/type/varnumericset';
-$string['varnumericsetsummary'] = 'Allows a numeric response';
+$string['varnumericsetsummary'] = 'Allows a numeric response, question can have several \'variants\', expressions are pre evaluated for each question variant';
 $string['vartypecalculated'] = 'Calculated Variable';
 $string['vartypepredefined'] = 'Predefined Variable';
-$string['youmustprovideavalueforfirstvariant'] = 'You must provide a value for at least the first variant for a \'Predefined Variable\'';
+$string['youmustprovideavalueforatleastonevariant'] = 'You must provide a value here.';
+$string['youmustprovideavalueforallvariants'] = 'Please fill out an equal number of blanks for all predefined variables, ie. a value for each predefined variable for all question variants you require.';

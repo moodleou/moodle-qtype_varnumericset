@@ -486,14 +486,14 @@ abstract class qtype_varnumeric_base extends question_type {
         foreach ($vars as $var) {
             $expout .= "    <var>\n";
             foreach (array('varno', 'nameorassignment') as $field) {
-                $exportedvalue = self::wrap_html_special_chars($var->$field);
+                $exportedvalue = $format->xml_escape($var->$field);
                 $expout .= "      <$field>{$exportedvalue}</$field>\n";
             }
             foreach ($variants as $variant) {
                 if ($variant->varid == $var->id) {
                     $expout .= "      <variant>\n";
                     foreach (array('variantno', 'value') as $field) {
-                        $exportedvalue = self::wrap_html_special_chars($variant->$field);
+                        $exportedvalue = $format->xml_escape($variant->$field);
                         $expout .= "        <$field>{$exportedvalue}</$field>\n";
                     }
                     $expout .= "      </variant>\n";

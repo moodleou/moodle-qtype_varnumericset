@@ -35,5 +35,7 @@ require_once($CFG->dirroot . '/question/type/varnumericset/questionbase.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_varnumericset_question extends qtype_varnumeric_question_base {
-
+   public function get_variants_selection_seed() {
+        return $this->get_random_seed();
+    }
 }

@@ -151,7 +151,7 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
         $mform = $this->_form;
 
         list($repeated, $repeatedoptions) =
-                            parent::get_hint_fields($withclearwrong, $withshownumpartscorrect);
+                            parent::get_hint_fields(false, false);
         $repeated[] = $mform->createElement('advcheckbox', 'hintclearwrong',
                             get_string('options', 'qtype_varnumericset'),
                             get_string('hintoverride', 'qtype_varnumericset'), null, array(0, 1));

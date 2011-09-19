@@ -206,7 +206,6 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         $evaluated = $this->calculator->evaluate($answer->answer);
         $rounded = (float)self::round_to($evaluated, $answer->sigfigs, true);
         $string = self::normalize_number_format($string, $this->requirescinotation);
-        dbg(compact('rounded', 'string'));
         if ($answer->error == '') {
             $allowederror = 0;
         } else {

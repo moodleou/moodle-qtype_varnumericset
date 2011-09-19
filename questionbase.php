@@ -206,6 +206,7 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         $evaluated = $this->calculator->evaluate($answer->answer);
         $rounded = (float)self::round_to($evaluated, $answer->sigfigs, true);
         $string = self::normalize_number_format($string, $this->requirescinotation);
+        dbg(compact('rounded', 'string'));
         if ($answer->error == '') {
             $allowederror = 0;
         } else {
@@ -275,7 +276,7 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
             //strip any extra tags added by html editor that are not sup
             $string = strip_tags($string, '<sup>');
             //Convert html used to write exponential to standard php way.
-            $string = preg_replace('!\s*[x*]\s*10\s*<sup>\s*([+-]?[0-9])+\s*</sup>\s*!i', 'e$1',
+            $string = preg_replace('!\s*[x*]\s*10\s*<sup>\s*([+-]?[0-9]+)\s*</sup>\s*!i', 'e$1',
                                     $string, 1);
         }
         if (QTYPE_VARNUMERICSET_DECIMAL_SEP != '.') {

@@ -43,6 +43,7 @@ class qtype_varnumeric_renderer_base extends qtype_renderer {
         $inputname = $qa->get_qt_field_name('answer');
         $generalattributes = array(
             'id' => $inputname,
+            'class' => 'answer'
         );
 
         $size = 40;
@@ -55,7 +56,7 @@ class qtype_varnumeric_renderer_base extends qtype_renderer {
             } else {
                 $fraction = 0;
             }
-            $generalattributes['class'] = $this->feedback_class($fraction);
+            $generalattributes['class'] .= ' '.$this->feedback_class($fraction);
             $feedbackimg = $this->feedback_image($fraction);
         }
 

@@ -3,6 +3,9 @@
     width: auto;
     display: inline;
 }
+.que.varnumericset span.answerwrap {
+    display : inline-block;
+}
 .que.varnumericset .answer input {
     width: 99%;
 }

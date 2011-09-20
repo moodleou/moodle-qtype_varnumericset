@@ -79,8 +79,8 @@ class qtype_varnumeric_renderer_base extends qtype_renderer {
             $input = html_writer::tag('span', $currentanswer, $generalattributes);
         } else if ($usehtml) {
             $textareaattributes = array('name' => $inputname, 'rows' => 2, 'cols' => $size);
-            $input = html_writer::tag('div', html_writer::tag('textarea', $currentanswer,
-                    $textareaattributes + $generalattributes));
+            $input = html_writer::tag('span', html_writer::tag('textarea', $currentanswer,
+                    $textareaattributes + $generalattributes), array('class'=>'answerwrap'));
             $supsuboptions = array(
                 'supsub' => 'sup'
             );

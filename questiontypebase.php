@@ -449,27 +449,32 @@ abstract class qtype_varnumeric_base extends question_type {
     public function import_from_xml($data, $question, $format, $extra=null) {
         $qo = parent::import_from_xml($data, $question, $format, $extra);
         $qo->noofvariants = 0;
-        $vars = $data['#']['var'];
-        foreach ($vars as $var) {
-            $varno = $format->getpath($var, array('#', 'varno', 0, '#'), false);
-            $qo->varname[$varno] =
-                $format->getpath($var, array('#', 'nameorassignment', 0, '#'), false);
-            $calculatorname = $this->calculator_name();
-            if ($calculatorname::is_assignment($qo->varname[$varno])) {
-                $qo->vartype[$varno] = 0;
-            } else {
-                $qo->vartype[$varno] = 1;
-            }
-            if (isset($var['#']['variant'])) {
-                $variants = $var['#']['variant'];
-                foreach ($variants as $variant) {
-                    $variantno = $format->getpath($variant, array('#', 'variantno', 0, '#'), false);
-                    $variantpropname = 'variant'.$variantno;
-                    $qo->{$variantpropname}[$varno] =
-                                    $format->getpath($variant, array('#', 'value', 0, '#'), false);
-                    $qo->noofvariants = max($qo->noofvariants, $variantno + 1);
+        if (isset($data['#']['var'])) {
+            $vars = $data['#']['var'];
+            foreach ($vars as $var) {
+                $varno = $format->getpath($var, array('#', 'varno', 0, '#'), false);
+                $qo->varname[$varno] =
+                    $format->getpath($var, array('#', 'nameorassignment', 0, '#'), false);
+                $calculatorname = $this->calculator_name();
+                if ($calculatorname::is_assignment($qo->varname[$varno])) {
+                    $qo->vartype[$varno] = 0;
+                } else {
+                    $qo->vartype[$varno] = 1;
+                }
+                if (isset($var['#']['variant'])) {
+                    $variants = $var['#']['variant'];
+                    foreach ($variants as $variant) {
+                        $variantno = $format->getpath($variant, array('#', 'variantno', 0, '#'), false);
+                        $variantpropname = 'variant'.$variantno;
+                        $qo->{$variantpropname}[$varno] =
+                                        $format->getpath($variant, array('#', 'value', 0, '#'), false);
+                        $qo->noofvariants = max($qo->noofvariants, $variantno + 1);
+                    }
                 }
             }
+        } else {
+            $qo->varname = array();
+            $qo->vartype = array();
         }
         return $qo;
     }

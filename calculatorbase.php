@@ -105,7 +105,7 @@ abstract class qtype_varnumeric_calculator_base {
         $this->textswithembeddedvars[$fromformfield] = $value;
     }
 
-    abstract public function get_num_variants();
+    abstract public function get_num_variants_in_form();
 
     public function get_errors() {
         return $this->errors;
@@ -118,7 +118,7 @@ abstract class qtype_varnumeric_calculator_base {
     protected function get_defined_variant($varno, $variantno) {
         if (!isset($this->predefinedvariants[$variantno][$varno])) {
             throw new coding_exception(
-                'Predefined variant no {$variantno} for var no {$varno} has not been loaded!');
+                "Predefined variant no {$variantno} for var no {$varno} has not been loaded!");
         }
         return $this->predefinedvariants[$variantno][$varno];
     }
@@ -131,7 +131,7 @@ abstract class qtype_varnumeric_calculator_base {
      * @param boolean $forcerecalculate
      */
     public function evaluate_all($forcerecalculate = false) {
-        for ($variantno = 0; $variantno < $this->get_num_variants(); $variantno++) {
+        for ($variantno = 0; $variantno < $this->get_num_variants_in_form(); $variantno++) {
             $this->evaluate_variant($variantno, $forcerecalculate);
             $this->calculatedvariants[$variantno]
                             = $this->calculate_calculated_variant_values($variantno);
@@ -321,7 +321,7 @@ abstract class qtype_varnumeric_calculator_base {
         $dataforform->randomseed = $dataforform->options->randomseed;
         $dataforform->vartype = $this->vartypes;
         $dataforform->varname = $this->variables;
-        for ($variantno=0; $variantno < $this->get_num_variants(); $variantno++) {
+        for ($variantno=0; $variantno < $this->get_num_variants_in_form(); $variantno++) {
             $propname = 'variant'.$variantno;
             $dataforform->{$propname} = array();
             if (isset($this->predefinedvariants[$variantno])) {

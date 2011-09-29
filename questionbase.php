@@ -435,7 +435,7 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
     }
 
     public function get_num_variants() {
-        return $this->calculator->get_num_variants();
+        return $this->calculator->get_num_variants_in_form();
     }
 
     public function start_attempt(question_attempt_step $step, $variantno) {

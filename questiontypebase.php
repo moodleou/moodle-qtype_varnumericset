@@ -170,7 +170,7 @@ abstract class qtype_varnumeric_base extends question_type {
         }
 
         //process variants
-        if ($this->recalculate_every_time()) {
+        if ($this->recalculate_every_time() && count($assignments)) {
             //remove any old variants in the db that are calculated
             list($varidsql, $varids) = $DB->get_in_or_equal($assignments);
             $DB->delete_records_select($this->db_table_prefix().'_variants',

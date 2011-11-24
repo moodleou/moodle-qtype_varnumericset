@@ -278,7 +278,7 @@ abstract class qtype_varnumeric_calculator_base {
      *                              question object
      */
     public function set_random_seed($randomseed, $questionstamp) {
-        if (!empty($randomseed)) {
+        if ($randomseed !== '') {
             $this->randomseed = $randomseed;
         } else {
             $this->randomseed = $questionstamp;

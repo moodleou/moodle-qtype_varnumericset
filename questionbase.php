@@ -434,6 +434,10 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         }
     }
 
+    public function get_variants_selection_seed() {
+        return $this->calculator->get_random_seed();
+    }
+
     public function get_num_variants() {
         return $this->calculator->get_num_variants_in_form();
     }

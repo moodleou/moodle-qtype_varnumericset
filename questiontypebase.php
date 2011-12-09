@@ -56,7 +56,7 @@ abstract class qtype_varnumeric_base extends question_type {
         return array($this->db_table_prefix(), 'randomseed', 'requirescinotation');
     }
 
-    protected function extra_answer_fields() {
+    public function extra_answer_fields() {
         return array($this->db_table_prefix().'_answers',
                         'sigfigs',
                         'error',
@@ -65,10 +65,6 @@ abstract class qtype_varnumeric_base extends question_type {
                         'checkscinotation',
                         'checkpowerof10',
                         'checkrounding');
-    }
-
-    protected function questionid_column_name() {
-        return 'questionid';
     }
 
     public function move_files($questionid, $oldcontextid, $newcontextid) {

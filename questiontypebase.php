@@ -472,6 +472,8 @@ abstract class qtype_varnumeric_base extends question_type {
             $qo->varname = array();
             $qo->vartype = array();
         }
+        $format->import_hints($qo, $data, true, false,
+                                                $format->get_format($qo->questiontextformat));
         return $qo;
     }
 

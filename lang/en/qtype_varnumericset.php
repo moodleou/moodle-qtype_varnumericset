@@ -65,6 +65,7 @@ $string['notenoughanswers'] = 'This type of question requires at least {$a} answ
 $string['notvalidnumber'] = 'You have not entered a number in a recognised format.';
 $string['options'] = 'Options';
 $string['pleaseenterananswer'] = 'Please enter an answer.';
+$string['pluginname'] = 'Variable numeric set';
 $string['questiontext'] = 'Question text and embedded variables';
 $string['questiontext_help'] = 'You can embed variable names and expressions in question text, general feedback, answer feedback and hints
 

@@ -15,15 +15,18 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Short answer question type version information.
+ * varnumericset question type version information.
  *
- * @package    qtype
- * @subpackage varnumericset
+ * @package    qtype_varnumericset
  * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version  = 2011082701;
-$plugin->requires = 2011051212;
+$plugin->version   = 2011082701;
+$plugin->requires  = 2011120500;
+$plugin->cron      = 0;
+$plugin->component = 'qtype_varnumericset';
+$plugin->maturity  = MATURITY_STABLE;
+$plugin->release   = '1.0';

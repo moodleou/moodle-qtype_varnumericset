@@ -446,6 +446,10 @@ abstract class qtype_varnumeric_base extends question_type {
      */
     public function import_from_xml($data, $question, $format, $extra=null) {
         $qo = parent::import_from_xml($data, $question, $format, $extra);
+        if (!$qo) {
+            return false;
+        }
+
         $qo->noofvariants = 0;
         if (isset($data['#']['var'])) {
             $vars = $data['#']['var'];

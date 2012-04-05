@@ -361,7 +361,7 @@ abstract class qtype_varnumeric_base extends question_type {
     protected function initialise_question_instance(question_definition $question, $questiondata) {
         parent::initialise_question_instance($question, $questiondata);
         $this->initialise_question_vars_and_variants($question, $questiondata);
-        $this->initialise_question_answers($question, $questiondata);
+        $this->initialise_varnumeric_answers($question, $questiondata);
     }
     public function load_var_and_variants_from_db($questionid) {
         global $DB;
@@ -399,7 +399,7 @@ abstract class qtype_varnumeric_base extends question_type {
      * @param question_definition $question the question_definition we are creating.
      * @param object $questiondata the question data loaded from the database.
      */
-    protected function initialise_question_answers(question_definition $question, $questiondata) {
+    protected function initialise_varnumeric_answers(question_definition $question, $questiondata) {
         $question->answers = array();
         if (empty($questiondata->options->answers)) {
             return;
@@ -444,7 +444,7 @@ abstract class qtype_varnumeric_base extends question_type {
      * Imports question using information from extra_question_fields function
      * If some of you fields contains id's you'll need to reimplement this
      */
-    public function import_from_xml($data, $question, $format, $extra=null) {
+    public function import_from_xml($data, $question, qformat_xml $format, $extra=null) {
         $qo = parent::import_from_xml($data, $question, $format, $extra);
         if (!$qo) {
             return false;
@@ -489,7 +489,7 @@ abstract class qtype_varnumeric_base extends question_type {
      * Export question using information from extra_question_fields function
      * If some of you fields contains id's you'll need to reimplement this
      */
-    public function export_to_xml($question, $format, $extra=null) {
+    public function export_to_xml($question, qformat_xml $format, $extra=null) {
         $expout = parent::export_to_xml($question, $format, $extra);
         list($vars, $variants) = self::load_var_and_variants_from_db($question->id);
         foreach ($vars as $var) {

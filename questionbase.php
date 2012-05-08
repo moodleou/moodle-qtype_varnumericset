@@ -284,14 +284,18 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         //remove any redundant characters
         $string = str_replace(array(' ', '+'), '', $string);//remove all spaces and any + signs.
         $string = str_replace('E', 'e', $string); // use lower case e
+        $string = preg_replace('!^(\-)?(0)+!', '$1', $string);//remove all leading zeroes
+        $string = preg_replace('!^(\-)?\.!', '${1}0.', $string);// put zero back on string to lead before any decimal point
         return $string;
     }
 
     /**
      *
-     * Check to see if $normalizedstring has $sigfigs significant figures.
+     * Check to see if $normalizedstring is out by a (positive or negative) factor of ten
      * @param string $normalizedstring number as a normalized string
-     * @param integer $sigfigs
+     * @param $roundedanswer
+     * @param $error accepted error
+     * @param $maxfactor maximum factor of ten
      * @return boolean
      */
     public static function wrong_by_a_factor_of_ten($normalizedstring, $roundedanswer,
@@ -337,7 +341,8 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
             } else {
                 $poweroften = floor(log10(abs($number)));
             }
-            $digitsafterdecimalpoint = $sigfigs - $poweroften - 1;
+            //what power of ten do we multiply by before chopping off bit behind decimal point?
+            $digitsafterdecimalpoint = $sigfigs - $poweroften -1;
             $number = $number * pow(10, $digitsafterdecimalpoint);
             if (!$floor) {
                 $rounded = round($number);
@@ -368,8 +373,8 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
      *
      * Check to see if $normalizedstring has the correct answer to too many $sigfigs significant
      * figures.
-     * @param string $normalizedstring number as a normalized string
-     * @param integer $answerunrounded
+     * @param string $normalizedstring student response as a normalized string
+     * @param float $answerunrounded
      * @param integer $sigfigs correct ammount of sigfigs
      * @return boolean
      */
@@ -385,6 +390,11 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         $rounded = self::round_to($answerunrounded, 7, $scinotation);
         $roundedfloored = self::round_to($answerunrounded, 7, $scinotation, true);
         $roundednormalizedstring = self::round_to($normalizedstring, 7, $scinotation);
+
+        //we need this test to stop Moodle adding zeroes onto the end of the normalized string and giving a false positive
+        if (strlen($roundednormalizedstring) > strlen($normalizedstring)) {
+            return false;
+        }
         if ($roundednormalizedstring === $rounded || $roundednormalizedstring === $roundedfloored) {
             return true;
         }

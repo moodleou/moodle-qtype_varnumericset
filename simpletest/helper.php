@@ -35,7 +35,8 @@ defined('MOODLE_INTERNAL') || die();
  */
 class qtype_varnumericset_test_helper extends question_test_helper {
     public function get_test_questions() {
-        return array('no_accepted_error', 'numeric_accepted_error');
+        return array('no_accepted_error', 'numeric_accepted_error', '3_sig_figs',
+                        '3_sig_figs_trailing_zero', '3_sig_figs_trailing_zero_negative_answer');
     }
 
     /**
@@ -45,7 +46,7 @@ class qtype_varnumericset_test_helper extends question_test_helper {
         question_bank::load_question_definition_classes('varnumericset');
         $vs = new qtype_varnumericset_question();
         test_question_maker::initialise_a_question($vs);
-        $vs->name = 'Q1a1 FAULTY No accepted error VN Response match directly specified negative value';
+        $vs->name = 'test question 1';
         $vs->questiontext = '<p>The correct answer is -4.2.</p>';
         $vs->generalfeedback = '<p>General feedback -4.2.</p>';
         $vs->penalty = 0.3333333;
@@ -60,7 +61,7 @@ class qtype_varnumericset_test_helper extends question_test_helper {
                                                  'html', //feedbackformat
                                                  '0', //sigfigs
                                                  '', //error
-                                                 '0.1000000', //syserrorpenalty
+                                                 '10', //syserrorpenalty
                                                  '0', //checknumerical
                                                  '0', //checkscinotation
                                                  '0', //checkpowerof10
@@ -88,8 +89,46 @@ class qtype_varnumericset_test_helper extends question_test_helper {
     public function make_varnumericset_question_numeric_accepted_error() {
         $vs = $this->make_varnumericset_question_no_accepted_error();
         //add acceptable error for correct answer.
+        $vs->name = 'test question 2';
         $vs->answers[1]->error = '0.000001';
         return $vs;
     }
+    /**
+     * @return qtype_varnumericset_question
+     */
+    public function make_varnumericset_question_3_sig_figs() {
+        $vs = $this->make_varnumericset_question_no_accepted_error();
 
+        $vs->questiontext = '<p>The correct answer is 12300.</p>';
+        $vs->generalfeedback = '<p>General feedback 12300.</p>';
+        $vs->answers[1]->answer = '12345';
+        $vs->answers[1]->sigfigs = 3;
+        return $vs;
+    }
+
+    /**
+     * @return qtype_varnumericset_question
+     */
+    public function make_varnumericset_question_3_sig_figs_trailing_zero() {
+        $vs = $this->make_varnumericset_question_no_accepted_error();
+
+        $vs->questiontext = '<p>The correct answer is 0.0720.</p>';
+        $vs->generalfeedback = '<p>General feedback 0.0720.</p>';
+        $vs->answers[1]->answer = '0.0720';
+        $vs->answers[1]->sigfigs = 3;
+        return $vs;
+    }
+
+    /**
+     * @return qtype_varnumericset_question
+     */
+    public function make_varnumericset_question_3_sig_figs_trailing_zero_negative_answer() {
+        $vs = $this->make_varnumericset_question_no_accepted_error();
+
+        $vs->questiontext = '<p>The correct answer is -0.0720.</p>';
+        $vs->generalfeedback = '<p>General feedback -0.0720.</p>';
+        $vs->answers[1]->answer = '-0.0720';
+        $vs->answers[1]->sigfigs = 3;
+        return $vs;
+    }
 }

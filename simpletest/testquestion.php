@@ -121,6 +121,14 @@ class qtype_varnumericset_question_test extends UnitTestCase {
             qtype_varnumericset_question::has_number_of_sig_figs('152000', 2));
     }
     public function test_has_too_many_sig_figs() {
+        $this->assertTrue(qtype_varnumericset_question::has_too_many_sig_figs('1.23456e5', 123456, 2));;
+        $this->assertTrue(qtype_varnumericset_question::has_too_many_sig_figs('1.23456e5', 123456, 3));;
+        $this->assertTrue(qtype_varnumericset_question::has_too_many_sig_figs('1.23456e5', 123456, 4));;
+        $this->assertTrue(qtype_varnumericset_question::has_too_many_sig_figs('1.23456e5', 123456, 5));;
+        $this->assertFalse(qtype_varnumericset_question::has_too_many_sig_figs('1.23456e5', 123456, 6));;
+        $this->assertTrue(qtype_varnumericset_question::has_too_many_sig_figs('1.234560e5', 123456, 6));;
+        $this->assertFalse(qtype_varnumericset_question::has_too_many_sig_figs('1.23456e5', 123456, 6));;
+        //should only return true when extra sig figs in response are correct
         $this->assertTrue(
             qtype_varnumericset_question::has_too_many_sig_figs('1.23456', 1.23456, 2));
         $this->assertTrue(
@@ -139,6 +147,16 @@ class qtype_varnumericset_question_test extends UnitTestCase {
             qtype_varnumericset_question::has_too_many_sig_figs('1.23456e4', 1.33456e4, 2));
         $this->assertTrue(
             qtype_varnumericset_question::has_too_many_sig_figs('7.89e-4', 7.890123e-4, 2));
+        $this->assertFalse(
+            qtype_varnumericset_question::has_too_many_sig_figs('-1.23456e-12', -1.2346e-12, 4));
+        $this->assertFalse(
+            qtype_varnumericset_question::has_too_many_sig_figs('7.89e-4', 7.89e-4, 3));
+        $this->assertTrue(
+            qtype_varnumericset_question::has_too_many_sig_figs('7.891e-4', 7.891e-4, 3));
+        $this->assertTrue(
+            qtype_varnumericset_question::has_too_many_sig_figs('7.891e-4', 789.10e-6, 3));
+        $this->assertTrue(
+            qtype_varnumericset_question::has_too_many_sig_figs('7.891e-4', 007.891e-4, 3));
         $this->assertFalse(
             qtype_varnumericset_question::has_too_many_sig_figs('-1.23456e-12', -1.2346e-12, 4));
     }
@@ -186,11 +204,30 @@ class qtype_varnumericset_question_test extends UnitTestCase {
 
     public function test_grade_response() {
         $question = test_question_maker::make_question('varnumericset', 'no_accepted_error');
-        $this->assertEqual($this->grade($question, -4.2), 100);
-        $this->assertEqual($this->grade($question, 4.2), 0);
+        $this->assertEqual($this->grade($question, '-4.2'), 100);
+        $this->assertEqual($this->grade($question, '4.2'), 0);
 
         $question = test_question_maker::make_question('varnumericset', 'numeric_accepted_error');
-        $this->assertEqual($this->grade($question, -4.2), 100);
-        $this->assertEqual($this->grade($question, 4.2), 0);
+        $this->assertEqual($this->grade($question, '-4.2'), 100);
+        $this->assertEqual($this->grade($question, '4.2'), 0);
+
+        $question = test_question_maker::make_question('varnumericset', '3_sig_figs');
+        $this->assertEqual($this->grade($question, '12300'), 100);
+        $this->assertEqual($this->grade($question, '0012300'), 100);
+
+        $question = test_question_maker::make_question('varnumericset', '3_sig_figs_trailing_zero');
+        $this->assertEqual($this->grade($question, '0.0720'), 100);
+        $this->assertEqual($this->grade($question, '00.0720'), 100);
+        $this->assertEqual($this->grade($question, '00.07200'), 90);
+        $this->assertEqual($this->grade($question, '+00.07200'), 90);
+        $this->assertEqual($this->grade($question, '+0.0720'), 100);
+        $this->assertEqual($this->grade($question, '+0.072'), 0);
+
+        $question = test_question_maker::make_question('varnumericset', '3_sig_figs_trailing_zero_negative_answer');
+        $this->assertEqual($this->grade($question, '-0.0720'), 100);
+        $this->assertEqual($this->grade($question, '-00.0720'), 100);
+        $this->assertEqual($this->grade($question, '-00.07200'), 90);
+        $this->assertEqual($this->grade($question, '-00.07200'), 90);
+        $this->assertEqual($this->grade($question, '-0.072'), 0);
     }
 }

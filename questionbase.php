@@ -254,8 +254,8 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         if ($allowederror == 0) {
             $allowederror = $answer * 1e-6;
         }
-        $errorduetofloatprecision = $answer * 1e-15;
-        if (abs($answer - $cast) <= $allowederror + $errorduetofloatprecision) {
+        $errorduetofloatprecision = abs($answer * 1e-15);
+        if (abs($answer - $cast) <= abs($allowederror) + $errorduetofloatprecision) {
             return true;
         } else {
             return false;

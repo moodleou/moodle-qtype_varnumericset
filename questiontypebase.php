@@ -83,12 +83,18 @@ abstract class qtype_varnumeric_base extends question_type {
         global $DB;
         $prefix = $this->db_table_prefix();
         $DB->delete_records($prefix, array('questionid' => $questionid));
-        $DB->execute("DELETE FROM {{$prefix}_answers} AS qva USING {question_answers} AS qa".
-                       " WHERE qa.id = qva.answerid AND qa.question = ?", array($questionid));
-
-        $DB->execute("DELETE FROM {{$prefix}_variants} AS va ".
-                       "USING {{$prefix}_vars} AS v ".
-                       "WHERE va.varid = v.id AND v.questionid = ?", array($questionid));
+        $ids = $DB->get_fieldset_sql("SELECT qva.id FROM {{$prefix}_answers} qva
+                                        JOIN {question_answers} qa ON qa.id = qva.answerid
+                                       WHERE qa.question = ?", array($questionid));
+        if (!empty($ids)) {
+            $DB->delete_records_list("{$prefix}_answers", 'id', $ids);
+        }        
+        $ids = $DB->get_fieldset_sql("SELECT va.id FROM {{$prefix}_variants} va
+                                        JOIN {{$prefix}_vars} v ON va.varid = v.id
+                                       WHERE v.questionid = ?", array($questionid));
+        if (!empty($ids)) {
+            $DB->delete_records_list("{$prefix}_variants", 'id', $ids);
+        }
         $DB->delete_records("{$prefix}_vars", array('questionid' => $questionid));
 
         parent::delete_question($questionid, $contextid);

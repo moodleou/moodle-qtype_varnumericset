@@ -214,6 +214,17 @@ class qtype_varnumericset_question_test extends UnitTestCase {
         $question = test_question_maker::make_question('varnumericset', '3_sig_figs');
         $this->assertEqual($this->grade($question, '12300'), 100);
         $this->assertEqual($this->grade($question, '0012300'), 100);
+        $this->assertEqual($this->grade($question, '0012350'), 90);//correct to wrong amount of sig figs
+        $this->assertEqual($this->grade($question, '0012345'), 90);//correct to wrong amount of sig figs
+        $this->assertEqual($this->grade($question, '12350'), 90);//correct to wrong amount of sig figs
+        $this->assertEqual($this->grade($question, '12345'), 90);//correct to wrong amount of sig figs
+
+        $question = test_question_maker::make_question('varnumericset', '3_sig_figs_2');
+        $this->assertEqual($this->grade($question, '1.23'), 100);
+        $this->assertEqual($this->grade($question, '01.23'), 100);
+        $this->assertEqual($this->grade($question, '1.230'), 0);//wrong
+        $this->assertEqual($this->grade($question, '1.235'), 90);//wrong no of sig figs
+        $this->assertEqual($this->grade($question, '1.2346'), 90);
 
         $question = test_question_maker::make_question('varnumericset', '3_sig_figs_trailing_zero');
         $this->assertEqual($this->grade($question, '0.0720'), 100);
@@ -222,6 +233,7 @@ class qtype_varnumericset_question_test extends UnitTestCase {
         $this->assertEqual($this->grade($question, '+00.07200'), 90);
         $this->assertEqual($this->grade($question, '+0.0720'), 100);
         $this->assertEqual($this->grade($question, '+0.072'), 0);
+        $this->assertEqual($this->grade($question, '0.072'), 0);
 
         $question = test_question_maker::make_question('varnumericset', '3_sig_figs_trailing_zero_negative_answer');
         $this->assertEqual($this->grade($question, '-0.0720'), 100);

@@ -223,6 +223,11 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
                 if ($data['fraction'][$key] == 1) {
                     $maxgrade = true;
                 }
+                if ($trimmedanswer == '*') {
+                    if ($data['error'][$key] != '') {
+                        $errors["error[$key]"] = get_string('notolerancehere', 'qtype_varnumericset');
+                    }
+                }
             } else if ($data['fraction'][$key] != 0 ||
                     !html_is_blank($data['feedback'][$key]['text'])) {
                 $errors["answer[$key]"] = get_string('answermustbegiven', 'qtype_varnumericset');

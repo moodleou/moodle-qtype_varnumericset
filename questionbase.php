@@ -141,7 +141,7 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
     }
 
     public function get_correct_response() {
-        $answer = $this->get_first_answer_graded_correct();
+        $answer = clone($this->get_first_answer_graded_correct());
         if (!$answer) {
             return array();
         }
@@ -152,7 +152,7 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
     }
 
     public function get_correct_answer() {
-        $answer = $this->get_first_answer_graded_correct();
+        $answer = clone($this->get_first_answer_graded_correct());
         if (!is_null($answer)) {
             $evaluated = $this->calculator->evaluate($answer->answer);
             $answer->answer =

@@ -35,7 +35,7 @@ defined('MOODLE_INTERNAL') || die();
  */
 class qtype_varnumericset_test_helper extends question_test_helper {
     public function get_test_questions() {
-        return array('no_accepted_error', 'numeric_accepted_error', '3_sig_figs',
+        return array('no_accepted_error', 'numeric_accepted_error', '3_sig_figs', '3_sig_figs_2',
                         '3_sig_figs_trailing_zero', '3_sig_figs_trailing_zero_negative_answer');
     }
 
@@ -105,6 +105,17 @@ class qtype_varnumericset_test_helper extends question_test_helper {
         $vs->answers[1]->sigfigs = 3;
         return $vs;
     }
+
+    public function make_varnumericset_question_3_sig_figs_2() {
+        $vs = $this->make_varnumericset_question_no_accepted_error();
+
+        $vs->questiontext = '<p>The answer is 1.23456 to 3 sig figs = 1.23.</p>';
+        $vs->generalfeedback = '<p>General feedback 1.23456.</p>';
+        $vs->answers[1]->answer = '1.23456';
+        $vs->answers[1]->sigfigs = 3;
+        return $vs;
+    }
+
 
     /**
      * @return qtype_varnumericset_question

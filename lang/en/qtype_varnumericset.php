@@ -60,6 +60,7 @@ $string['forallanswers'] = 'For all answers';
 $string['hintoverride'] = 'If auto-check fires allow another try but do not show this hint or apply this penalty';
 $string['illegalthousandseparator'] = 'You have used an illegal thousands separator "{$a->thousandssep}" in your answer. We only accept answers with a decimal separator "{$a->decimalsep}".';
 $string['notenoughanswers'] = 'This type of question requires at least {$a} answers';
+$string['notolerancehere'] = 'You cannot enter a tolerance for this match anything answer';
 $string['notvalidnumber'] = 'You have not entered a number in a recognised format.';
 $string['options'] = 'Options';
 $string['pleaseenterananswer'] = 'Please enter an answer.';

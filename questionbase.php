@@ -141,7 +141,7 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
     }
 
     public function get_correct_response() {
-        $answer = $this->get_first_answer_graded_correct();
+        $answer = clone($this->get_first_answer_graded_correct());
         if (!$answer) {
             return array();
         }
@@ -152,7 +152,7 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
     }
 
     public function get_correct_answer() {
-        $answer = $this->get_first_answer_graded_correct();
+        $answer = clone($this->get_first_answer_graded_correct());
         if (!is_null($answer)) {
             $evaluated = $this->calculator->evaluate($answer->answer);
             $answer->answer =
@@ -494,26 +494,31 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
     }
 
     public function compute_final_grade($responses, $totaltries) {
-        $totalsyspenalty = 0;
+        $totalpenalty = 0;
         $trieswithnopenalty = 0;
 
-        foreach ($responses as $i => $response) {
-            list($fraction, $state) = $this->grade_response($response);
-            if ($state == question_state::$gradedpartial) {
-                $syserrorpenalty = 1 - $fraction;
-                $totalsyspenalty = $totalsyspenalty + $syserrorpenalty;
-                if ((isset($this->hints[$i])) && $this->hints[$i]->clearwrong) {
-                    $trieswithnopenalty++;
+        $finalresponse = array_pop($responses);
+
+        if (count($responses)) {
+            foreach ($responses as $i => $response) {
+                list($fraction, $state) = $this->grade_response($response);
+                if ($state == question_state::$gradedpartial) {
+                    $syserrorpenalty = 1 - $fraction;
+                    $totalpenalty += $syserrorpenalty;
+                    if (!(isset($this->hints[$i]) && $this->hints[$i]->clearwrong)) {
+                        $totalpenalty += $this->penalty;
+                    }
+                } else {
+                    $totalpenalty += $this->penalty;
                 }
             }
         }
-        if ($state == question_state::$gradedwrong) {
+        list($finalfraction, $finalstate) = $this->grade_response($finalresponse);
+        if ($finalstate == question_state::$gradedwrong) {
             return 0;
         }
-        $finalfraction = max(0, (1 - $totalsyspenalty -
-                         ((count($responses) - 1 - $trieswithnopenalty) * $this->penalty)));
+        $finalfraction -= $totalpenalty;
         return $finalfraction;
-
     }
 
     public function classify_response(array $response) {

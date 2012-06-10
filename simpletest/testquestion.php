@@ -242,4 +242,20 @@ class qtype_varnumericset_question_test extends UnitTestCase {
         $this->assertEqual($this->grade($question, '-00.07200'), 90);
         $this->assertEqual($this->grade($question, '-0.072'), 0);
     }
+
+    public function test_normalize_number_format() {
+        $this->assertEqual(qtype_varnumericset_question::normalize_number_format("1.6834m", false),
+                            array('1.6834', array('', 'm')));
+        $this->assertEqual(qtype_varnumericset_question::normalize_number_format("1.6834km", false),
+                            array('1.6834', array('', 'km')));
+        $this->assertEqual(qtype_varnumericset_question::normalize_number_format("M1.68", false),
+                            array('1.68', array('M', '')));
+        $this->assertEqual(qtype_varnumericset_question::normalize_number_format("$1.68", false),
+                            array('1.68', array('$', '')));
+        $this->assertEqual(qtype_varnumericset_question::normalize_number_format("$1.68e+20", false),
+                            array('1.68e20', array('$', '')));
+        $this->assertEqual(qtype_varnumericset_question::normalize_number_format("$1.68x10<sup>20</sup>", true),
+                            array('1.68e20', array('$', '')));
+    }
+
 }

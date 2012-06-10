@@ -62,6 +62,7 @@ $string['illegalthousandseparator'] = 'You have used an illegal thousands separa
 $string['notenoughanswers'] = 'This type of question requires at least {$a} answers';
 $string['notolerancehere'] = 'You cannot enter a tolerance for this match anything answer';
 $string['notvalidnumber'] = 'You have not entered a number in a recognised format.';
+$string['notvalidnumberprepostfound'] = 'You seem to have entered something besides the numerical answer. You should not include a unit in your answer.';
 $string['options'] = 'Options';
 $string['pleaseenterananswer'] = 'Please enter an answer.';
 $string['pluginname'] = 'Variable numeric set';
@@ -74,6 +75,7 @@ $string['pluginname_link'] = 'question/type/varnumericset';
 $string['pluginnameadding'] = 'Adding a Variable numeric set question';
 $string['pluginnameediting'] = 'Editing a Variable numeric set question';
 $string['pluginnamesummary'] = 'Allows a numeric response, question can have several \'variants\', expressions are pre evaluated for each question variant';
+$string['preandpostfixesignored'] = 'Only the numerical part of your answer was graded. You should not have entered any units and any you entered have been ignored.';
 $string['questiontext'] = 'Question text and embedded variables';
 $string['questiontext_help'] = 'You can embed variable names and expressions in question text, general feedback, answer feedback and hints
 

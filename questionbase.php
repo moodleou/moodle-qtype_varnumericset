@@ -84,11 +84,11 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         return (0 === preg_match('!$'.QTYPE_VARNUMERICSET_VALID_NORMALISED_STRING.'!A', $number));
     }
 
-    public function get_validation_error(array $response, $errorsfor = 'student') {
+    public function get_validation_error(array $response) {
         if ($this->is_no_response($response)) {
             return get_string('pleaseenterananswer', 'qtype_varnumericset');
         }
-        if ($errorsfor == 'student' && false !== strpos($response['answer'], QTYPE_VARNUMERICSET_THOUSAND_SEP)) {
+        if (false !== strpos($response['answer'], QTYPE_VARNUMERICSET_THOUSAND_SEP)) {
             $a = new stdClass();
             $a->thousandssep = QTYPE_VARNUMERICSET_THOUSAND_SEP;
             $a->decimalsep = QTYPE_VARNUMERICSET_DECIMAL_SEP;
@@ -96,20 +96,26 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         }
         list($string, $postorprefix) = self::normalize_number_format($response['answer'], $this->requirescinotation);
 
-        if ($errorsfor == 'student' && !empty($string) && (!empty($postorprefix[0]) || !empty($postorprefix[1]))) {
+        if (!empty($string) && (!empty($postorprefix[0]) || !empty($postorprefix[1]))) {
             return get_string('notvalidnumberprepostfound', 'qtype_varnumericset');
-        } else if (!self::is_valid_normalized_number_string($string)) {
+        }
+
+        if (!self::is_valid_normalized_number_string($string)) {
             return get_string('notvalidnumber', 'qtype_varnumericset');
         }
         return '';
     }
 
     public function is_gradable_response(array $response) {
-        if ('' == $this->get_validation_error($response, 'grading')) {
-            return true;
-        } else {
+        if ($this->is_no_response($response)) {
             return false;
         }
+        list($string, ) = self::normalize_number_format($response['answer'], $this->requirescinotation);
+
+        if (!self::is_valid_normalized_number_string($string)) {
+            return false;
+        }
+        return true;
     }
 
     public function is_same_response(array $prevresponse, array $newresponse) {
@@ -134,9 +140,6 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
     }
 
     public function grade_response(array $response) {
-        if (!$this->is_gradable_response($response)) {
-            return array(0, question_state::$gradedwrong);
-        }
         $answer = $this->get_matching_answer($response);
         if (!is_null($answer)) {
             return array($answer->fraction,

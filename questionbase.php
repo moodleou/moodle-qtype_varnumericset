@@ -77,11 +77,7 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
     }
 
     public function is_complete_response(array $response) {
-        if ('' == $this->get_validation_error($response)) {
-            return true;
-        } else {
-            return false;
-        }
+        return ('' == $this->get_validation_error($response));
     }
 
     public static function is_valid_normalized_number_string($number) {
@@ -546,7 +542,7 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
             return 0;
         }
         $finalfraction -= $totalpenalty;
-        return $finalfraction;
+        return max(0, $finalfraction);
     }
 
     public function classify_response(array $response) {

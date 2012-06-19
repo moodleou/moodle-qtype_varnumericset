@@ -31,8 +31,8 @@ defined('MOODLE_INTERNAL') || die();
 /**
  * Checks file access for short answer questions.
  */
-function qtype_varnumericset_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload) {
+function qtype_varnumericset_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options=array()) {
     global $DB, $CFG;
     require_once($CFG->libdir . '/questionlib.php');
-    question_pluginfile($course, $context, 'qtype_varnumericset', $filearea, $args, $forcedownload);
+    question_pluginfile($course, $context, 'qtype_varnumericset', $filearea, $args, $forcedownload, $options);
 }

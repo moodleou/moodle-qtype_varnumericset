@@ -18,12 +18,13 @@
  *
  * @package    qtype
  * @subpackage varnumericset
- * @copyright  2011 The Open University
+ * @copyright  2012 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 
 defined('MOODLE_INTERNAL') || die();
+global $CFG;
 
 require_once($CFG->libdir . '/evalmath/evalmath.class.php');
 
@@ -31,20 +32,21 @@ require_once($CFG->libdir . '/evalmath/evalmath.class.php');
 /**
  * Unit tests for the EvalMath expression evaluator, specific to this question type.
  *
- * @copyright  2011 The Open University
+ * @copyright  2012 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @group      qtype_varnumericset
  */
-class qtype_varnumericset_evalmath_test extends UnitTestCase {
+class qtype_varnumericset_evalmath_test extends basic_testcase {
     public function test_basic_expressions() {
         $ev = new EvalMath(true, true);
 
-        $this->assertTrue($ev->evaluate('a=2'));
+        $this->assertEquals($ev->evaluate('a=2'), 2);
 
-        $this->expectError();
+        $this->setExpectedException('PHPUnit_Framework_Error');
         $this->assertFalse($ev->evaluate('b=2+'));
-        $this->assertEqual($ev->last_error, get_string('operatorlacksoperand', 'mathslib', '+'));
+        $this->assertEquals($ev->last_error, get_string('operatorlacksoperand', 'mathslib', '+'));
 
-        $this->assertEqual($ev->evaluate('a'), 2);
+        $this->assertEquals($ev->evaluate('a'), 2);
 
     }
     public function test_random_expressions() {

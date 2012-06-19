@@ -81,7 +81,7 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
     }
 
     public static function is_valid_normalized_number_string($number) {
-        return (0 === preg_match('!$'.QTYPE_VARNUMERICSET_VALID_NORMALISED_STRING.'!A', $number));
+        return (1 === preg_match('!'.QTYPE_VARNUMERICSET_VALID_NORMALISED_STRING.'$!A', $number));
     }
 
     public function get_validation_error(array $response) {

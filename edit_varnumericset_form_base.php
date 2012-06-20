@@ -224,7 +224,7 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
                     $maxgrade = true;
                 }
                 if ($trimmedanswer == '*') {
-                    if ($data['error'][$key] != '') {
+                    if ($data['error'][$key] !== '') {
                         $errors["error[$key]"] = get_string('notolerancehere', 'qtype_varnumericset');
                     }
                 }

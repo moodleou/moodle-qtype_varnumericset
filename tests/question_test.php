@@ -206,57 +206,57 @@ class qtype_varnumericset_question_test extends basic_testcase {
 
     public function test_grade_response() {
         $question = test_question_maker::make_question('varnumericset', 'no_accepted_error');
-        $this->assertEqual($this->grade($question, '-4.2'), 100);
-        $this->assertEqual($this->grade($question, '4.2'), 0);
+        $this->assertEquals($this->grade($question, '-4.2'), 100);
+        $this->assertEquals($this->grade($question, '4.2'), 0);
 
         $question = test_question_maker::make_question('varnumericset', 'numeric_accepted_error');
-        $this->assertEqual($this->grade($question, '-4.2'), 100);
-        $this->assertEqual($this->grade($question, '4.2'), 0);
+        $this->assertEquals($this->grade($question, '-4.2'), 100);
+        $this->assertEquals($this->grade($question, '4.2'), 0);
 
         $question = test_question_maker::make_question('varnumericset', '3_sig_figs');
-        $this->assertEqual($this->grade($question, '12300'), 100);
-        $this->assertEqual($this->grade($question, '0012300'), 100);
-        $this->assertEqual($this->grade($question, '0012350'), 90);//correct to wrong amount of sig figs
-        $this->assertEqual($this->grade($question, '0012345'), 90);//correct to wrong amount of sig figs
-        $this->assertEqual($this->grade($question, '12350'), 90);//correct to wrong amount of sig figs
-        $this->assertEqual($this->grade($question, '12345'), 90);//correct to wrong amount of sig figs
+        $this->assertEquals($this->grade($question, '12300'), 100);
+        $this->assertEquals($this->grade($question, '0012300'), 100);
+        $this->assertEquals($this->grade($question, '0012350'), 90);//correct to wrong amount of sig figs
+        $this->assertEquals($this->grade($question, '0012345'), 90);//correct to wrong amount of sig figs
+        $this->assertEquals($this->grade($question, '12350'), 90);//correct to wrong amount of sig figs
+        $this->assertEquals($this->grade($question, '12345'), 90);//correct to wrong amount of sig figs
 
         $question = test_question_maker::make_question('varnumericset', '3_sig_figs_2');
-        $this->assertEqual($this->grade($question, '1.23'), 100);
-        $this->assertEqual($this->grade($question, '01.23'), 100);
-        $this->assertEqual($this->grade($question, '1.230'), 0);//wrong
-        $this->assertEqual($this->grade($question, '1.235'), 90);//wrong no of sig figs
-        $this->assertEqual($this->grade($question, '1.2346'), 90);
+        $this->assertEquals($this->grade($question, '1.23'), 100);
+        $this->assertEquals($this->grade($question, '01.23'), 100);
+        $this->assertEquals($this->grade($question, '1.230'), 0);//wrong
+        $this->assertEquals($this->grade($question, '1.235'), 90);//wrong no of sig figs
+        $this->assertEquals($this->grade($question, '1.2346'), 90);
 
         $question = test_question_maker::make_question('varnumericset', '3_sig_figs_trailing_zero');
-        $this->assertEqual($this->grade($question, '0.0720'), 100);
-        $this->assertEqual($this->grade($question, '00.0720'), 100);
-        $this->assertEqual($this->grade($question, '00.07200'), 90);
-        $this->assertEqual($this->grade($question, '+00.07200'), 90);
-        $this->assertEqual($this->grade($question, '+0.0720'), 100);
-        $this->assertEqual($this->grade($question, '+0.072'), 0);
-        $this->assertEqual($this->grade($question, '0.072'), 0);
+        $this->assertEquals($this->grade($question, '0.0720'), 100);
+        $this->assertEquals($this->grade($question, '00.0720'), 100);
+        $this->assertEquals($this->grade($question, '00.07200'), 90);
+        $this->assertEquals($this->grade($question, '+00.07200'), 90);
+        $this->assertEquals($this->grade($question, '+0.0720'), 100);
+        $this->assertEquals($this->grade($question, '+0.072'), 0);
+        $this->assertEquals($this->grade($question, '0.072'), 0);
 
         $question = test_question_maker::make_question('varnumericset', '3_sig_figs_trailing_zero_negative_answer');
-        $this->assertEqual($this->grade($question, '-0.0720'), 100);
-        $this->assertEqual($this->grade($question, '-00.0720'), 100);
-        $this->assertEqual($this->grade($question, '-00.07200'), 90);
-        $this->assertEqual($this->grade($question, '-00.07200'), 90);
-        $this->assertEqual($this->grade($question, '-0.072'), 0);
+        $this->assertEquals($this->grade($question, '-0.0720'), 100);
+        $this->assertEquals($this->grade($question, '-00.0720'), 100);
+        $this->assertEquals($this->grade($question, '-00.07200'), 90);
+        $this->assertEquals($this->grade($question, '-00.07200'), 90);
+        $this->assertEquals($this->grade($question, '-0.072'), 0);
     }
 
     public function test_normalize_number_format() {
-        $this->assertEqual(qtype_varnumericset_question::normalize_number_format("1.6834m", false),
+        $this->assertEquals(qtype_varnumericset_question::normalize_number_format("1.6834m", false),
                             array('1.6834', array('', 'm')));
-        $this->assertEqual(qtype_varnumericset_question::normalize_number_format("1.6834km", false),
+        $this->assertEquals(qtype_varnumericset_question::normalize_number_format("1.6834km", false),
                             array('1.6834', array('', 'km')));
-        $this->assertEqual(qtype_varnumericset_question::normalize_number_format("M1.68", false),
+        $this->assertEquals(qtype_varnumericset_question::normalize_number_format("M1.68", false),
                             array('1.68', array('M', '')));
-        $this->assertEqual(qtype_varnumericset_question::normalize_number_format("$1.68", false),
+        $this->assertEquals(qtype_varnumericset_question::normalize_number_format("$1.68", false),
                             array('1.68', array('$', '')));
-        $this->assertEqual(qtype_varnumericset_question::normalize_number_format("$1.68e+20", false),
+        $this->assertEquals(qtype_varnumericset_question::normalize_number_format("$1.68e+20", false),
                             array('1.68e20', array('$', '')));
-        $this->assertEqual(qtype_varnumericset_question::normalize_number_format("$1.68x10<sup>20</sup>", true),
+        $this->assertEquals(qtype_varnumericset_question::normalize_number_format("$1.68x10<sup>20</sup>", true),
                             array('1.68e20', array('$', '')));
     }
 

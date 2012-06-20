@@ -45,14 +45,47 @@ class qtype_varnumericset_question_test extends basic_testcase {
         $this->assertFalse(
                 qtype_varnumericset_question::num_within_allowed_error('1.230002e4', 1.23e4, ''));
         $this->assertTrue(
+                qtype_varnumericset_question::num_within_allowed_error('-1.230001e4', -1.23e4, ''));
+        $this->assertFalse(
+                qtype_varnumericset_question::num_within_allowed_error('-1.230002e4', -1.23e4, ''));
+        $this->assertTrue(
+                qtype_varnumericset_question::num_within_allowed_error('-9.000009e-4', -9e-4, ''));
+        $this->assertFalse(
+                qtype_varnumericset_question::num_within_allowed_error('-9.000010e-4', -9e-4, ''));
+        $this->assertTrue(
                 qtype_varnumericset_question::num_within_allowed_error('1.2301e4', 1.23e4, '1'));
         $this->assertFalse(
                 qtype_varnumericset_question::num_within_allowed_error('1.23015e4', 1.23e4, '1'));
         $this->assertTrue(
+                qtype_varnumericset_question::num_within_allowed_error('12299', 1.23e4, '1'));
+        $this->assertFalse(
+                qtype_varnumericset_question::num_within_allowed_error('1.2985e4', 1.23e4, '1'));
+        $this->assertTrue(
+                qtype_varnumericset_question::num_within_allowed_error('1.2299', 1.23, '0.001'));
+        $this->assertFalse(
+                qtype_varnumericset_question::num_within_allowed_error('1.2985', 1.23, '0.001'));
+        $this->assertTrue(
+                qtype_varnumericset_question::num_within_allowed_error('-12299', -1.23e4, '1'));
+        $this->assertFalse(
+                qtype_varnumericset_question::num_within_allowed_error('-1.2985e4', -1.23e4, '1'));
+        $this->assertTrue(
+                qtype_varnumericset_question::num_within_allowed_error('-1.2299', -1.23, '0.001'));
+        $this->assertFalse(
+                qtype_varnumericset_question::num_within_allowed_error('-1.2985', -1.23, '0.001'));
+        $this->assertTrue(
                 qtype_varnumericset_question::num_within_allowed_error('12301', 1.23e4, '1'));
         $this->assertFalse(
                 qtype_varnumericset_question::num_within_allowed_error('12301.5', 1.23e4, '1'));
+        $this->assertTrue(
+                qtype_varnumericset_question::num_within_allowed_error('-4', -4, ''));
+        $this->assertFalse(
+                qtype_varnumericset_question::num_within_allowed_error('4', -4, ''));
+        $this->assertTrue(
+                qtype_varnumericset_question::num_within_allowed_error('-4', -4, '0.0001'));
+        $this->assertFalse(
+                qtype_varnumericset_question::num_within_allowed_error('4', -4, '0.0001'));
     }
+
     public function test_wrong_by_a_factor_of_ten() {
         $this->assertTrue(
             qtype_varnumericset_question::wrong_by_a_factor_of_ten('1.23e4', 1.23e5, '', 1));
@@ -90,6 +123,14 @@ class qtype_varnumericset_question_test extends basic_testcase {
             qtype_varnumericset_question::has_number_of_sig_figs('152000', 2));
     }
     public function test_has_too_many_sig_figs() {
+        $this->assertTrue(qtype_varnumericset_question::has_too_many_sig_figs('1.23456e5', 123456, 2));;
+        $this->assertTrue(qtype_varnumericset_question::has_too_many_sig_figs('1.23456e5', 123456, 3));;
+        $this->assertTrue(qtype_varnumericset_question::has_too_many_sig_figs('1.23456e5', 123456, 4));;
+        $this->assertTrue(qtype_varnumericset_question::has_too_many_sig_figs('1.23456e5', 123456, 5));;
+        $this->assertFalse(qtype_varnumericset_question::has_too_many_sig_figs('1.23456e5', 123456, 6));;
+        $this->assertTrue(qtype_varnumericset_question::has_too_many_sig_figs('1.234560e5', 123456, 6));;
+        $this->assertFalse(qtype_varnumericset_question::has_too_many_sig_figs('1.23456e5', 123456, 6));;
+        //should only return true when extra sig figs in response are correct
         $this->assertTrue(
             qtype_varnumericset_question::has_too_many_sig_figs('1.23456', 1.23456, 2));
         $this->assertTrue(
@@ -108,6 +149,16 @@ class qtype_varnumericset_question_test extends basic_testcase {
             qtype_varnumericset_question::has_too_many_sig_figs('1.23456e4', 1.33456e4, 2));
         $this->assertTrue(
             qtype_varnumericset_question::has_too_many_sig_figs('7.89e-4', 7.890123e-4, 2));
+        $this->assertFalse(
+            qtype_varnumericset_question::has_too_many_sig_figs('-1.23456e-12', -1.2346e-12, 4));
+        $this->assertFalse(
+            qtype_varnumericset_question::has_too_many_sig_figs('7.89e-4', 7.89e-4, 3));
+        $this->assertTrue(
+            qtype_varnumericset_question::has_too_many_sig_figs('7.891e-4', 7.891e-4, 3));
+        $this->assertTrue(
+            qtype_varnumericset_question::has_too_many_sig_figs('7.891e-4', 789.10e-6, 3));
+        $this->assertTrue(
+            qtype_varnumericset_question::has_too_many_sig_figs('7.891e-4', 007.891e-4, 3));
         $this->assertFalse(
             qtype_varnumericset_question::has_too_many_sig_figs('-1.23456e-12', -1.2346e-12, 4));
     }
@@ -148,5 +199,65 @@ class qtype_varnumericset_question_test extends basic_testcase {
                                 qtype_varnumericset_question::round_to(1234.5600, 6, true, true));
     }
 
+    protected function grade($question, $enteredresponse) {
+        list($fraction, $stateforfraction) = $question->grade_response(array('answer'=>$enteredresponse));
+        return $fraction;
+    }
+
+    public function test_grade_response() {
+        $question = test_question_maker::make_question('varnumericset', 'no_accepted_error');
+        $this->assertEqual($this->grade($question, '-4.2'), 100);
+        $this->assertEqual($this->grade($question, '4.2'), 0);
+
+        $question = test_question_maker::make_question('varnumericset', 'numeric_accepted_error');
+        $this->assertEqual($this->grade($question, '-4.2'), 100);
+        $this->assertEqual($this->grade($question, '4.2'), 0);
+
+        $question = test_question_maker::make_question('varnumericset', '3_sig_figs');
+        $this->assertEqual($this->grade($question, '12300'), 100);
+        $this->assertEqual($this->grade($question, '0012300'), 100);
+        $this->assertEqual($this->grade($question, '0012350'), 90);//correct to wrong amount of sig figs
+        $this->assertEqual($this->grade($question, '0012345'), 90);//correct to wrong amount of sig figs
+        $this->assertEqual($this->grade($question, '12350'), 90);//correct to wrong amount of sig figs
+        $this->assertEqual($this->grade($question, '12345'), 90);//correct to wrong amount of sig figs
+
+        $question = test_question_maker::make_question('varnumericset', '3_sig_figs_2');
+        $this->assertEqual($this->grade($question, '1.23'), 100);
+        $this->assertEqual($this->grade($question, '01.23'), 100);
+        $this->assertEqual($this->grade($question, '1.230'), 0);//wrong
+        $this->assertEqual($this->grade($question, '1.235'), 90);//wrong no of sig figs
+        $this->assertEqual($this->grade($question, '1.2346'), 90);
+
+        $question = test_question_maker::make_question('varnumericset', '3_sig_figs_trailing_zero');
+        $this->assertEqual($this->grade($question, '0.0720'), 100);
+        $this->assertEqual($this->grade($question, '00.0720'), 100);
+        $this->assertEqual($this->grade($question, '00.07200'), 90);
+        $this->assertEqual($this->grade($question, '+00.07200'), 90);
+        $this->assertEqual($this->grade($question, '+0.0720'), 100);
+        $this->assertEqual($this->grade($question, '+0.072'), 0);
+        $this->assertEqual($this->grade($question, '0.072'), 0);
+
+        $question = test_question_maker::make_question('varnumericset', '3_sig_figs_trailing_zero_negative_answer');
+        $this->assertEqual($this->grade($question, '-0.0720'), 100);
+        $this->assertEqual($this->grade($question, '-00.0720'), 100);
+        $this->assertEqual($this->grade($question, '-00.07200'), 90);
+        $this->assertEqual($this->grade($question, '-00.07200'), 90);
+        $this->assertEqual($this->grade($question, '-0.072'), 0);
+    }
+
+    public function test_normalize_number_format() {
+        $this->assertEqual(qtype_varnumericset_question::normalize_number_format("1.6834m", false),
+                            array('1.6834', array('', 'm')));
+        $this->assertEqual(qtype_varnumericset_question::normalize_number_format("1.6834km", false),
+                            array('1.6834', array('', 'km')));
+        $this->assertEqual(qtype_varnumericset_question::normalize_number_format("M1.68", false),
+                            array('1.68', array('M', '')));
+        $this->assertEqual(qtype_varnumericset_question::normalize_number_format("$1.68", false),
+                            array('1.68', array('$', '')));
+        $this->assertEqual(qtype_varnumericset_question::normalize_number_format("$1.68e+20", false),
+                            array('1.68e20', array('$', '')));
+        $this->assertEqual(qtype_varnumericset_question::normalize_number_format("$1.68x10<sup>20</sup>", true),
+                            array('1.68e20', array('$', '')));
+    }
 
 }

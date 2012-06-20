@@ -19,24 +19,26 @@
  *
  * @package    qtype
  * @subpackage varnumericset
- * @copyright  2011 The Open University
+ * @copyright  2012 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 
 defined('MOODLE_INTERNAL') || die();
+global $CFG;
 
 require_once($CFG->dirroot . '/question/type/varnumericset/question.php');
-require_once($CFG->dirroot . '/question/engine/simpletest/helpers.php');
+require_once($CFG->dirroot . '/question/engine/tests/helpers.php');
 
 
 /**
  * Unit tests for the varnumericset question definition class.
  *
- * @copyright  2011 The Open University
+ * @copyright  2012 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @group      qtype_varnumericset
  */
-class qtype_varnumericset_question_test extends UnitTestCase {
+class qtype_varnumericset_question_test extends basic_testcase {
     public function test_num_within_allowed_error() {
         $this->assertTrue(
                 qtype_varnumericset_question::num_within_allowed_error('1.230001e4', 1.23e4, ''));
@@ -173,27 +175,27 @@ class qtype_varnumericset_question_test extends UnitTestCase {
 
     }
     public function test_round_to() {
-        $this->assertIdentical('0.123', qtype_varnumericset_question::round_to(0.12345, 3, false));
-        $this->assertIdentical('0.1235', qtype_varnumericset_question::round_to(0.12345, 4, false));
+        $this->assertSame('0.123', qtype_varnumericset_question::round_to(0.12345, 3, false));
+        $this->assertSame('0.1235', qtype_varnumericset_question::round_to(0.12345, 4, false));
         //incorrect rounding
-        $this->assertIdentical('1.235e-1',
+        $this->assertSame('1.235e-1',
                                         qtype_varnumericset_question::round_to(0.12345, 4, true));
         //incorrect rounding
-        $this->assertIdentical('1.234e-1',
+        $this->assertSame('1.234e-1',
                                     qtype_varnumericset_question::round_to(0.12345, 4, true, true));
-        $this->assertIdentical('1234.57',
+        $this->assertSame('1234.57',
                                     qtype_varnumericset_question::round_to(1234.5678, 6, false));
-        $this->assertIdentical('1.23457e3',
+        $this->assertSame('1.23457e3',
                                     qtype_varnumericset_question::round_to(1234.5678, 6, true));
         //incorrect rounding
-        $this->assertIdentical('1234.56',
+        $this->assertSame('1234.56',
                                 qtype_varnumericset_question::round_to(1234.5678, 6, false, true));
-        $this->assertIdentical('1.23456e3',
+        $this->assertSame('1.23456e3',
                                 qtype_varnumericset_question::round_to(1234.5678, 6, true, true));
         //always round down when incorrect rounding requested
-        $this->assertIdentical('1234.56',
+        $this->assertSame('1234.56',
                                 qtype_varnumericset_question::round_to(1234.5600, 6, false, true));
-        $this->assertIdentical('1.23456e3',
+        $this->assertSame('1.23456e3',
                                 qtype_varnumericset_question::round_to(1234.5600, 6, true, true));
     }
 

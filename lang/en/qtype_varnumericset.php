@@ -62,7 +62,7 @@ $string['illegalthousandseparator'] = 'You have used an illegal thousands separa
 $string['notenoughanswers'] = 'This type of question requires at least {$a} answers';
 $string['notolerancehere'] = 'You cannot enter a tolerance for this match anything answer';
 $string['notvalidnumber'] = 'You have not entered a number in a recognised format.';
-$string['notvalidnumberprepostfound'] = 'You seem to have entered something besides the numerical answer. You should not include a unit in your answer.';
+$string['notvalidnumberprepostfound'] = 'Please enter a valid number and nothing else.';
 $string['options'] = 'Options';
 $string['pleaseenterananswer'] = 'Please enter an answer.';
 $string['pluginname'] = 'Variable numeric set';
@@ -75,7 +75,7 @@ $string['pluginname_link'] = 'question/type/varnumericset';
 $string['pluginnameadding'] = 'Adding a Variable numeric set question';
 $string['pluginnameediting'] = 'Editing a Variable numeric set question';
 $string['pluginnamesummary'] = 'Allows a numeric response, question can have several \'variants\', expressions are pre evaluated for each question variant';
-$string['preandpostfixesignored'] = 'Only the numerical part of your answer was graded. You should not have entered any units and any you entered have been ignored.';
+$string['preandpostfixesignored'] = 'Only the numerical part of your answer was graded.';
 $string['questiontext'] = 'Question text and embedded variables';
 $string['questiontext_help'] = 'You can embed variable names and expressions in question text, general feedback, answer feedback and hints
 
@@ -103,6 +103,14 @@ $string['varname_help'] = 'For a \'Predefined variable\' you enter only a variab
 Or for a \'Calculated variable\' enter a variable name and assign it a value from an expression e.g. \'b = a^4\' (where \'a\' is a previously defined variable).
 
 If you leave this field blank then any values below will just be ignored.';
+$string['varnumericset'] = 'Variable numeric set';
+$string['varnumericset_help'] = 'In response to a question the respondent types a number.
+
+Numbers used in the question and used to calculate the answer are chosen from predefined sets which can be precalculated from mathematical expressions.
+
+All expressions are calculated at the time of question creation and values from random functions are the same for all users. For a question without variants, with expressions calculated on the fly and with random values different for each user see the \'variable numeric\' question type.';
+$string['varnumericset_link'] = 'question/type/varnumericset';
+$string['varnumericsetsummary'] = 'Allows a numeric response, question can have several \'variants\', expressions are pre evaluated for each question variant';
 $string['vartypecalculated'] = 'Calculated variable';
 $string['vartypepredefined'] = 'Predefined variable';
 $string['youmustprovideavalueforatleastonevariant'] = 'You must provide a value here.';

@@ -31,7 +31,9 @@ defined('MOODLE_INTERNAL') || die();
 define('QTYPE_VARNUMERICSET_THOUSAND_SEP', ',');
 define('QTYPE_VARNUMERICSET_DECIMAL_SEP', '.');
 
-define('QTYPE_VARNUMERICSET_VALID_NORMALISED_STRING', '-?[0-9]+(\.[0-9]*)?(e-?[0-9]*)?');
+define('QTYPE_VARNUMERICSET_VALID_NORMALISED_STRING',
+                        "(?<sign>-?)(?<coeff1>[0-9]+)(\.(?<coeff2>[0-9]*))?".
+                        "(e(?<exp>-?[0-9]*))?");
 
 /**
  * Represents a varnumeric question.
@@ -311,8 +313,33 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
                 $string = $matches[0][0];
             }
         }
-        $string = preg_replace('!^(\-)?(0)+!', '$1', $string);//remove all leading zeroes
-        $string = preg_replace('!^(\-)?\.!', '${1}0.', $string);// put zero back on string to lead before any decimal point
+        if (self::is_sci_notation($string)) {
+            //make sure that coefficient is between 1 and 10.
+            preg_match($pattern, $string, $no);
+            $no['coeff1'] =  ltrim($no['coeff1'], '0');
+            if (strlen($no['coeff1'])>1) {
+                $no['exp'] += strlen($no['coeff1'])-1;
+                $no['coeff2'] = substr($no['coeff1'], 1).$no['coeff2'];
+                $no['coeff1'] = substr($no['coeff1'], 0, 1);
+            }
+            while ($no['coeff1'] === '' || $no['coeff1'] === "0") {
+                $no['exp']--;
+                $no['coeff1'] =  substr($no['coeff2'], 0, 1);
+                $no['coeff2'] =  substr($no['coeff2'], 1);
+            }
+            $string = $no['sign'].$no['coeff1'].'.'.$no['coeff2'].'e'.$no['exp'];
+        } else {
+            if ($string === '-0') {//unlikely but possible
+                $string = '0';
+            }
+            if ($string !== '0') {
+                // put zero back on string to lead before any decimal point
+                $string = preg_replace('!^(\-)?(0)+!', '$1', $string);
+                // put zero back on string to lead before any decimal point
+                $string = preg_replace('!^(\-)?\.!', '${1}0.', $string);
+            }
+        }
+
         return array($string, $postorprefix);
     }
 

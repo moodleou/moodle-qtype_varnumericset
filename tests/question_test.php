@@ -199,6 +199,15 @@ class qtype_varnumericset_question_test extends basic_testcase {
                                 qtype_varnumericset_question::round_to(1234.5600, 6, true, true));
     }
 
+    public function test_is_valid_normalized_number_string() {
+        $this->assertTrue(qtype_varnumericset_question::is_valid_normalized_number_string('0'));
+        $this->assertTrue(qtype_varnumericset_question::is_valid_normalized_number_string('1.2'));
+        $this->assertTrue(qtype_varnumericset_question::is_valid_normalized_number_string('1.5670e4'));
+        $this->assertFalse(qtype_varnumericset_question::is_valid_normalized_number_string('e4'));
+        $this->assertFalse(qtype_varnumericset_question::is_valid_normalized_number_string('e'));
+        $this->assertFalse(qtype_varnumericset_question::is_valid_normalized_number_string('-'));
+    }
+
     protected function grade($question, $enteredresponse) {
         list($fraction, $stateforfraction) = $question->grade_response(array('answer'=>$enteredresponse));
         return $fraction;
@@ -216,7 +225,20 @@ class qtype_varnumericset_question_test extends basic_testcase {
         $question = test_question_maker::make_question('varnumericset', '3_sig_figs');
         $this->assertEquals($this->grade($question, '12300'), 100);
         $this->assertEquals($this->grade($question, '0012300'), 100);
-        $this->assertEquals($this->grade($question, '0012350'), 90);//correct to wrong amount of sig figs
+        $this->assertEquals($this->grade($question, '123e2'), 100);
+        $this->assertEquals($this->grade($question, '00123e2'), 100);
+        $this->assertEquals($this->grade($question, '12.3e3'), 100);
+        $this->assertEquals($this->grade($question, '1.23e4'), 100);
+        $this->assertEquals($this->grade($question, '0.123e5'), 100);
+        $this->assertEquals($this->grade($question, '0.0123e6'), 100);
+        $this->assertEquals($this->grade($question, '0.000123e8'), 100);
+        $this->assertEquals($this->grade($question, '123450e-1'), 90);
+        $this->assertEquals($this->grade($question, '123450000e-4'), 90);
+        $this->assertEquals($this->grade($question, '123450000e-3'), 0);
+        $this->assertEquals($this->grade($question, '001235e1'), 90);//correct to wrong amount of sig figs
+        $this->assertEquals($this->grade($question, '001234e1'), 00);//incorrect rounding
+        $this->assertEquals($this->grade($question, '1235e1'), 90);//correct to wrong amount of sig figs
+        $this->assertEquals($this->grade($question, '123.5e2'), 90);//correct to wrong amount of sig figs
         $this->assertEquals($this->grade($question, '0012345'), 90);//correct to wrong amount of sig figs
         $this->assertEquals($this->grade($question, '12350'), 90);//correct to wrong amount of sig figs
         $this->assertEquals($this->grade($question, '12345'), 90);//correct to wrong amount of sig figs
@@ -246,8 +268,10 @@ class qtype_varnumericset_question_test extends basic_testcase {
     }
 
     public function test_normalize_number_format() {
+        $this->assertEquals(qtype_varnumericset_question::normalize_number_format("0", false),
+            array('0', array('', '')));
         $this->assertEquals(qtype_varnumericset_question::normalize_number_format("1.6834m", false),
-                            array('1.6834', array('', 'm')));
+            array('1.6834', array('', 'm')));
         $this->assertEquals(qtype_varnumericset_question::normalize_number_format("1.6834km", false),
                             array('1.6834', array('', 'km')));
         $this->assertEquals(qtype_varnumericset_question::normalize_number_format("M1.68", false),

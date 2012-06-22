@@ -108,7 +108,7 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
 
     abstract protected function add_value_form_fields($mform, $repeated, $repeatedoptions);
 
-    protected function get_per_answer_fields(&$mform, $label, $gradeoptions,
+    protected function get_per_answer_fields($mform, $label, $gradeoptions,
             &$repeatedoptions, &$answersoption) {
         $parentansweroptions = parent::get_per_answer_fields($mform, $label, $gradeoptions,
                                                         $repeatedoptions, $answersoption);
@@ -189,7 +189,7 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
      * @param object $question the data being passed to the form.
      * @return object $question the modified data.
      */
-    protected function data_preprocessing_answers($question) {
+    protected function data_preprocessing_answers($question, $withanswerfiles = false) {
         $question = parent::data_preprocessing_answers($question);
         if (empty($question->options->answers)) {
             return $question;

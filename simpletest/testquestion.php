@@ -119,6 +119,9 @@ class qtype_varnumericset_question_test extends UnitTestCase {
             qtype_varnumericset_question::has_number_of_sig_figs('151000', 3));
         $this->assertFalse(
             qtype_varnumericset_question::has_number_of_sig_figs('152000', 2));
+        $this->assertTrue(
+            qtype_varnumericset_question::has_number_of_sig_figs('1e9', 1));
+
     }
     public function test_has_too_many_sig_figs() {
         $this->assertTrue(qtype_varnumericset_question::has_too_many_sig_figs('1.23456e5', 123456, 2));;
@@ -241,6 +244,15 @@ class qtype_varnumericset_question_test extends UnitTestCase {
         $this->assertEqual($this->grade($question, '-00.07200'), 90);
         $this->assertEqual($this->grade($question, '-00.07200'), 90);
         $this->assertEqual($this->grade($question, '-0.072'), 0);
+
+        $question = test_question_maker::make_question('varnumericset', '1_sig_fig');
+        $this->assertEqual($this->grade($question, '1e9'), 100);
+        $this->assertEqual($this->grade($question, '1x10<sup>9</sup>'), 100);
+        $this->assertEqual($this->grade($question, '+1x10<sup>+9</sup>'), 100);
+        $question->answers[1]->answer = '-1.0e9';
+        $this->assertEqual($this->grade($question, '-1e9'), 100);
+        $this->assertEqual($this->grade($question, '-1x10<sup>9</sup>'), 100);
+        $this->assertEqual($this->grade($question, '-1x10<sup>+9</sup>'), 100);
     }
 
     public function test_normalize_number_format() {

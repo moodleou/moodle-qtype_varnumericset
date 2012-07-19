@@ -36,7 +36,8 @@ defined('MOODLE_INTERNAL') || die();
 class qtype_varnumericset_test_helper extends question_test_helper {
     public function get_test_questions() {
         return array('no_accepted_error', 'numeric_accepted_error', '3_sig_figs', '3_sig_figs_2',
-                        '3_sig_figs_trailing_zero', '3_sig_figs_trailing_zero_negative_answer');
+                        '3_sig_figs_trailing_zero', '3_sig_figs_trailing_zero_negative_answer',
+                        '1_sig_fig');
     }
 
     /**
@@ -142,4 +143,22 @@ class qtype_varnumericset_test_helper extends question_test_helper {
         $vs->answers[1]->sigfigs = 3;
         return $vs;
     }
+
+
+    /**
+     * @return qtype_varnumericset_question
+     */
+    public function make_varnumericset_question_1_sig_fig() {
+        $vs = $this->make_varnumericset_question_no_accepted_error();
+
+        $vs->questiontext = '<p>The correct answer is 1e9.</p>';
+        $vs->generalfeedback = '<p>General feedback 1e9.</p>';
+        $vs->requirescinotation = 1;
+        $vs->answers[1]->answer = '1.0e9';
+        $vs->answers[1]->sigfigs = 1;
+        $vs->answers[1]->checknumerical = 1;
+        $vs->answers[1]->checkscinotation = 1;
+        return $vs;
+    }
+
 }

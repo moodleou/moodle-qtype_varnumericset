@@ -327,7 +327,10 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
                 $no['coeff1'] =  substr($no['coeff2'], 0, 1);
                 $no['coeff2'] =  substr($no['coeff2'], 1);
             }
-            $string = $no['sign'].$no['coeff1'].'.'.$no['coeff2'].'e'.$no['exp'];
+            if ($no['coeff2'] !== '') {
+                $no['coeff2'] = '.'.$no['coeff2'];
+            }
+            $string = $no['sign'].$no['coeff1'].$no['coeff2'].'e'.$no['exp'];
         } else {
             if ($string === '-0') {//unlikely but possible
                 $string = '0';

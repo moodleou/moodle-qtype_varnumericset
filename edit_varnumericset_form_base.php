@@ -100,10 +100,14 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
                 get_string('filloutoneanswer', 'qtype_varnumericset'));
         $mform->closeHeaderBefore('answersinstruct');
 
-        $this->add_per_answer_fields($mform, get_string('answerno', 'qtype_varnumericset', '{no}'),
-                question_bank::fraction_options());
+        $this->add_answer_form_part($mform);
 
         $this->add_interactive_settings($mform, $repeated, $repeatedoptions);
+    }
+
+    protected function add_answer_form_part($mform) {
+        $this->add_per_answer_fields($mform, get_string('answerno', 'qtype_varnumericset', '{no}'),
+            question_bank::fraction_options());
     }
 
     protected function add_value_form_fields($mform, $repeated, $repeatedoptions) {

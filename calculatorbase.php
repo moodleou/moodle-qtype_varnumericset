@@ -105,7 +105,13 @@ abstract class qtype_varnumeric_calculator_base {
         $this->textswithembeddedvars[$fromformfield] = $value;
     }
 
-    abstract public function get_num_variants_in_form();
+    public function get_num_variants_in_form() {
+        if ($this->noofvariants == 0) {
+            //if there are no predefined variables at all then have a set ammount of 5 variants
+            return 5;
+        }
+        return $this->noofvariants;
+    }
 
     public function get_errors() {
         return $this->errors;

@@ -229,11 +229,7 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         $evaluated = $this->calculator->evaluate($answer->answer);
         $rounded = (float)self::round_to($evaluated, $answer->sigfigs, true);
         list($string, $postorprefix) = self::normalize_number_format($string, $this->requirescinotation);
-        if ($postorprefix[0].$postorprefix[1] != '') {
-            $feedback = get_string('preandpostfixesignored', 'qtype_varnumericset');
-        } else {
-            $feedback = '';
-        }
+        $feedback = $this->feedback_for_post_prefix_parts($postorprefix);
         if ($answer->error == '') {
             $allowederror = 0;
         } else {
@@ -275,6 +271,14 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         }
         $penalty = ($answer->syserrorpenalty * $autofireerrors);
         return array($penalty, get_string('ae_'.$autofireerrorfeedback, 'qtype_varnumericset').$feedback);
+    }
+
+    protected function feedback_for_post_prefix_parts($postorprefix) {
+        if ($postorprefix[0].$postorprefix[1] != '') {
+            return get_string('preandpostfixesignored', 'qtype_varnumericset');
+        } else {
+            return '';
+        }
     }
 
     public static function num_within_allowed_error($string, $answer, $allowederror) {

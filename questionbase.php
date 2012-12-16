@@ -97,16 +97,27 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
             $a->decimalsep = QTYPE_VARNUMERICSET_DECIMAL_SEP;
             return get_string('illegalthousandseparator', 'qtype_varnumericset', $a);
         }
-        list($string, $postorprefix) = self::normalize_number_format($response['answer'], $this->requirescinotation);
 
-        if (!empty($string) && (!empty($postorprefix[0]) || !empty($postorprefix[1]))) {
-            return get_string('notvalidnumberprepostfound', 'qtype_varnumericset');
-        }
+        list($string, $postorprefix) = self::normalize_number_format($response['answer'], $this->requirescinotation);
 
         if (!self::is_valid_normalized_number_string($string)) {
             return get_string('notvalidnumber', 'qtype_varnumericset');
         }
+
+        $preposterror = $this->get_pre_post_validation_error($postorprefix);
+        if ($preposterror !== '') {
+            return $preposterror;
+        }
+
         return '';
+    }
+
+    protected function get_pre_post_validation_error($postorprefix) {
+        if (!empty($string) && (!empty($postorprefix[0]) || !empty($postorprefix[1]))) {
+            return get_string('notvalidnumberprepostfound', 'qtype_varnumericset');
+        } else {
+            return '';
+        }
     }
 
     public function is_gradable_response(array $response) {

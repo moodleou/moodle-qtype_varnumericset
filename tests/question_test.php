@@ -199,15 +199,6 @@ class qtype_varnumericset_question_test extends basic_testcase {
                                 qtype_varnumericset_question::round_to(1234.5600, 6, true, true));
     }
 
-    public function test_is_valid_normalized_number_string() {
-        $this->assertTrue(qtype_varnumericset_question::is_valid_normalized_number_string('0'));
-        $this->assertTrue(qtype_varnumericset_question::is_valid_normalized_number_string('1.2'));
-        $this->assertTrue(qtype_varnumericset_question::is_valid_normalized_number_string('1.5670e4'));
-        $this->assertFalse(qtype_varnumericset_question::is_valid_normalized_number_string('e4'));
-        $this->assertFalse(qtype_varnumericset_question::is_valid_normalized_number_string('e'));
-        $this->assertFalse(qtype_varnumericset_question::is_valid_normalized_number_string('-'));
-    }
-
     protected function grade($question, $enteredresponse) {
         list($fraction, $stateforfraction) = $question->grade_response(array('answer'=>$enteredresponse));
         return $fraction;
@@ -275,22 +266,4 @@ class qtype_varnumericset_question_test extends basic_testcase {
         $this->assertEquals($this->grade($question, '-1x10<sup>9</sup>'), 100);
         $this->assertEquals($this->grade($question, '-1x10<sup>+9</sup>'), 100);
     }
-
-    public function test_normalize_number_format() {
-        $this->assertEquals(qtype_varnumericset_question::normalize_number_format("0", false),
-            array('0', array('', '')));
-        $this->assertEquals(qtype_varnumericset_question::normalize_number_format("1.6834m", false),
-            array('1.6834', array('', 'm')));
-        $this->assertEquals(qtype_varnumericset_question::normalize_number_format("1.6834km", false),
-                            array('1.6834', array('', 'km')));
-        $this->assertEquals(qtype_varnumericset_question::normalize_number_format("M1.68", false),
-                            array('1.68', array('M', '')));
-        $this->assertEquals(qtype_varnumericset_question::normalize_number_format("$1.68", false),
-                            array('1.68', array('$', '')));
-        $this->assertEquals(qtype_varnumericset_question::normalize_number_format("$1.68e+20", false),
-                            array('1.68e20', array('$', '')));
-        $this->assertEquals(qtype_varnumericset_question::normalize_number_format("$1.68x10<sup>20</sup>", true),
-                            array('1.68e20', array('$', '')));
-    }
-
 }

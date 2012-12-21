@@ -24,17 +24,9 @@
  */
 
 require_once($CFG->dirroot . '/question/type/questionbase.php');
+require_once($CFG->dirroot . '/question/type/varnumericset/number_interpreter.php');
 
 defined('MOODLE_INTERNAL') || die();
-
-
-//these only affect how student input is processed, not how values are displayed.
-define('QTYPE_VARNUMERICSET_THOUSAND_SEP', ',');
-define('QTYPE_VARNUMERICSET_DECIMAL_SEP', '.');
-
-define('QTYPE_VARNUMERICSET_VALID_NORMALISED_STRING',
-                        "(?<sign>-?)(?<coeff1>[0-9]+)(\.(?<coeff2>[0-9]*))?".
-                        "(e(?<exp>-?[0-9]*))?");
 
 /**
  * Represents a varnumeric question.
@@ -83,10 +75,6 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         return ('' == $this->get_validation_error($response));
     }
 
-    public static function is_valid_normalized_number_string($number) {
-        return (1 === preg_match('!'.QTYPE_VARNUMERICSET_VALID_NORMALISED_STRING.'$!A', $number));
-    }
-
     public function get_validation_error(array $response) {
         if ($this->is_no_response($response)) {
             return get_string('pleaseenterananswer', 'qtype_varnumericset');
@@ -98,13 +86,14 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
             return get_string('illegalthousandseparator', 'qtype_varnumericset', $a);
         }
 
-        list($string, $postorprefix) = self::normalize_number_format($response['answer'], $this->requirescinotation);
+        $num = new qtype_varnumericset_number_interpreter_number_with_optional_sci_notation($this->requirescinotation);
 
-        if (!self::is_valid_normalized_number_string($string)) {
+
+        if (!$num->match($response['answer'])) {
             return get_string('notvalidnumber', 'qtype_varnumericset');
         }
 
-        $preposterror = $this->get_pre_post_validation_error($postorprefix);
+        $preposterror = $this->get_pre_post_validation_error($num->get_prefix(), $num->get_postfix());
         if ($preposterror !== '') {
             return $preposterror;
         }
@@ -112,8 +101,8 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         return '';
     }
 
-    protected function get_pre_post_validation_error($postorprefix) {
-        if (!empty($string) && (!empty($postorprefix[0]) || !empty($postorprefix[1]))) {
+    protected function get_pre_post_validation_error($prefix, $postfix) {
+        if (!empty($prefix) || !empty($postfix)) {
             return get_string('notvalidnumberprepostfound', 'qtype_varnumericset');
         } else {
             return '';
@@ -124,9 +113,9 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         if ($this->is_no_response($response)) {
             return false;
         }
-        list($string, ) = self::normalize_number_format($response['answer'], $this->requirescinotation);
+        $num = new qtype_varnumericset_number_interpreter_number_with_optional_sci_notation($this->requirescinotation);
 
-        if (!self::is_valid_normalized_number_string($string)) {
+        if (!$num->match($response['answer'])) {
             return false;
         }
         return true;
@@ -228,8 +217,10 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         $autofireerrorfeedback = '';
         $evaluated = $this->calculator->evaluate($answer->answer);
         $rounded = (float)self::round_to($evaluated, $answer->sigfigs, true);
-        list($string, $postorprefix) = self::normalize_number_format($string, $this->requirescinotation);
-        $feedback = $this->feedback_for_post_prefix_parts($postorprefix);
+        $num = new qtype_varnumericset_number_interpreter_number_with_optional_sci_notation($this->requirescinotation);
+        $num->match($string);
+        $string = $num->get_normalised();
+        $feedback = $this->feedback_for_post_prefix_parts($num->get_prefix(), $num->get_postfix());
         if ($answer->error == '') {
             $allowederror = 0;
         } else {
@@ -273,8 +264,8 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         return array($penalty, get_string('ae_'.$autofireerrorfeedback, 'qtype_varnumericset').$feedback);
     }
 
-    protected function feedback_for_post_prefix_parts($postorprefix) {
-        if ($postorprefix[0].$postorprefix[1] != '') {
+    protected function feedback_for_post_prefix_parts($prefix, $postfix) {
+        if ($prefix.$postfix != '') {
             return get_string('preandpostfixesignored', 'qtype_varnumericset');
         } else {
             return '';
@@ -292,74 +283,6 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         } else {
             return false;
         }
-    }
-
-
-    /**
-     *
-     * Convert html used to write exponential to standard php way. Used to process numbers entered
-     * as strings by students.
-     * @param string $string number as string
-     * @return array with contents string number in standardised formt with / without standard php scientific notation
-     *               and boolean whether a non-numeric post or prefix was stripped from the string
-     */
-    public static function normalize_number_format($string, $normalizescinotation) {
-        if ($normalizescinotation) {
-            //strip any extra tags added by html editor that are not sup
-            $string = strip_tags($string, '<sup>');
-            //Convert html used to write exponential to standard php way.
-            $string = preg_replace('!\s*[x*]\s*10\s*<sup>\s*([+-]?[0-9]+)\s*</sup>\s*!i', 'e$1',
-                                    $string, 1);
-        }
-        if (QTYPE_VARNUMERICSET_DECIMAL_SEP != '.') {
-            $string = str_replace(QTYPE_VARNUMERICSET_DECIMAL_SEP, '.', $string);
-        }
-        //remove any redundant characters
-        $string = str_replace(array(' ', '+', QTYPE_VARNUMERICSET_THOUSAND_SEP), '', $string);
-        $string = str_replace('E', 'e', $string); // use lower case e
-        $matches = array();
-        $postorprefix = array('', '');
-        $pattern = '!'.QTYPE_VARNUMERICSET_VALID_NORMALISED_STRING.'!';
-        if (1 === preg_match($pattern, $string, $matches, PREG_OFFSET_CAPTURE)) {
-            if (strlen($matches[0][0]) != strlen($string)) {
-                $prefix = substr($string, 0, $matches[0][1]);
-                $postfix = substr($string, $matches[0][1] + strlen($matches[0][0]),
-                                    strlen($string)- $matches[0][1] - strlen($matches[0][0]));
-                $postorprefix = array($prefix, $postfix);
-                $string = $matches[0][0];
-            }
-        }
-        if (self::is_sci_notation($string)) {
-            //make sure that coefficient is between 1 and 10.
-            preg_match($pattern, $string, $no);
-            $no['coeff1'] =  ltrim($no['coeff1'], '0');
-            if (strlen($no['coeff1'])>1) {
-                $no['exp'] += strlen($no['coeff1'])-1;
-                $no['coeff2'] = substr($no['coeff1'], 1).$no['coeff2'];
-                $no['coeff1'] = substr($no['coeff1'], 0, 1);
-            }
-            while ($no['coeff1'] === '' || $no['coeff1'] === "0") {
-                $no['exp']--;
-                $no['coeff1'] =  substr($no['coeff2'], 0, 1);
-                $no['coeff2'] =  substr($no['coeff2'], 1);
-            }
-            if ($no['coeff2'] !== '') {
-                $no['coeff2'] = '.'.$no['coeff2'];
-            }
-            $string = $no['sign'].$no['coeff1'].$no['coeff2'].'e'.$no['exp'];
-        } else {
-            if ($string === '-0') {//unlikely but possible
-                $string = '0';
-            }
-            if ($string !== '0') {
-                // put zero back on string to lead before any decimal point
-                $string = preg_replace('!^(\-)?(0)+!', '$1', $string);
-                // put zero back on string to lead before any decimal point
-                $string = preg_replace('!^(\-)?\.!', '${1}0.', $string);
-            }
-        }
-
-        return array($string, $postorprefix);
     }
 
     /**
@@ -603,11 +526,13 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         if (!$ans) {
             return array($this->id => question_classified_response::no_response());
         }
-        list($responsenormalized, $postorprefix) = self::normalize_number_format($response['answer'], true);
+        $num = new qtype_varnumericset_number_interpreter_number_with_optional_sci_notation(true);
+        $num->match($response['answer']);
+
         $calculatorname = $this->qtype->calculator_name();
-        $responsehtmlized = $calculatorname::htmlize_exponent($responsenormalized);
+        $responsehtmlized = $calculatorname::htmlize_exponent($num->get_normalised());
         return array($this->id => new question_classified_response(
-                $ans->id, $postorprefix[0].$responsehtmlized.$postorprefix[1], $ans->fraction));
+                $ans->id, $num->get_prefix().$responsehtmlized.$num->get_postfix(), $ans->fraction));
     }
 }
 

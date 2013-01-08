@@ -206,64 +206,64 @@ class qtype_varnumericset_question_test extends basic_testcase {
 
     public function test_grade_response() {
         $question = test_question_maker::make_question('varnumericset', 'no_accepted_error');
-        $this->assertEquals($this->grade($question, '-4.2'), 100);
+        $this->assertEquals($this->grade($question, '-4.2'), 1);
         $this->assertEquals($this->grade($question, '4.2'), 0);
 
         $question = test_question_maker::make_question('varnumericset', 'numeric_accepted_error');
-        $this->assertEquals($this->grade($question, '-4.2'), 100);
+        $this->assertEquals($this->grade($question, '-4.2'), 1);
         $this->assertEquals($this->grade($question, '4.2'), 0);
 
         $question = test_question_maker::make_question('varnumericset', '3_sig_figs');
-        $this->assertEquals($this->grade($question, '12300'), 100);
-        $this->assertEquals($this->grade($question, '0012300'), 100);
-        $this->assertEquals($this->grade($question, '123e2'), 100);
-        $this->assertEquals($this->grade($question, '00123e2'), 100);
-        $this->assertEquals($this->grade($question, '12.3e3'), 100);
-        $this->assertEquals($this->grade($question, '1.23e4'), 100);
-        $this->assertEquals($this->grade($question, '0.123e5'), 100);
-        $this->assertEquals($this->grade($question, '0.0123e6'), 100);
-        $this->assertEquals($this->grade($question, '0.000123e8'), 100);
-        $this->assertEquals($this->grade($question, '123450e-1'), 90);
-        $this->assertEquals($this->grade($question, '123450000e-4'), 90);
+        $this->assertEquals($this->grade($question, '12300'), 1);
+        $this->assertEquals($this->grade($question, '0012300'), 1);
+        $this->assertEquals($this->grade($question, '123e2'), 1);
+        $this->assertEquals($this->grade($question, '00123e2'), 1);
+        $this->assertEquals($this->grade($question, '12.3e3'), 1);
+        $this->assertEquals($this->grade($question, '1.23e4'), 1);
+        $this->assertEquals($this->grade($question, '0.123e5'), 1);
+        $this->assertEquals($this->grade($question, '0.0123e6'), 1);
+        $this->assertEquals($this->grade($question, '0.000123e8'), 1);
+        $this->assertEquals($this->grade($question, '123450e-1'), 0.9);
+        $this->assertEquals($this->grade($question, '123450000e-4'), 0.9);
         $this->assertEquals($this->grade($question, '123450000e-3'), 0);
-        $this->assertEquals($this->grade($question, '001235e1'), 90);//correct to wrong amount of sig figs
+        $this->assertEquals($this->grade($question, '001235e1'), 0.9);//correct to wrong amount of sig figs
         $this->assertEquals($this->grade($question, '001234e1'), 00);//incorrect rounding
-        $this->assertEquals($this->grade($question, '1235e1'), 90);//correct to wrong amount of sig figs
-        $this->assertEquals($this->grade($question, '123.5e2'), 90);//correct to wrong amount of sig figs
-        $this->assertEquals($this->grade($question, '0012345'), 90);//correct to wrong amount of sig figs
-        $this->assertEquals($this->grade($question, '12350'), 90);//correct to wrong amount of sig figs
-        $this->assertEquals($this->grade($question, '12345'), 90);//correct to wrong amount of sig figs
+        $this->assertEquals($this->grade($question, '1235e1'), 0.9);//correct to wrong amount of sig figs
+        $this->assertEquals($this->grade($question, '123.5e2'), 0.9);//correct to wrong amount of sig figs
+        $this->assertEquals($this->grade($question, '0012345'), 0.9);//correct to wrong amount of sig figs
+        $this->assertEquals($this->grade($question, '12350'), 0.9);//correct to wrong amount of sig figs
+        $this->assertEquals($this->grade($question, '12345'), 0.9);//correct to wrong amount of sig figs
 
         $question = test_question_maker::make_question('varnumericset', '3_sig_figs_2');
-        $this->assertEquals($this->grade($question, '1.23'), 100);
-        $this->assertEquals($this->grade($question, '01.23'), 100);
+        $this->assertEquals($this->grade($question, '1.23'), 1);
+        $this->assertEquals($this->grade($question, '01.23'), 1);
         $this->assertEquals($this->grade($question, '1.230'), 0);//wrong
-        $this->assertEquals($this->grade($question, '1.235'), 90);//wrong no of sig figs
-        $this->assertEquals($this->grade($question, '1.2346'), 90);
+        $this->assertEquals($this->grade($question, '1.235'), 0.9);//wrong no of sig figs
+        $this->assertEquals($this->grade($question, '1.2346'), 0.9);
 
         $question = test_question_maker::make_question('varnumericset', '3_sig_figs_trailing_zero');
-        $this->assertEquals($this->grade($question, '0.0720'), 100);
-        $this->assertEquals($this->grade($question, '00.0720'), 100);
-        $this->assertEquals($this->grade($question, '00.07200'), 90);
-        $this->assertEquals($this->grade($question, '+00.07200'), 90);
-        $this->assertEquals($this->grade($question, '+0.0720'), 100);
+        $this->assertEquals($this->grade($question, '0.0720'), 1);
+        $this->assertEquals($this->grade($question, '00.0720'), 1);
+        $this->assertEquals($this->grade($question, '00.07200'), 0.9);
+        $this->assertEquals($this->grade($question, '+00.07200'), 0.9);
+        $this->assertEquals($this->grade($question, '+0.0720'), 1);
         $this->assertEquals($this->grade($question, '+0.072'), 0);
         $this->assertEquals($this->grade($question, '0.072'), 0);
 
         $question = test_question_maker::make_question('varnumericset', '3_sig_figs_trailing_zero_negative_answer');
-        $this->assertEquals($this->grade($question, '-0.0720'), 100);
-        $this->assertEquals($this->grade($question, '-00.0720'), 100);
-        $this->assertEquals($this->grade($question, '-00.07200'), 90);
-        $this->assertEquals($this->grade($question, '-00.07200'), 90);
+        $this->assertEquals($this->grade($question, '-0.0720'), 1);
+        $this->assertEquals($this->grade($question, '-00.0720'), 1);
+        $this->assertEquals($this->grade($question, '-00.07200'), 0.9);
+        $this->assertEquals($this->grade($question, '-00.07200'), 0.9);
         $this->assertEquals($this->grade($question, '-0.072'), 0);
 
         $question = test_question_maker::make_question('varnumericset', '1_sig_fig');
-        $this->assertEquals($this->grade($question, '1e9'), 100);
-        $this->assertEquals($this->grade($question, '1x10<sup>9</sup>'), 100);
-        $this->assertEquals($this->grade($question, '+1x10<sup>+9</sup>'), 100);
+        $this->assertEquals($this->grade($question, '1e9'), 1);
+        $this->assertEquals($this->grade($question, '1x10<sup>9</sup>'), 1);
+        $this->assertEquals($this->grade($question, '+1x10<sup>+9</sup>'), 1);
         $question->answers[1]->answer = '-1.0e9';
-        $this->assertEquals($this->grade($question, '-1e9'), 100);
-        $this->assertEquals($this->grade($question, '-1x10<sup>9</sup>'), 100);
-        $this->assertEquals($this->grade($question, '-1x10<sup>+9</sup>'), 100);
+        $this->assertEquals($this->grade($question, '-1e9'), 1);
+        $this->assertEquals($this->grade($question, '-1x10<sup>9</sup>'), 1);
+        $this->assertEquals($this->grade($question, '-1x10<sup>+9</sup>'), 1);
     }
 }

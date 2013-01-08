@@ -57,12 +57,12 @@ class qtype_varnumericset_test_helper extends question_test_helper {
 
         $vs->answers = array(1 => new qtype_varnumericset_answer('1', //id
                                                  '-4.2',  //answer
-                                                 '100',  //fraction
+                                                 '1',  //fraction
                                                  '<p>Your answer is correct.</p>', //feedback
                                                  'html', //feedbackformat
                                                  '0', //sigfigs
                                                  '', //error
-                                                 '10', //syserrorpenalty
+                                                 '0.1', //syserrorpenalty
                                                  '0', //checknumerical
                                                  '0', //checkscinotation
                                                  '0', //checkpowerof10

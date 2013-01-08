@@ -89,7 +89,6 @@ class qtype_varnumericset_walkthrough_test extends qbehaviour_walkthrough_test_b
             $this->get_does_not_contain_try_again_button_expectation(),
             $this->get_no_hint_visible_expectation());
 
-        // Submit something that does not look like a number.
         $this->process_submission(array('-submit' => 1, 'answer' => '12,300'));
 
         $this->check_current_state(question_state::$invalid);
@@ -116,13 +115,13 @@ class qtype_varnumericset_walkthrough_test extends qbehaviour_walkthrough_test_b
         $this->assertEquals('12300', $this->quba->get_response_summary($this->slot));
     }
 
-    public function test_validation_and_several_tries_for_3_sig_figs() {
+    public function test_validation_and_interactive_with_several_tries_for_3_sig_figs() {
 
         // Create a varnumericset question.
         $q = test_question_maker::make_question('varnumericset', '3_sig_figs');
         $q->hints = array(
-            //fourth param for hint constructor is clearwrong that in this case controls if
-            //the suppression of the hint and the penalty when numerical error 'auto fires'.
+            // Fourth param for hint constructor is clearwrong.
+            // In this case controls if the suppression of the hint and the penalty when numerical error 'auto fires'.
             new question_hint_with_parts(1, 'This is the first hint.', FORMAT_HTML, null, true),
             new question_hint_with_parts(2, 'This is the second hint.', FORMAT_HTML, null, true),
         );
@@ -167,7 +166,7 @@ class qtype_varnumericset_walkthrough_test extends qbehaviour_walkthrough_test_b
             $this->get_does_not_contain_try_again_button_expectation(),
             $this->get_no_hint_visible_expectation());
 
-        // Submit something completely incorrect (too many sig figs 10% penalty).
+        // Submit something partially correct (too many sig figs 10% penalty).
         $this->process_submission(array('-submit' => 1, 'answer' => '12350'));
 
         $this->check_current_state(question_state::$todo);
@@ -205,6 +204,133 @@ class qtype_varnumericset_walkthrough_test extends qbehaviour_walkthrough_test_b
         $this->check_current_output(
             $this->get_contains_mark_summary(90),
             $this->get_contains_submit_button_expectation(false),
+            $this->get_contains_correct_expectation(),
+            $this->get_does_not_contain_validation_error_expectation(),
+            $this->get_no_hint_visible_expectation());
+        $this->assertEquals('12300', $this->quba->get_response_summary($this->slot));
+    }
+
+    public function test_deferred_feedback_for_3_sig_figs_blank_answer() {
+
+        // Create a varnumericset question.
+        $q = test_question_maker::make_question('varnumericset', '3_sig_figs');
+        $q->hints = array(
+            new question_hint_with_parts(1, 'This is the first hint.', FORMAT_HTML, null, true),
+            new question_hint_with_parts(2, 'This is the second hint.', FORMAT_HTML, null, true),
+        );
+        $this->start_attempt_at_question($q, 'deferredfeedback', 100);
+
+        // Check the initial state.
+        $this->check_current_state(question_state::$todo);
+        $this->check_current_mark(null);
+        $this->check_current_output(
+            $this->get_contains_marked_out_of_summary(),
+            $this->get_does_not_contain_feedback_expectation(),
+            $this->get_does_not_contain_validation_error_expectation(),
+            $this->get_does_not_contain_try_again_button_expectation(),
+            $this->get_no_hint_visible_expectation());
+
+        // Submit blank.
+        $this->process_submission(array('answer' => ''));
+
+
+        $this->check_current_state(question_state::$todo);
+        $this->check_current_mark(null);
+        $this->check_current_output(
+            $this->get_contains_marked_out_of_summary(),
+            $this->get_does_not_contain_validation_error_expectation(),
+            $this->get_no_hint_visible_expectation());
+        $this->assertEquals('', $this->quba->get_response_summary($this->slot));
+
+        $this->process_submission(array('-finish' => 1));
+
+        $this->check_current_state(question_state::$gaveup);
+        $this->check_current_mark(null);
+        $this->check_current_output(
+            $this->get_contains_marked_out_of_summary(),
+            $this->get_contains_incorrect_expectation(),
+            $this->get_does_not_contain_validation_error_expectation(),
+            $this->get_no_hint_visible_expectation());
+        $this->assertEquals('', $this->quba->get_response_summary($this->slot));
+    }
+
+
+    public function test_deferred_feedback_for_3_sig_figs_answer_with_thousand_separator() {
+
+        // Create a varnumericset question.
+        $q = test_question_maker::make_question('varnumericset', '3_sig_figs');
+        $q->hints = array(
+            new question_hint_with_parts(1, 'This is the first hint.', FORMAT_HTML, null, true),
+            new question_hint_with_parts(2, 'This is the second hint.', FORMAT_HTML, null, true),
+        );
+        $this->start_attempt_at_question($q, 'deferredfeedback', 100);
+
+        $this->check_current_state(question_state::$todo);
+        $this->check_current_mark(null);
+        $this->check_current_output(
+            $this->get_contains_marked_out_of_summary(),
+            $this->get_does_not_contain_feedback_expectation(),
+            $this->get_does_not_contain_try_again_button_expectation(),
+            $this->get_no_hint_visible_expectation());
+
+        $this->process_submission(array('answer' => '12,300'));
+
+        $this->check_current_state(question_state::$invalid);
+        $this->check_current_mark(null);
+        $this->check_current_output(
+            $this->get_contains_marked_out_of_summary(),
+            $this->get_contains_validation_error_expectation(),
+            $this->get_no_hint_visible_expectation());
+        $this->assertEquals(null, $this->quba->get_response_summary($this->slot));
+
+        $this->process_submission(array('-finish' => 1));
+
+        $this->check_current_state(question_state::$gradedright);
+        $this->check_current_mark(100);
+        $this->check_current_output(
+            $this->get_contains_mark_summary(100),
+            $this->get_contains_correct_expectation(),
+            $this->get_does_not_contain_validation_error_expectation(),
+            $this->get_no_hint_visible_expectation());
+        $this->assertEquals('12,300', $this->quba->get_response_summary($this->slot));
+
+
+    }
+
+    public function test_deferred_feedback_for_3_sig_figs_answer_with_correct_answer() {
+
+        // Create a varnumericset question.
+        $q = test_question_maker::make_question('varnumericset', '3_sig_figs');
+        $q->hints = array(
+            new question_hint_with_parts(1, 'This is the first hint.', FORMAT_HTML, null, true),
+            new question_hint_with_parts(2, 'This is the second hint.', FORMAT_HTML, null, true),
+        );
+        $this->start_attempt_at_question($q, 'deferredfeedback', 100);
+
+        $this->check_current_state(question_state::$todo);
+        $this->check_current_mark(null);
+        $this->check_current_output(
+            $this->get_contains_marked_out_of_summary(),
+            $this->get_does_not_contain_feedback_expectation(),
+            $this->get_does_not_contain_try_again_button_expectation(),
+            $this->get_no_hint_visible_expectation());
+
+        // Now give an answer that will be accepted
+        $this->process_submission(array('answer' => '12300'));
+
+        $this->check_current_state(question_state::$complete);
+        $this->check_current_mark(null);
+        $this->check_current_output(
+            $this->get_contains_marked_out_of_summary(),
+            $this->get_does_not_contain_validation_error_expectation(),
+            $this->get_no_hint_visible_expectation());
+        $this->assertEquals(null, $this->quba->get_response_summary($this->slot));
+
+        $this->process_submission(array('-finish' => 1));
+
+        $this->check_current_mark(100);
+        $this->check_current_output(
+            $this->get_contains_mark_summary(100),
             $this->get_contains_correct_expectation(),
             $this->get_does_not_contain_validation_error_expectation(),
             $this->get_no_hint_visible_expectation());

@@ -72,8 +72,7 @@ abstract class qtype_varnumericset_number_interpreter_part_using_preg_pattern ex
         $matches = array();
         if (1 === preg_match($this->pattern(), $string, $matches, PREG_OFFSET_CAPTURE)) {
             $this->prefix = substr($string, 0, $matches[0][1]);
-            $this->postfix = substr($string, $matches[0][1] + strlen($matches[0][0]),
-                strlen($string)- $matches[0][1] - strlen($matches[0][0]));
+            $this->postfix = substr($string, $matches[0][1] + strlen($matches[0][0]));
             $this->extract_parts($matches);
             return true;
         } else {
@@ -289,6 +288,7 @@ class qtype_varnumericset_number_interpreter_number_with_optional_sci_notation e
                 }
             } else {
                 $this->normalised = $num->get_normalised();
+                $this->postfix = $num->get_postfix();
             }
             $this->prefix = $num->get_prefix();
             return true;

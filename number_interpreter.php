@@ -133,7 +133,7 @@ class qtype_varnumericset_number_interpreter_number_with_optional_decimal_place 
         $decsep = preg_quote(QTYPE_VARNUMERICSET_DECIMAL_SEP, '!');
         return '!(?<sign>[+-]?)\s*'.
                 '(?<predecpoint>[0-9][0-9'.$thousandsep.']*)'.
-                '(\s*'.$decsep.'\s*(?<postdecpoint>[0-9]*))?!i';
+                '(\s*'.$decsep.'\s*(?<postdecpoint>[0-9]+))?!i';
     }
 
     protected function parts_to_extract() {
@@ -145,7 +145,7 @@ class qtype_varnumericset_number_interpreter_number_with_optional_decimal_place 
     protected $postdecpoint;
 
     public function get_pre_dec_point() {
-        return $this->predecpoint;
+        return str_replace(QTYPE_VARNUMERICSET_THOUSAND_SEP, '', $this->predecpoint);
     }
 
     public function set_pre_dec_point($predecpoint) {
@@ -228,7 +228,7 @@ class qtype_varnumericset_number_interpreter_nonhtml_exponent_following_float ex
     protected function pattern() {
         return '!\s*e\s*'.
             '(?<sign>[+-]?)\s*'.
-            '(?<exp>[0-9][0-9]*)!iA';
+            '(?<exp>[0-9]+)!iA';
     }
 }
 
@@ -243,7 +243,7 @@ class qtype_varnumericset_number_interpreter_html_exponent_following_float exten
         return '!\s*[\*x×]\s*10\s*'.
             '<sup>\s*'.
             '(?<sign>[+-]?)\s*'.
-            '(?<exp>[0-9][0-9]*)\s*'.
+            '(?<exp>[0-9]+)\s*'.
             '</sup>'.
             '!iuA';
     }

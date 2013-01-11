@@ -490,18 +490,26 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
     }
 
     public function compute_final_grade($responses, $totaltries) {
+        $answers = $this->get_answers();
+
         $totalpenalty = 0;
-        $trieswithnopenalty = 0;
 
         $finalresponse = array_pop($responses);
 
+        // Calculate how previous attempts affect final grade.
         if (count($responses)) {
             foreach ($responses as $i => $response) {
-                list($fraction, $state) = $this->grade_response($response);
-                if ($state == question_state::$gradedpartial) {
-                    $syserrorpenalty = 1 - $fraction;
-                    $totalpenalty += $syserrorpenalty;
-                    if (!(isset($this->hints[$i]) && $this->hints[$i]->clearwrong)) {
+                $answerwithsyserrorpenalty = $this->get_matching_answer($response);
+                if ($answerwithsyserrorpenalty !== null) {
+                    $answerbeforesyserrorpenalty = $answers[$answerwithsyserrorpenalty->id];
+                    // Auto fire error penalty applied to answer before it is returned from get_matching_answer() method.
+                    $syserrorpenalty = $answerbeforesyserrorpenalty->fraction - $answerwithsyserrorpenalty->fraction;
+                    if ($syserrorpenalty !== 0) {
+                        $totalpenalty += $syserrorpenalty;
+                        if (!(isset($this->hints[$i]) && $this->hints[$i]->clearwrong)) {
+                            $totalpenalty += $this->penalty;
+                        }
+                    } else if ($answerwithsyserrorpenalty->fraction != '1') {
                         $totalpenalty += $this->penalty;
                     }
                 } else {
@@ -509,12 +517,12 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
                 }
             }
         }
-        list($finalfraction, $finalstate) = $this->grade_response($finalresponse);
-        if ($finalstate == question_state::$gradedwrong) {
+        $finalanswer = $this->get_matching_answer($finalresponse);
+        if ($finalanswer === null) {
             return 0;
         }
-        $finalfraction -= $totalpenalty;
-        return max(0, $finalfraction);
+        $finalanswer->fraction -= $totalpenalty;
+        return max(0, $finalanswer->fraction);
     }
 
     public function classify_response(array $response) {

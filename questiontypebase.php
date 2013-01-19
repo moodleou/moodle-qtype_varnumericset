@@ -244,7 +244,7 @@ abstract class qtype_varnumeric_base extends question_type {
         //variants are indexed by variantno and then var no
         foreach ($variants as $variantno => $variant) {
             foreach ($variant as $varno => $value) {
-                if ($value === '' || !in_array($varnotovarid[$varno], $varidstoprocess)) {
+                if ($value === '' || !isset($varnotovarid[$varno]) || !in_array($varnotovarid[$varno], $varidstoprocess)) {
                     continue;
                 }
                 $foundold = false;

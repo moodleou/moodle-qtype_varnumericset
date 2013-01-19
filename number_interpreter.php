@@ -285,6 +285,7 @@ class qtype_varnumericset_number_interpreter_number_with_optional_sci_notation e
                     $this->postfix = $exp->get_postfix();
                 } else {
                     $this->normalised = $num->get_normalised();
+                    $this->postfix = $num->get_postfix();
                 }
             } else {
                 $this->normalised = $num->get_normalised();

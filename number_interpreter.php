@@ -213,11 +213,7 @@ abstract class qtype_varnumericset_number_interpreter_exponent_following_float_b
     }
 
     public function get_normalised() {
-        if ($this->exp != 0) {
-            return 'e'.$this->get_normalised_sign().$this->exp;
-        } else {
-            return '';
-        }
+        return 'e'.$this->get_normalised_sign().$this->exp;
     }
 }
 

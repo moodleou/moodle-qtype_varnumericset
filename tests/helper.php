@@ -52,7 +52,8 @@ class qtype_varnumericset_test_helper extends question_test_helper {
         $vs->generalfeedback = '<p>General feedback -4.2.</p>';
         $vs->penalty = 0.3333333;
         $vs->randomseed = '';
-        $vs->requirescinotation = 0;
+        $vs->requirescinotation = false;
+        $vs->usesupeditor = false;
         $vs->qtype = question_bank::get_qtype('varnumericset');
 
         $vs->answers = array(1 => new qtype_varnumericset_answer('1', //id
@@ -153,7 +154,8 @@ class qtype_varnumericset_test_helper extends question_test_helper {
 
         $vs->questiontext = '<p>The correct answer is 1e9.</p>';
         $vs->generalfeedback = '<p>General feedback 1e9.</p>';
-        $vs->requirescinotation = 1;
+        $vs->requirescinotation = true;
+        $vs->usesupeditor = true;
         $vs->answers[1]->answer = '1.0e9';
         $vs->answers[1]->sigfigs = 1;
         $vs->answers[1]->checknumerical = 1;

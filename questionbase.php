@@ -45,7 +45,15 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
 
     /**
      *
-     * Whether to require scientific notation and whether to allow use of superscript.
+     * Whether to allow use of superscript and expect html input instead of plain text in response.
+     *
+     * @var boolean
+     */
+    public $usesupeditor;
+
+    /**
+     *
+     * Whether to require scientific notation.
      *
      * @var boolean
      */
@@ -86,7 +94,7 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
             return get_string('illegalthousandseparator', 'qtype_varnumericset', $a);
         }
 
-        $num = new qtype_varnumericset_number_interpreter_number_with_optional_sci_notation($this->requirescinotation);
+        $num = new qtype_varnumericset_number_interpreter_number_with_optional_sci_notation($this->usesupeditor);
 
 
         if (!$num->match($response['answer'])) {
@@ -113,7 +121,7 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         if ($this->is_no_response($response)) {
             return false;
         }
-        $num = new qtype_varnumericset_number_interpreter_number_with_optional_sci_notation($this->requirescinotation);
+        $num = new qtype_varnumericset_number_interpreter_number_with_optional_sci_notation($this->usesupeditor);
 
         if (!$num->match($response['answer'])) {
             return false;
@@ -217,7 +225,7 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         $autofireerrorfeedback = '';
         $evaluated = $this->calculator->evaluate($answer->answer);
         $rounded = (float)self::round_to($evaluated, $answer->sigfigs, true);
-        $num = new qtype_varnumericset_number_interpreter_number_with_optional_sci_notation($this->requirescinotation);
+        $num = new qtype_varnumericset_number_interpreter_number_with_optional_sci_notation($this->usesupeditor);
         $num->match($string);
         $string = $num->get_normalised();
         $feedback = $this->feedback_for_post_prefix_parts($num->get_prefix(), $num->get_postfix());

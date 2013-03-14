@@ -17,22 +17,21 @@
 /**
  * Defines the editing form for the varnumericset question type.
  *
- * @package    qtype
- * @subpackage varnumericset
- * @copyright  2011 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   qtype_varnumericset
+ * @copyright 2011 The Open University
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/question/type/varnumericset/calculator.php');
 
+
 /**
  * varnumeric question editing form definition base.
  *
- * @copyright  2011 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright 2011 The Open University
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
 
@@ -86,8 +85,8 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
                                         get_string('recalculatenow', 'qtype_varnumericset', 2));
         $mform->closeHeaderBefore('recalculatenow');
 
-        //we are using a hook in questiontype to resdisplay the form and it expects a parameter
-        //wizard, which we won't actually use but we need to pass it to avoid an error message.
+        // We are using a hook in questiontype to resdisplay the form and it expects a parameter
+        // wizard, which we won't actually use but we need to pass it to avoid an error message.
         $mform->addElement('hidden', 'wizard', '');
 
         $mform->addElement('header', 'forallanswers',
@@ -156,16 +155,16 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
                                 1 => 1, 2 => 2, 3 => 3, 4 => 4, 5 => 5, 6 => 6);
         $answeroptions = array();
 
-        $answeroptions[] = $parentansweroptions[0]; // header
-        $answeroptions[] = $parentansweroptions[1]; // answer text box
+        $answeroptions[] = $parentansweroptions[0]; // Header.
+        $answeroptions[] = $parentansweroptions[1]; // Answer text box.
 
         $answeroptions[] = $mform->createElement('text', 'error',
                                 get_string('error', 'qtype_varnumericset'), array('size' => 80));
         $answeroptions[] = $mform->createElement('select', 'sigfigs',
                                 get_string('sigfigs', 'qtype_varnumericset'), $sigfigsoptions);
 
-        $answeroptions[] = $parentansweroptions[2]; // grade
-        $answeroptions[] = $parentansweroptions[3]; // feedback
+        $answeroptions[] = $parentansweroptions[2]; // Grade.
+        $answeroptions[] = $parentansweroptions[3]; // Feedback.
 
         $answeroptions[] = $mform->createElement('header', 'autofirehdr',
                             get_string('autofirehdr', 'qtype_varnumericset', '{no}'));
@@ -318,9 +317,9 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
         }
         if (count($errors) == 0) {
             $calculator = new $calculatorname();
-            //don't need to bother setting the random seed here as the
-            //results of the evaluation are not important, we are just seeing
-            //if the expressions evaluate without errors.
+            // Don't need to bother setting the random seed here as the
+            // results of the evaluation are not important, we are just seeing
+            // if the expressions evaluate without errors.
             $calculator->load_data_from_form($data);
             $calculator->evaluate_all(true);
 

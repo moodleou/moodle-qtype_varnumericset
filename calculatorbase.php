@@ -19,20 +19,23 @@ require_once($CFG->libdir . '/evalmath/evalmath.class.php');
 /**
  * Class for evaluating variants for varnumericset question type.
  *
- * @package    qtype
- * @subpackage varnumericset
- * @copyright  2011 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   qtype_varnumericset
+ * @copyright 2011 The Open University
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 abstract class qtype_varnumeric_calculator_base {
 
-    /** @var boolean whether assignments to variables should be evaluated on each question load. */
+    /**
+     * @var boolean whether assignments to variables should be evaluated on each
+     * question load.
+     */
     protected $recalculateeverytime = false;
 
-    /** @var string used to randomize random functions. The variant no and variable name will be
-     *                   appended to this.
-     **/
+    /**
+     * @var string used to randomize random functions. The variant no and variable
+     *      name will be appended to this.
+     */
     protected $randomseed;
 
     /** @var EvalMath $ev evaluation class instance to use. **/
@@ -40,19 +43,20 @@ abstract class qtype_varnumeric_calculator_base {
 
     /**
      * @var array two dimensional array first key is varno,
-     *                2nd is variant no, contents is value of variant
-     **/
+     *      2nd is variant no, contents is value of variant.
+     */
     protected $predefinedvariants = array();
 
-    /** @var array two dimensional array first key is varno,
-     *                2nd is variant no, contents is value of variant
-     **/
+    /**
+     * @var array two dimensional array first key is varno,
+     *      2nd is variant no, contents is value of variant
+     */
     protected $calculatedvariants = array();
 
-    /** @var array one dimensional array key is varno **/
+    /** @var array one dimensional array key is varno. **/
     protected $variables = array();
 
-    /** @var array one dimensional array first key is varno **/
+    /** @var array one dimensional array first key is varno. **/
     protected $vartypes = array();
 
     protected $noofvariants = 0;
@@ -74,6 +78,7 @@ abstract class qtype_varnumeric_calculator_base {
         }
         $this->predefinedvariants[$variantno][$varno] = $value;
     }
+
     public function add_answer($answerno, $answer, $error) {
         $answerobj = new stdClass();
         $answerobj->answer = $answer;
@@ -107,7 +112,8 @@ abstract class qtype_varnumeric_calculator_base {
 
     public function get_num_variants_in_form() {
         if ($this->noofvariants == 0) {
-            //if there are no predefined variables at all then have a set ammount of 5 variants
+            // If there are no predefined variables at all then have a set
+            // amount of 5 variants.
             return 5;
         }
         return $this->noofvariants;
@@ -129,9 +135,7 @@ abstract class qtype_varnumeric_calculator_base {
         return $this->predefinedvariants[$variantno][$varno];
     }
 
-
     /**
-     *
      * Evaluate everything loaded into caculator. Used for error checking and to calculate values
      * for variables in every question variant.
      * @param boolean $forcerecalculate
@@ -144,10 +148,10 @@ abstract class qtype_varnumeric_calculator_base {
             foreach ($this->answers as $answerno => $answer) {
                 foreach (array('answer', 'error') as $prop) {
                     if ($prop == 'error' && $answer->{$prop} == '') {
-                        continue;// no error messages for blank allowed error fields in answer
+                        continue; // No error messages for blank allowed error fields in answer.
                     }
                     if (self::is_assignment($answer->{$prop})) {
-                        //this is an assignment not legal here
+                        // This is an assignment not legal here.
                         $this->errors["{$prop}[{$answerno}]"] =
                             get_string('expressionmustevaluatetoanumber', 'qtype_varnumericset');
                     } else {
@@ -180,6 +184,7 @@ abstract class qtype_varnumeric_calculator_base {
         }
         return $result;
     }
+
     /**
      *
      * Load all variable assignments.
@@ -208,7 +213,6 @@ abstract class qtype_varnumeric_calculator_base {
         }
     }
 
-
     protected function calculate_calculated_variant_values($variantno) {
         $calculatedvariants = array();
         foreach ($this->variables as $varno => $variablenameorassignment) {
@@ -222,7 +226,6 @@ abstract class qtype_varnumeric_calculator_base {
     }
 
     /**
-     *
      * Save internal state of calculator as question type step data.
      * @param question_attempt_step $step
      * @param integer $variantno
@@ -248,6 +251,7 @@ abstract class qtype_varnumeric_calculator_base {
                 $this->add_variable($varno, $varname);
             }
         }
+
         for ($variantno = 0; $variantno < $formdata['noofvariants']; $variantno++) {
             if (isset($formdata['variant'.$variantno])) {
                 $variants = $formdata['variant'.$variantno];
@@ -260,13 +264,16 @@ abstract class qtype_varnumeric_calculator_base {
                 }
             }
         }
+
         foreach ($formdata['answer'] as $answerno => $answer) {
             if (!empty($answer) && '*' != $answer) {
                 $this->add_answer($answerno, $answer, $formdata['error'][$answerno]);
             }
         }
+
         $this->add_text_with_embedded_variables($formdata, array('questiontext'));
         $this->add_text_with_embedded_variables($formdata, array('generalfeedback'));
+
         foreach (array('feedback', 'hint') as $itemname) {
             if (isset($formdata[$itemname])) {
                 foreach ($formdata[$itemname] as $indexno => $item) {
@@ -290,21 +297,21 @@ abstract class qtype_varnumeric_calculator_base {
             $this->randomseed = $questionstamp;
         }
     }
+
     /**
-     *
      * Get the portion of the random seed shared by all variants and variables.
      */
     public function get_random_seed() {
         return $this->randomseed;
     }
+
     public function set_recalculate_rand($recalculateeverytime) {
         $this->recalculateeverytime = $recalculateeverytime;
     }
 
-
     public function load_data_from_database($vars, $variants) {
         global $DB;
-        //declare and load data whether or not we will use calculator.
+        // Declare and load data whether or not we will use calculator.
         $varidtovarno = array();
         foreach ($vars as $varid => $var) {
             if (self::is_assignment($var->nameorassignment)) {
@@ -320,6 +327,7 @@ abstract class qtype_varnumeric_calculator_base {
                                         $variant->variantno, $variant->value);
         }
     }
+
     public function get_data_for_form($dataforform) {
         if ($this->recalculateeverytime) {
             $this->evaluate_all(true);
@@ -364,15 +372,16 @@ abstract class qtype_varnumeric_calculator_base {
         $parts = explode('=', $assignment);
         return trim($parts[0]);
     }
+
     public function evaluate_variables_in_text($text, $wheretoputerror = null) {
         $match = array();
         $offset = 0;
-        //match anything surrounded by [[ ]]
+        // Match anything surrounded by [[ ]].
         while (0 !== preg_match('!\[\[(.+?)(\s*,\s*(.+?))?\]\]!', $text, $match,
                                                 PREG_OFFSET_CAPTURE, $offset)) {
             $variableorexpression = $match[1][0];
             if (self::is_assignment($variableorexpression)) {
-                //this is an assignment, not legal here
+                // This is an assignment, not legal here.
                 $this->errors[$wheretoputerror] =
                         get_string('expressionmustevaluatetoanumber', 'qtype_varnumericset');
             } else {

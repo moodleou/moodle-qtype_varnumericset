@@ -14,8 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-//these only affect how student input is processed, not how values are displayed.
-
 
 define('QTYPE_VARNUMERICSET_THOUSAND_SEP', ',');
 define('QTYPE_VARNUMERICSET_DECIMAL_SEP', '.');
@@ -23,8 +21,9 @@ define('QTYPE_VARNUMERICSET_DECIMAL_SEP', '.');
 /**
  * Interface for all classes to match parts of number.
  *
- * @package    qtype
- * @subpackage varnumericset
+ * Interpreting only affects how student input is processed, not how values are displayed.
+ *
+ * @package    qtype_varnumericset
  * @copyright  2012 The Open University
  * @author     James Pratt me@jamiep.org
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -168,7 +167,8 @@ class qtype_varnumericset_number_interpreter_number_with_optional_decimal_place 
             $normalised = '0';
         }
 
-        // Add decimal point and stuff after decimal point if there is stuff after decimal point
+        // Add decimal point and stuff after decimal point if there is stuff
+        // after decimal point.
         if ($this->get_post_dec_point()) {
             $normalised .= '.'.$this->get_post_dec_point();
         }

@@ -15,10 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * varnumeric base question definition class.
+ * Base question definition class for varnumeric questions.
  *
- * @package    qtype
- * @subpackage varnumericset
+ * @package    qtype_varnumericset
  * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -28,6 +27,7 @@ require_once($CFG->dirroot . '/question/type/varnumericset/number_interpreter.ph
 
 defined('MOODLE_INTERNAL') || die();
 
+
 /**
  * Represents a varnumeric question.
  *
@@ -36,15 +36,13 @@ defined('MOODLE_INTERNAL') || die();
  */
 class qtype_varnumeric_question_base extends question_graded_automatically_with_countback {
 
-
-    /** @var qtype_varnumeric_calculator_base calculator to deal with expressions,
-     *                                    variable and variants.
+    /**
+     * @var qtype_varnumeric_calculator_base calculator to deal with expressions,
+     *      variable and variants.
      */
     public $calculator;
 
-
     /**
-     *
      * Whether to allow use of superscript and expect html input instead of plain text in response.
      *
      * @var boolean
@@ -52,7 +50,6 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
     public $usesupeditor;
 
     /**
-     *
      * Whether to require scientific notation.
      *
      * @var boolean
@@ -62,9 +59,13 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
     /** @var array of question_answer. */
     public $answers = array();
 
-
     public function get_expected_data() {
         return array('answer' => PARAM_RAW_TRIMMED);
+    }
+
+    public function get_question_summary() {
+        return $this->html_to_text($this->calculator->evaluate_variables_in_text(
+                $this->questiontext), $this->questiontextformat);
     }
 
     public function summarise_response(array $response) {
@@ -95,7 +96,6 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         }
 
         $num = new qtype_varnumericset_number_interpreter_number_with_optional_sci_notation($this->usesupeditor);
-
 
         if (!$num->match($response['answer'])) {
             return get_string('notvalidnumber', 'qtype_varnumericset');
@@ -193,6 +193,7 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
             return null;
         }
     }
+
     public function get_first_answer_graded_correct() {
         foreach ($this->get_answers() as $answer) {
             $state = question_state::graded_state_for_fraction($answer->fraction);
@@ -201,6 +202,7 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
             }
         }
     }
+
     public function compare_response_with_answer(array $response, question_answer $answer) {
         if ($answer->answer == '*') {
             return $answer;
@@ -238,10 +240,10 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
                 (($answer->sigfigs == 0)
                         || self::has_number_of_sig_figs($string, $answer->sigfigs)) &&
                 (!$this->requirescinotation || self::is_sci_notation($string))) {
-            return array(0, $feedback); //this answer is a perfect match 0% penalty
+            return array(0, $feedback); // This answer is a perfect match 0% penalty.
         } else if ($answer->checknumerical &&
                         self::num_within_allowed_error($string, $rounded, $allowederror)) {
-            //numerically correct
+            // Numerically correct.
             $autofireerrorfeedback = 'numericallycorrect';
             if (!self::has_number_of_sig_figs($string, $answer->sigfigs)) {
                 $autofireerrors = 1;
@@ -261,7 +263,7 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
             $autofireerrorfeedback = 'roundingincorrect';
             $autofireerrors = 1;
         } else {
-            return array(1, '');//this answer is not a match 100% penalty
+            return array(1, ''); // This answer is not a match 100% penalty.
         }
         if (!empty($autofireerrorfeedback)
                             && $this->requirescinotation && !self::is_sci_notation($string)) {
@@ -294,7 +296,6 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
     }
 
     /**
-     *
      * Check to see if $normalizedstring is out by a (positive or negative) factor of ten
      * @param string $normalizedstring number as a normalized string
      * @param $roundedanswer
@@ -307,6 +308,7 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         if ($error == '') {
             $error = $roundedanswer * 1e-6;
         }
+
         for ($wrongby = 1; $wrongby <= $maxfactor; $wrongby++) {
             $multiplier = pow(10, $wrongby);
             if (self::num_within_allowed_error($normalizedstring, $roundedanswer*$multiplier,
@@ -322,7 +324,6 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
     }
 
     /**
-     *
      * Check to see if $normalizedstring has $sigfigs significant figures.
      * @param string $normalizedstring number as a normalized string
      * @param integer $sigfigs
@@ -338,14 +339,15 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
     }
 
     public static function round_to($number, $sigfigs, $scinotation, $floor = false) {
-        //do the rounding ourselves so we can get it wrong (round down) if requested
+        // Do the rounding ourselves so we can get it wrong (round down) if requested.
         if ($sigfigs != 0) {
             if ($number == 0.0) {
-                $poweroften = 0;//avoid NaN result for log10
+                $poweroften = 0; // Avoid NaN result for log10.
             } else {
                 $poweroften = floor(log10(abs($number)));
             }
-            //what power of ten do we multiply by before chopping off bit behind decimal point?
+            // What power of ten do we multiply by before chopping off bit behind
+            // decimal point?
             $digitsafterdecimalpoint = $sigfigs - $poweroften -1;
             $number = $number * pow(10, $digitsafterdecimalpoint);
             if (!$floor) {
@@ -354,14 +356,14 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
                 $rounded = floor($number);
             }
             $number =  $rounded / pow(10, $digitsafterdecimalpoint);
-            //change to a string so we can do a string compare and check we have the right no
-            //of 0s on the end if necessary.
+            // Change to a string so we can do a string compare and check we
+            // have the right no of 0s on the end if necessary.
             if ($scinotation) {
                 $f = '%.'.($sigfigs - 1).'e';
             } else if ($digitsafterdecimalpoint >= 0) {
                 $f= '%.'.($digitsafterdecimalpoint).'F';
             } else {
-                $f= '%.0F'; // no digits after decimal point
+                $f= '%.0F'; // No digits after decimal point.
             }
             $number = sprintf($f, $number);
         } else {
@@ -370,13 +372,12 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
                 $number = sprintf($f, $number);
             }
         }
-        return (str_replace('+', '', $number)); //remove extra '+' in sci notation
+        return (str_replace('+', '', $number)); // Remove extra '+' in sci notation.
     }
 
     /**
-     *
-     * Check to see if $normalizedstring has the correct answer to too many $sigfigs significant
-     * figures.
+     * Check to see if $normalizedstring has the correct answer to too many
+     * $sigfigs significant figures.
      * @param string $normalizedstring student response as a normalized string
      * @param float $answerunrounded
      * @param integer $sigfigs correct ammount of sigfigs
@@ -390,12 +391,13 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
                 return true;
             }
         }
-        //anything in the student response more than 7 figs is ignored
+        // Anything in the student response more than 7 figs is ignored.
         $rounded = self::round_to($answerunrounded, 7, $scinotation);
         $roundedfloored = self::round_to($answerunrounded, 7, $scinotation, true);
         $roundednormalizedstring = self::round_to($normalizedstring, 7, $scinotation);
 
-        //we need this test to stop Moodle adding zeroes onto the end of the normalized string and giving a false positive
+        // We need this test to stop Moodle adding zeroes onto the end of the
+        // normalized string and giving a false positive.
         if (strlen($roundednormalizedstring) > strlen($normalizedstring)) {
             return false;
         }
@@ -419,7 +421,6 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
     }
 
     /**
-     *
      * Check to see if $normalizedstring uses scientific notation.
      * @param string $normalizedstring number as a normalized string
      * @return boolean
@@ -436,7 +437,7 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         if ($component == 'question' && $filearea == 'answerfeedback') {
             $currentanswer = $qa->get_last_qt_var('answer');
             $answer = $qa->get_question()->get_matching_answer(array('answer' => $currentanswer));
-            $answerid = reset($args); // itemid is answer id.
+            $answerid = reset($args); // The itemid is answer id.
             return $options->feedback && $answerid == $answer->id;
 
         } else if ($component == 'question' && $filearea == 'hint') {
@@ -552,12 +553,13 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
     }
 }
 
+
 /**
  * Class to represent a question answer, loaded from the question_answers table
  * in the database.
  *
- * @copyright  2009 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright 2009 The Open University
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_varnumericset_answer extends question_answer {
     public $sigfigs;

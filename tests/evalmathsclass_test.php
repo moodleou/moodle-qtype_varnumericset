@@ -16,10 +16,9 @@
 
 /**
  *
- * @package    qtype
- * @subpackage varnumericset
- * @copyright  2012 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   qtype_varnumericset
+ * @copyright 2012 The Open University
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 
@@ -32,9 +31,9 @@ require_once($CFG->libdir . '/evalmath/evalmath.class.php');
 /**
  * Unit tests for the EvalMath expression evaluator, specific to this question type.
  *
- * @copyright  2012 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @group      qtype_varnumericset
+ * @copyright 2012 The Open University
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @group qtype_varnumericset
  */
 class qtype_varnumericset_evalmath_test extends basic_testcase {
     public function test_basic_expressions() {

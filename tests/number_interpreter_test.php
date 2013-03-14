@@ -17,11 +17,10 @@
 /**
  * Unit tests for the number interpreter classes .
  *
- * @package    qtype
- * @subpackage varnumericset
- * @copyright  2012 The Open University
- * @author     Jamie Pratt me@jamiep.org
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   qtype_varnumericset
+ * @copyright 2012 The Open University
+ * @author    Jamie Pratt me@jamiep.org
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 
@@ -34,10 +33,9 @@ require_once($CFG->dirroot . '/question/type/varnumericset/number_interpreter.ph
 /**
  * Unit tests for the number interpreter classes .
  *
- * @copyright  2012 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @group      qtype_varnumericset
- *
+ * @copyright 2012 The Open University
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @group qtype_varnumericset
  */
 class qtype_varnumericset_number_interpreter_test extends basic_testcase {
     public function test_interpret_number_with_optional_decimal_place() {
@@ -57,6 +55,7 @@ class qtype_varnumericset_number_interpreter_test extends basic_testcase {
         $this->assertEquals('', $num->get_prefix());
         $this->assertEquals(' m', $num->get_postfix());
     }
+
     public function test_interpret_number_with_optional_sci_notation_not_accepting_html_exponent() {
         $num = new qtype_varnumericset_number_interpreter_number_with_optional_sci_notation(false);
         $this->assertTrue($num->match('1.23e4m'));
@@ -81,8 +80,6 @@ class qtype_varnumericset_number_interpreter_test extends basic_testcase {
         $this->assertSame('0', $num->get_normalised());
     }
 
-
-
     public function test_interpret_number_with_optional_sci_notation_accepting_html_exponent() {
         $num = new qtype_varnumericset_number_interpreter_number_with_optional_sci_notation(true);
 
@@ -106,6 +103,4 @@ class qtype_varnumericset_number_interpreter_test extends basic_testcase {
         $this->assertEquals('', $num->get_prefix());
         $this->assertEquals('m', $num->get_postfix());
     }
-
-
 }

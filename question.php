@@ -17,10 +17,9 @@
 /**
  * varnumericset question definition class.
  *
- * @package    qtype
- * @subpackage varnumericset
- * @copyright  2011 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   qtype_varnumericset
+ * @copyright 2011 The Open University
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 
@@ -31,11 +30,11 @@ require_once($CFG->dirroot . '/question/type/varnumericset/questionbase.php');
 /**
  * Represents a varnumericset question.
  *
- * @copyright  2011 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright 2011 The Open University
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_varnumericset_question extends qtype_varnumeric_question_base {
-   public function get_variants_selection_seed() {
+    public function get_variants_selection_seed() {
         return $this->get_random_seed();
     }
 }

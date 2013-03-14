@@ -17,10 +17,9 @@
 /**
  * This file contains overall tests of varnumericset questions.
  *
- * @package    qtype
- * @subpackage varnumericset
- * @copyright  2011 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   qtype_varnumericset
+ * @copyright 2011 The Open University
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 
@@ -34,8 +33,9 @@ require_once($CFG->dirroot . '/question/type/varnumericset/tests/helper.php');
 /**
  * Walk through Unit tests for varnumericset questions.
  *
- * @copyright  2011 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @copyright 2011 The Open University
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @group qtype_varnumericset
  */
 class qtype_varnumericset_walkthrough_test extends qbehaviour_walkthrough_test_base {
     public function test_validation_and_interactive_with_one_try_for_3_sig_figs() {
@@ -61,7 +61,6 @@ class qtype_varnumericset_walkthrough_test extends qbehaviour_walkthrough_test_b
 
         // Submit blank.
         $this->process_submission(array('-submit' => 1, 'answer' => ''));
-
 
         $this->check_current_state(question_state::$invalid);
         $this->check_current_mark(null);
@@ -233,7 +232,6 @@ class qtype_varnumericset_walkthrough_test extends qbehaviour_walkthrough_test_b
         // Submit blank.
         $this->process_submission(array('answer' => ''));
 
-
         $this->check_current_state(question_state::$todo);
         $this->check_current_mark(null);
         $this->check_current_output(
@@ -253,7 +251,6 @@ class qtype_varnumericset_walkthrough_test extends qbehaviour_walkthrough_test_b
             $this->get_no_hint_visible_expectation());
         $this->assertEquals('', $this->quba->get_response_summary($this->slot));
     }
-
 
     public function test_deferred_feedback_for_3_sig_figs_answer_with_thousand_separator() {
 
@@ -293,8 +290,6 @@ class qtype_varnumericset_walkthrough_test extends qbehaviour_walkthrough_test_b
             $this->get_does_not_contain_validation_error_expectation(),
             $this->get_no_hint_visible_expectation());
         $this->assertEquals('12,300', $this->quba->get_response_summary($this->slot));
-
-
     }
 
     public function test_deferred_feedback_for_3_sig_figs_answer_with_correct_answer() {
@@ -315,7 +310,7 @@ class qtype_varnumericset_walkthrough_test extends qbehaviour_walkthrough_test_b
             $this->get_does_not_contain_try_again_button_expectation(),
             $this->get_no_hint_visible_expectation());
 
-        // Now give an answer that will be accepted
+        // Now give an answer that will be accepted.
         $this->process_submission(array('answer' => '12300'));
 
         $this->check_current_state(question_state::$complete);

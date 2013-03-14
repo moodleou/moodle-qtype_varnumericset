@@ -17,10 +17,9 @@
 /**
  * Unit tests for the varnumericset question definition class.
  *
- * @package    qtype
- * @subpackage varnumericset
- * @copyright  2012 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package   qtype_varnumericset
+ * @copyright 2012 The Open University
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 
@@ -34,11 +33,11 @@ require_once($CFG->dirroot . '/question/engine/tests/helpers.php');
 /**
  * Unit tests for the varnumericset question definition class.
  *
- * @copyright  2012 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @group      qtype_varnumericset
+ * @copyright 2012 The Open University
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @group qtype_varnumericset
  */
-class qtype_varnumericset_question_test extends basic_testcase {
+class qtype_varnumericset_question_test extends advanced_testcase {
     public function test_num_within_allowed_error() {
         $this->assertTrue(
                 qtype_varnumericset_question::num_within_allowed_error('1.230001e4', 1.23e4, ''));
@@ -100,6 +99,7 @@ class qtype_varnumericset_question_test extends basic_testcase {
         $this->assertFalse(
             qtype_varnumericset_question::wrong_by_a_factor_of_ten('152000', 150, 1, 3));
     }
+
     public function test_has_number_of_sig_figs() {
         $this->assertTrue(
             qtype_varnumericset_question::has_number_of_sig_figs('1.23e4', 3));
@@ -122,6 +122,7 @@ class qtype_varnumericset_question_test extends basic_testcase {
         $this->assertFalse(
             qtype_varnumericset_question::has_number_of_sig_figs('152000', 2));
     }
+
     public function test_has_too_many_sig_figs() {
         $this->assertTrue(qtype_varnumericset_question::has_too_many_sig_figs('1.23456e5', 123456, 2));;
         $this->assertTrue(qtype_varnumericset_question::has_too_many_sig_figs('1.23456e5', 123456, 3));;
@@ -130,7 +131,7 @@ class qtype_varnumericset_question_test extends basic_testcase {
         $this->assertFalse(qtype_varnumericset_question::has_too_many_sig_figs('1.23456e5', 123456, 6));;
         $this->assertTrue(qtype_varnumericset_question::has_too_many_sig_figs('1.234560e5', 123456, 6));;
         $this->assertFalse(qtype_varnumericset_question::has_too_many_sig_figs('1.23456e5', 123456, 6));;
-        //should only return true when extra sig figs in response are correct
+        // Should only return true when extra sig figs in response are correct.
         $this->assertTrue(
             qtype_varnumericset_question::has_too_many_sig_figs('1.23456', 1.23456, 2));
         $this->assertTrue(
@@ -162,37 +163,39 @@ class qtype_varnumericset_question_test extends basic_testcase {
         $this->assertFalse(
             qtype_varnumericset_question::has_too_many_sig_figs('-1.23456e-12', -1.2346e-12, 4));
     }
+
     public function test_rounding_incorrect() {
         $this->assertTrue(
             qtype_varnumericset_question::rounding_incorrect('1.234', 1.2345, 4));
         $this->assertTrue(
             qtype_varnumericset_question::rounding_incorrect('1.2345', 1.23456, 5));
-        //this routine is not meant to catch incorrect rounding up
+        // This routine is not meant to catch incorrect rounding up.
         $this->assertFalse(
             qtype_varnumericset_question::rounding_incorrect('1.3', 1.23, 2));
         $this->assertFalse(
             qtype_varnumericset_question::rounding_incorrect('1.23', 1.23456, 2));
 
     }
+
     public function test_round_to() {
         $this->assertSame('0.123', qtype_varnumericset_question::round_to(0.12345, 3, false));
         $this->assertSame('0.1235', qtype_varnumericset_question::round_to(0.12345, 4, false));
-        //incorrect rounding
+        // Incorrect rounding.
         $this->assertSame('1.235e-1',
                                         qtype_varnumericset_question::round_to(0.12345, 4, true));
-        //incorrect rounding
+        // Incorrect rounding.
         $this->assertSame('1.234e-1',
                                     qtype_varnumericset_question::round_to(0.12345, 4, true, true));
         $this->assertSame('1234.57',
                                     qtype_varnumericset_question::round_to(1234.5678, 6, false));
         $this->assertSame('1.23457e3',
                                     qtype_varnumericset_question::round_to(1234.5678, 6, true));
-        //incorrect rounding
+        // Incorrect rounding.
         $this->assertSame('1234.56',
                                 qtype_varnumericset_question::round_to(1234.5678, 6, false, true));
         $this->assertSame('1.23456e3',
                                 qtype_varnumericset_question::round_to(1234.5678, 6, true, true));
-        //always round down when incorrect rounding requested
+        // Always round down when incorrect rounding requested.
         $this->assertSame('1234.56',
                                 qtype_varnumericset_question::round_to(1234.5600, 6, false, true));
         $this->assertSame('1.23456e3',
@@ -226,19 +229,19 @@ class qtype_varnumericset_question_test extends basic_testcase {
         $this->assertEquals($this->grade($question, '123450e-1'), 0.9);
         $this->assertEquals($this->grade($question, '123450000e-4'), 0.9);
         $this->assertEquals($this->grade($question, '123450000e-3'), 0);
-        $this->assertEquals($this->grade($question, '001235e1'), 0.9);//correct to wrong amount of sig figs
-        $this->assertEquals($this->grade($question, '001234e1'), 00);//incorrect rounding
-        $this->assertEquals($this->grade($question, '1235e1'), 0.9);//correct to wrong amount of sig figs
-        $this->assertEquals($this->grade($question, '123.5e2'), 0.9);//correct to wrong amount of sig figs
-        $this->assertEquals($this->grade($question, '0012345'), 0.9);//correct to wrong amount of sig figs
-        $this->assertEquals($this->grade($question, '12350'), 0.9);//correct to wrong amount of sig figs
-        $this->assertEquals($this->grade($question, '12345'), 0.9);//correct to wrong amount of sig figs
+        $this->assertEquals($this->grade($question, '001235e1'), 0.9); // Correct to wrong amount of sig figs.
+        $this->assertEquals($this->grade($question, '001234e1'), 0.0); // Incorrect rounding.
+        $this->assertEquals($this->grade($question, '1235e1'),   0.9); // Correct to wrong amount of sig figs.
+        $this->assertEquals($this->grade($question, '123.5e2'),  0.9); // Correct to wrong amount of sig figs.
+        $this->assertEquals($this->grade($question, '0012345'),  0.9); // Correct to wrong amount of sig figs.
+        $this->assertEquals($this->grade($question, '12350'),    0.9); // Correct to wrong amount of sig figs.
+        $this->assertEquals($this->grade($question, '12345'),    0.9); // Correct to wrong amount of sig figs.
 
         $question = test_question_maker::make_question('varnumericset', '3_sig_figs_2');
-        $this->assertEquals($this->grade($question, '1.23'), 1);
-        $this->assertEquals($this->grade($question, '01.23'), 1);
-        $this->assertEquals($this->grade($question, '1.230'), 0);//wrong
-        $this->assertEquals($this->grade($question, '1.235'), 0.9);//wrong no of sig figs
+        $this->assertEquals($this->grade($question, '1.23'),   1);
+        $this->assertEquals($this->grade($question, '01.23'),  1);
+        $this->assertEquals($this->grade($question, '1.230'),  0);   // Wrong.
+        $this->assertEquals($this->grade($question, '1.235'),  0.9); // Wrong no of sig figs.
         $this->assertEquals($this->grade($question, '1.2346'), 0.9);
 
         $question = test_question_maker::make_question('varnumericset', '3_sig_figs_trailing_zero');
@@ -265,5 +268,11 @@ class qtype_varnumericset_question_test extends basic_testcase {
         $this->assertEquals($this->grade($question, '-1e9'), 1);
         $this->assertEquals($this->grade($question, '-1x10<sup>9</sup>'), 1);
         $this->assertEquals($this->grade($question, '-1x10<sup>+9</sup>'), 1);
+    }
+
+    public function test_get_question_summary() {
+        $question = test_question_maker::make_question('varnumericset', 'with_variables');
+        $question->start_attempt(new question_attempt_step(), 1);
+        $this->assertEquals('What is 2 + 3?', $question->get_question_summary());
     }
 }

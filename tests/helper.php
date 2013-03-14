@@ -37,7 +37,7 @@ class qtype_varnumericset_test_helper extends question_test_helper {
     public function get_test_questions() {
         return array('no_accepted_error', 'numeric_accepted_error', '3_sig_figs', '3_sig_figs_2',
                         '3_sig_figs_trailing_zero', '3_sig_figs_trailing_zero_negative_answer',
-                        '1_sig_fig');
+                        '1_sig_fig', 'with_variables');
     }
 
     /**
@@ -56,45 +56,47 @@ class qtype_varnumericset_test_helper extends question_test_helper {
         $vs->usesupeditor = false;
         $vs->qtype = question_bank::get_qtype('varnumericset');
 
-        $vs->answers = array(1 => new qtype_varnumericset_answer('1', //id
-                                                 '-4.2',  //answer
-                                                 '1',  //fraction
-                                                 '<p>Your answer is correct.</p>', //feedback
-                                                 'html', //feedbackformat
-                                                 '0', //sigfigs
-                                                 '', //error
-                                                 '0.1', //syserrorpenalty
-                                                 '0', //checknumerical
-                                                 '0', //checkscinotation
-                                                 '0', //checkpowerof10
-                                                 '0'), //checkrounding
-                            2 => new qtype_varnumericset_answer('2', //id
-                                                 '*',  //answer
-                                                 '0',  //fraction
-                                                 '<p>Your answer is incorrect.</p>', //feedback
-                                                 'html', //feedbackformat
-                                                 '0', //sigfigs
-                                                 '', //error
-                                                 '0.1000000', //syserrorpenalty
-                                                 '0', //checknumerical
-                                                 '0', //checkscinotation
-                                                 '0', //checkpowerof10
-                                                 '0')); //checkrounding);
+        $vs->answers = array(1 => new qtype_varnumericset_answer('1', // Id.
+                                                 '-4.2',  // Answer.
+                                                 '1',     // Fraction.
+                                                 '<p>Your answer is correct.</p>', // Feedback.
+                                                 'html',  // Feedbackformat.
+                                                 '0',     // Sigfigs.
+                                                 '',      // Error.
+                                                 '0.1',   // Syserrorpenalty.
+                                                 '0',     // Checknumerical.
+                                                 '0',     // Checkscinotation.
+                                                 '0',     // Checkpowerof10.
+                                                 '0'),    // Checkrounding.
+                            2 => new qtype_varnumericset_answer('2', // Id.
+                                                 '*',     // Answer.
+                                                 '0',     // Fraction.
+                                                 '<p>Your answer is incorrect.</p>', // Feedback.
+                                                 'html',  // Feedbackformat.
+                                                 '0',     // Sigfigs.
+                                                 '',      // Error.
+                                                 '0.1000000', // Syserrorpenalty.
+                                                 '0',     // Checknumerical.
+                                                 '0',     // Checkscinotation.
+                                                 '0',     // Checkpowerof10.
+                                                 '0'));   // Checkrounding.
         $calculatorname = $vs->qtype->calculator_name();
         $vs->calculator = new $calculatorname();
         $vs->calculator->evaluate_variant(0);
         return $vs;
     }
+
     /**
      * @return qtype_varnumericset_question
      */
     public function make_varnumericset_question_numeric_accepted_error() {
         $vs = $this->make_varnumericset_question_no_accepted_error();
-        //add acceptable error for correct answer.
+        // Add acceptable error for correct answer.
         $vs->name = 'test question 2';
         $vs->answers[1]->error = '0.000001';
         return $vs;
     }
+
     /**
      * @return qtype_varnumericset_question
      */
@@ -117,7 +119,6 @@ class qtype_varnumericset_test_helper extends question_test_helper {
         $vs->answers[1]->sigfigs = 3;
         return $vs;
     }
-
 
     /**
      * @return qtype_varnumericset_question
@@ -145,7 +146,6 @@ class qtype_varnumericset_test_helper extends question_test_helper {
         return $vs;
     }
 
-
     /**
      * @return qtype_varnumericset_question
      */
@@ -163,4 +163,23 @@ class qtype_varnumericset_test_helper extends question_test_helper {
         return $vs;
     }
 
+    public function make_varnumericset_question_with_variables() {
+        $vs = $this->make_varnumericset_question_no_accepted_error();
+
+        $vs->questiontext = '<p>What is [[a]] + [[b]]?</p>';
+        $vs->generalfeedback = '<p>General feedback 1e9.</p>';
+        $vs->requirescinotation = 1;
+        $vs->answers[1]->answer = 'a + b';
+        $vs->answers[1]->sigfigs = 1;
+        $vs->answers[1]->checknumerical = 1;
+        $vs->answers[1]->checkscinotation = 1;
+
+        $vs->calculator->add_variable(0, 'a');
+        $vs->calculator->add_variable(1, 'b');
+        $vs->calculator->add_defined_variant(0, 0, 2);
+        $vs->calculator->add_defined_variant(1, 0, 3);
+        $vs->calculator->evaluate_variant(0);
+
+        return $vs;
+    }
 }

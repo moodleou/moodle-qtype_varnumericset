@@ -88,6 +88,7 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
         // We are using a hook in questiontype to resdisplay the form and it expects a parameter
         // wizard, which we won't actually use but we need to pass it to avoid an error message.
         $mform->addElement('hidden', 'wizard', '');
+        $mform->setType('wizard', PARAM_ALPHANUM);
 
         $mform->addElement('header', 'forallanswers',
                                 get_string('forallanswers', 'qtype_varnumericset'));

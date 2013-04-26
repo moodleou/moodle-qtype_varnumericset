@@ -93,6 +93,7 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
                                 get_string('forallanswers', 'qtype_varnumericset'));
         $mform->addElement('selectyesno', 'requirescinotation',
                                 get_string('requirescinotation', 'qtype_varnumericset'));
+        $mform->setExpanded('forallanswers', 1);
 
         $mform->addElement('static', 'answersinstruct',
                 get_string('correctanswers', 'qtype_varnumericset'),
@@ -100,10 +101,17 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
         $mform->closeHeaderBefore('answersinstruct');
 
         $this->add_answer_form_part($mform);
+        $mform->closeHeaderBefore('addanswers');
 
         $this->add_interactive_settings($mform, $repeated, $repeatedoptions);
     }
 
+
+    /**
+     * Add answer section of the form. In varnumeric unit question type this is overridden to add also the units to this
+     * section of the form.
+     * @param MoodleQuickForm $mform
+     */
     protected function add_answer_form_part($mform) {
         $this->add_per_answer_fields($mform, get_string('answerno', 'qtype_varnumericset', '{no}'),
             question_bank::fraction_options());
@@ -148,43 +156,56 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
     }
 
     protected function get_per_answer_fields($mform, $label, $gradeoptions,
-            &$repeatedoptions, &$answersoption) {
-        $parentansweroptions = parent::get_per_answer_fields($mform, $label, $gradeoptions,
-                                                        $repeatedoptions, $answersoption);
-        $sigfigsoptions = array(0 => get_string('unspecified', 'qtype_varnumericset'),
-                                1 => 1, 2 => 2, 3 => 3, 4 => 4, 5 => 5, 6 => 6);
+                                             &$repeatedoptions, &$answersoption) {
+        $repeated = array();
         $answeroptions = array();
 
-        $answeroptions[] = $parentansweroptions[0]; // Header.
-        $answeroptions[] = $parentansweroptions[1]; // Answer text box.
+        // For this question type we are using a per answer header, a header for all answers won't really work.
+        $mform->removeElement('answerhdr');
 
-        $answeroptions[] = $mform->createElement('text', 'error',
-                                get_string('error', 'qtype_varnumericset'), array('size' => 80));
-        $answeroptions[] = $mform->createElement('select', 'sigfigs',
-                                get_string('sigfigs', 'qtype_varnumericset'), $sigfigsoptions);
+        $repeated[] = $mform->createElement('header', 'answerhdr', $label);
 
-        $answeroptions[] = $parentansweroptions[2]; // Grade.
-        $answeroptions[] = $parentansweroptions[3]; // Feedback.
+        $answeroptions[] = $mform->createElement('text', 'answer', '', array('size' => 8));
+        $answeroptions[] = $mform->createElement('text', 'error', get_string('error', 'qtype_varnumericset'), array('size' => 8));
+        $sigfigsoptions = array(0 => get_string('unspecified', 'qtype_varnumericset'),
+                                1 => 1, 2 => 2, 3 => 3, 4 => 4, 5 => 5, 6 => 6);
+        $answeroptions[] = $mform->createElement('select', 'sigfigs', get_string('sigfigs', 'qtype_varnumericset'),
+                                                 $sigfigsoptions);
 
-        $answeroptions[] = $mform->createElement('header', 'autofirehdr',
-                            get_string('autofirehdr', 'qtype_varnumericset', '{no}'));
-        $answeroptions[] = $mform->createElement('selectyesno', 'checknumerical',
-                            get_string('checknumerical', 'qtype_varnumericset'));
+        $answeroptions[] = $mform->createElement('select', 'fraction', get_string('grade'), $gradeoptions);
+        $repeated[] = $mform->createElement('group', 'answeroptions',
+                                            get_string('answer', 'question'), $answeroptions, null, false);
+
+        $repeated[] = $mform->createElement('editor', 'feedback',
+                                            get_string('feedback', 'question'), array('rows' => 5), $this->editoroptions);
+        $repeated[] = $mform->createElement('header', 'autofirehdr',
+                                                 get_string('autofirehdr', 'qtype_varnumericset', '{no}'));
+        $autofirerow1 = array();
+        $autofirerow1[] = $mform->createElement('selectyesno', 'checknumerical', '');
         $checkpowerof10options = array(0 => get_string('no'),
-                                1 => '+/- 1', 2 => '+/- 2', 3 => '+/- 3',
-                                4 => '+/- 4', 5 => '+/- 5', 6 => '+/- 6');
-        $answeroptions[] = $mform->createElement('selectyesno', 'checkscinotation',
-                            get_string('checkscinotation', 'qtype_varnumericset'));
-        $answeroptions[] = $mform->createElement('select', 'checkpowerof10',
-                            get_string('checkpowerof10', 'qtype_varnumericset'),
-                            $checkpowerof10options);
-        $answeroptions[] = $mform->createElement('selectyesno', 'checkrounding',
-                            get_string('checkrounding', 'qtype_varnumericset'));
-        $answeroptions[] = $mform->createElement('select', 'syserrorpenalty',
-                            get_string('syserrorpenalty', 'qtype_varnumericset'), $gradeoptions);
-        $repeatedoptions['syserrorpenalty']['default'] = '0.1';
-                                return $answeroptions;
+                                       1 => '+/- 1', 2 => '+/- 2', 3 => '+/- 3',
+                                       4 => '+/- 4', 5 => '+/- 5', 6 => '+/- 6');
+        $autofirerow1[] = $mform->createElement('selectyesno', 'checkscinotation',
+                                                 get_string('checkscinotation', 'qtype_varnumericset'));
+        $repeated[] = $mform->createElement('group', 'autofirerow1', get_string('checknumerical',  'qtype_varnumericset'),
+                                            $autofirerow1, null, false);
+
+        $autofirerow2 = array();
+        $autofirerow2[] = $mform->createElement('select', 'checkpowerof10', '', $checkpowerof10options);
+        $autofirerow2[] = $mform->createElement('selectyesno', 'checkrounding',
+                                                 get_string('checkrounding', 'qtype_varnumericset'));
+        $repeated[] = $mform->createElement('group', 'autofirerow2', get_string('checkpowerof10', 'qtype_varnumericset'),
+                                            $autofirerow2, null, false);
+
+        $repeated[] = $mform->createElement('select', 'syserrorpenalty',
+                                                 get_string('syserrorpenalty', 'qtype_varnumericset'), $gradeoptions);
+
+        $repeatedoptions['answer']['type'] = PARAM_RAW;
+        $repeatedoptions['fraction']['default'] = 0;
+        $answersoption = 'answers';
+        return $repeated;
     }
+
 
     protected function get_hint_fields($withclearwrong = false, $withshownumpartscorrect = false) {
         $mform = $this->_form;
@@ -264,12 +285,12 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
                 }
                 if ($trimmedanswer == '*') {
                     if ($data['error'][$key] !== '') {
-                        $errors["error[$key]"] = get_string('notolerancehere', 'qtype_varnumericset');
+                        $errors["answeroptions[$key]"] = get_string('notolerancehere', 'qtype_varnumericset');
                     }
                 }
             } else if ($data['fraction'][$key] != 0 ||
                     !html_is_blank($data['feedback'][$key]['text'])) {
-                $errors["answer[$key]"] = get_string('answermustbegiven', 'qtype_varnumericset');
+                $errors["answeroptions[$key]"] = get_string('answermustbegiven', 'qtype_varnumericset');
                 $answercount++;
             }
         }
@@ -326,10 +347,10 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
             $errors = $calculator->get_errors();
         }
         if ($answercount==0) {
-            $errors['answer[0]'] = get_string('notenoughanswers', 'qtype_varnumericset', 1);
+            $errors['answeroptions[0]'] = get_string('notenoughanswers', 'qtype_varnumericset', 1);
         }
         if ($maxgrade == false) {
-            $errors['fraction[0]'] = get_string('fractionsnomax', 'question');
+            $errors['answeroptions[0]'] = get_string('fractionsnomax', 'question');
         }
         if (!empty($data['recalculatenow']) && count($errors)) {
             $errors['recalculatenow'] = get_string('cannotrecalculate', 'qtype_varnumericset');

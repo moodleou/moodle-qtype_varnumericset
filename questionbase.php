@@ -535,21 +535,27 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
     }
 
     public function classify_response(array $response) {
-        if (empty($response['answer'])) {
+        if (!$this->is_gradable_response($response)) {
             return array($this->id => question_classified_response::no_response());
         }
 
         $ans = $this->get_matching_answer($response);
         if (!$ans) {
-            return array($this->id => question_classified_response::no_response());
+            $fraction = $ansid = 0;
+        } else {
+            $ansid = $ans->id;
+            $fraction = $ans->fraction;
         }
+
         $num = new qtype_varnumericset_number_interpreter_number_with_optional_sci_notation(true);
         $num->match($response['answer']);
 
         $calculatorname = $this->qtype->calculator_name();
         $responsehtmlized = $calculatorname::htmlize_exponent($num->get_normalised());
-        return array($this->id => new question_classified_response(
-                $ans->id, $num->get_prefix().$responsehtmlized.$num->get_postfix(), $ans->fraction));
+
+
+        $responsetodisplay = $num->get_prefix().$responsehtmlized.$num->get_postfix();
+        return array($this->id => new question_classified_response($ansid, $responsetodisplay, $fraction));
     }
 }
 

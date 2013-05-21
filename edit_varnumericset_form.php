@@ -46,6 +46,6 @@ class qtype_varnumericset_edit_form extends qtype_varnumeric_edit_form_base {
         $mform->registerNoSubmitButton('addvariants');
         $addvariantel = $mform->createElement('submit', 'addvariants',
                                         get_string('addmorevariants', 'qtype_varnumericset', 2));
-        $mform->insertElementBefore($addvariantel, 'varhdr[1]');
+        $mform->insertElementBefore($addvariantel, 'vartype[1]');
     }
 }

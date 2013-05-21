@@ -9,3 +9,79 @@
 .que.varnumericset .answer input {
     width: 99%;
 }
+/* Editing form. Style repeated elements*/
+/* Top */
+body#page-question-type-varnumericset div[id^=fitem_id_][id*=vartype_],
+body#page-question-type-varnumericset #fitem_id_addanswers + .fitem,
+body#page-question-type-varnumericset div[id^=fgroup_id_][id*=answeroptions_] {
+    background: #EEE;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-bottom: 5px;
+    padding-top: 5px;
+    border: 1px solid #BBB;
+    border-bottom: 0;
+}
+
+body#page-question-type-varnumericset div[id^=fitem_id_][id*=_varname_] .fitemtitle,
+body#page-question-type-varnumericset #fitem_id_addanswers + .fitem .fitemtitle,
+body#page-question-type-varnumericset div[id^=fgroup_id_][id*=answeroptions_] .fitemtitle {
+    font-weight: bold;
+}
+/* Middle */
+body#page-question-type-varnumericset div[id^=fitem_id_][id*=varname_],
+body#page-question-type-varnumericset div[id^=fitem_id_][id*=_variant],
+body#page-question-type-varnumericset div[id^=fitem_id_][id*=feedback_],
+body#page-question-type-varnumericset div[id^=fitem_id_][id*=feedback_] + .fitem,
+body#page-question-type-varnumericset div[id^=fgroup_id_][id*=autofirerow1_],
+body#page-question-type-varnumericset div[id^=fgroup_id_][id*=autofirerow2_] {
+    background: #EEE;
+    margin-bottom: 0;
+    margin-top: 0;
+    padding-bottom: 5px;
+    padding-top: 5px;
+    border: 1px solid #BBB;
+    border-top: 0;
+    border-bottom: 0;
+}
+/* Bottom */
+body#page-question-type-varnumericset div[id^=fitem_id_][id*=syserrorpenalty_] {
+    background: #EEE;
+    margin-bottom: 2em;
+    margin-top: 0;
+    padding-bottom: 5px;
+    padding-top: 5px;
+    border: 1px solid #BBB;
+    border-top: 0;
+}
+/* Variant Bottom */
+body#page-question-type-varnumericset div[id^=fitem_id_][id*=_variant_last] {
+    margin-bottom: 1em;
+    margin-top: 0;
+    padding-bottom: 5px;
+    padding-top: 2em;
+    border: 1px solid #BBB;
+    border-bottom: 0;
+    border-left: 0;
+    border-right: 0;
+    background: #fff;
+    padding: 0;
+}
+body#page-question-type-varnumericset div[id^=fitem_id_][id*=_variant_last] div {
+    display: none;
+}
+body#page-question-type-varnumericset #fitem_id_addvariants,
+body#page-question-type-varnumericset div[id^=fitem_id_][id*=requirescinotation]  + .fitem {
+    margin-bottom: 2em;
+}
+body#page-question-type-varnumericset #fitem_id_answer_0 {
+    margin-top: 1em;
+}
+body#page-question-type-varnumericset div[id^=fgroup_id_][id*=answeroptions_] label[for^='id_answer_'],
+body#page-question-type-varnumericset div[id^=fgroup_id_][id*=autofirerow1_] label[for^='id_checknumerical_'],
+body#page-question-type-varnumericset div[id^=fgroup_id_][id*=autofirerow2_] label[for^='id_checkpowerof10_'] {
+    position: absolute;
+    left: -10000px;
+    font-weight: normal;
+    font-size: 1em;
+}

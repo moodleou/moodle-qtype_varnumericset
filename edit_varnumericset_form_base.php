@@ -50,11 +50,11 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
 
         $repeated = array();
         $repeatedoptions = array();
-        $repeated[] = $mform->createElement('header', 'varhdr',
-                                get_string('varheader', 'qtype_varnumericset'));
+        $mform->addElement('header', 'variables',
+                                get_string('variables', 'qtype_varnumericset'));
         $repeated[] = $mform->createElement('select', 'vartype', '', $typemenu);
         $repeated[] = $mform->createElement('text', 'varname',
-                                get_string('varname', 'qtype_varnumericset'), array('size' => 40));
+                                get_string('varheader', 'qtype_varnumericset'), array('size' => 40));
 
         $mform->setType('varname', PARAM_RAW_TRIMMED);
         $repeatedoptions['varname']['helpbutton'] = array('varname', 'qtype_varnumericset');
@@ -79,30 +79,29 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
         }
 
         $this->repeat_elements($repeated, $noofvarsatstart, $repeatedoptions,
-                'novars', 'addvars', 2, get_string('addmorevars', 'qtype_varnumericset'));
+                'novars', 'addvars', 2, get_string('addmorevars', 'qtype_varnumericset'), true);
 
         $mform->addElement('submit', 'recalculatenow',
                                         get_string('recalculatenow', 'qtype_varnumericset', 2));
-        $mform->closeHeaderBefore('recalculatenow');
 
         // We are using a hook in questiontype to resdisplay the form and it expects a parameter
         // wizard, which we won't actually use but we need to pass it to avoid an error message.
         $mform->addElement('hidden', 'wizard', '');
         $mform->setType('wizard', PARAM_ALPHANUM);
 
-        $mform->addElement('header', 'forallanswers',
+        $mform->addElement('header', 'answershdr',
+                                get_string('answers', 'question'));
+        $mform->setExpanded('answershdr', 1);
+        $mform->addElement('static', 'forallanswers',
                                 get_string('forallanswers', 'qtype_varnumericset'));
         $mform->addElement('selectyesno', 'requirescinotation',
                                 get_string('requirescinotation', 'qtype_varnumericset'));
-        $mform->setExpanded('forallanswers', 1);
 
         $mform->addElement('static', 'answersinstruct',
                 get_string('correctanswers', 'qtype_varnumericset'),
                 get_string('filloutoneanswer', 'qtype_varnumericset'));
-        $mform->closeHeaderBefore('answersinstruct');
 
         $this->add_answer_form_part($mform);
-        $mform->closeHeaderBefore('addanswers');
 
         $this->add_interactive_settings($mform, $repeated, $repeatedoptions);
     }
@@ -150,10 +149,26 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
             }
             $mform->setType("variant$i", PARAM_RAW_TRIMMED);
         }
+
+        $this->add_value_form_last_field($mform, $repeated, $repeatedoptions);
         $mform->addElement('hidden', 'noofvariants', $noofvariants);
         $mform->setConstant('noofvariants', $noofvariants);
         $mform->setType('noofvariants', PARAM_INT);
         return array($repeated, $repeatedoptions);
+    }
+
+    protected function add_value_form_last_field($mform, &$repeated, &$repeatedoptions) {
+        /*
+         * Adding a field element so we can style variants properly. Not what we want.
+         * Couldn't find a way to identify the last variant field using css. Can't find the
+         * add more elements and work backwards.
+         *
+         * Need an element with an id to work with. Hidden fields have no id and are inserted at
+         * the start of the form.
+         */
+        $repeated[] = $mform->createElement('text', "variant_last",
+                'last variant', '', array('class'=>'last'));
+        $mform->setType('variant_last', PARAM_TEXT);
     }
 
     protected function get_per_answer_fields($mform, $label, $gradeoptions,
@@ -164,8 +179,6 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
         // For this question type we are using a per answer header, a header for all answers won't really work.
         $mform->removeElement('answerhdr');
 
-        $repeated[] = $mform->createElement('header', 'answerhdr', $label);
-
         $answeroptions[] = $mform->createElement('text', 'answer', '', array('size' => 8));
         $answeroptions[] = $mform->createElement('text', 'error', get_string('error', 'qtype_varnumericset'), array('size' => 8));
         $sigfigsoptions = array(0 => get_string('unspecified', 'qtype_varnumericset'),
@@ -175,12 +188,12 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
 
         $answeroptions[] = $mform->createElement('select', 'fraction', get_string('grade'), $gradeoptions);
         $repeated[] = $mform->createElement('group', 'answeroptions',
-                                            get_string('answer', 'question'), $answeroptions, null, false);
+                                            $label, $answeroptions, null, false);
 
         $repeated[] = $mform->createElement('editor', 'feedback',
                                             get_string('feedback', 'question'), array('rows' => 5), $this->editoroptions);
-        $repeated[] = $mform->createElement('header', 'autofirehdr',
-                                                 get_string('autofirehdr', 'qtype_varnumericset', '{no}'));
+        $repeated[] = $mform->createElement('static', 'autofirehdr', '',
+                                                 get_string('autofirehdr', 'qtype_varnumericset', ''));
         $autofirerow1 = array();
         $autofirerow1[] = $mform->createElement('selectyesno', 'checknumerical', '');
         $checkpowerof10options = array(0 => get_string('no'),
@@ -203,6 +216,7 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
 
         $repeatedoptions['answer']['type'] = PARAM_RAW;
         $repeatedoptions['fraction']['default'] = 0;
+        $repeatedoptions['error']['type'] = PARAM_RAW;
         $answersoption = 'answers';
         return $repeated;
     }
@@ -357,6 +371,13 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
             $errors['recalculatenow'] = get_string('cannotrecalculate', 'qtype_varnumericset');
         }
         return $errors;
+    }
+
+    /**
+     * Language string to use for 'Add {no} more {whatever we call answers}'.
+     */
+    protected function get_more_choices_string() {
+        return get_string('addmoreanswerblanks', 'qtype_varnumericset');
     }
 
     protected function qtype_obj() {

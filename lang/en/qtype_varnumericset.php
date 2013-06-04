@@ -89,6 +89,7 @@ $string['sigfigs'] = 'Significant figures';
 $string['syserrorpenalty'] = 'For each error deduct';
 $string['unspecified'] = 'Unspecified';
 $string['usesuperscript'] = 'Use superscript entry';
+$string['variables'] = 'Variables';
 $string['varheader'] = 'Variable {no}';
 $string['variant'] = 'Value for variant {$a}';
 $string['variants'] = 'Value for variants';

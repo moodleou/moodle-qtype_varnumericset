@@ -195,24 +195,29 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
         $repeated[] = $mform->createElement('static', 'autofirehdr', '',
                                                  get_string('autofirehdr', 'qtype_varnumericset', ''));
         $autofirerow1 = array();
-        $autofirerow1[] = $mform->createElement('selectyesno', 'checknumerical', '');
+        $autofirerow1[] = $mform->createElement('selectyesno', 'checknumerical',
+                                                 get_string('checknumerical',  'qtype_varnumericset'));
         $checkpowerof10options = array(0 => get_string('no'),
                                        1 => '+/- 1', 2 => '+/- 2', 3 => '+/- 3',
                                        4 => '+/- 4', 5 => '+/- 5', 6 => '+/- 6');
         $autofirerow1[] = $mform->createElement('selectyesno', 'checkscinotation',
                                                  get_string('checkscinotation', 'qtype_varnumericset'));
-        $repeated[] = $mform->createElement('group', 'autofirerow1', get_string('checknumerical',  'qtype_varnumericset'),
+        $repeated[] = $mform->createElement('group', 'autofirerow1', '',
                                             $autofirerow1, null, false);
 
         $autofirerow2 = array();
-        $autofirerow2[] = $mform->createElement('select', 'checkpowerof10', '', $checkpowerof10options);
+        $autofirerow2[] = $mform->createElement('select', 'checkpowerof10',
+                                            get_string('checkpowerof10', 'qtype_varnumericset'), $checkpowerof10options);
         $autofirerow2[] = $mform->createElement('selectyesno', 'checkrounding',
                                                  get_string('checkrounding', 'qtype_varnumericset'));
-        $repeated[] = $mform->createElement('group', 'autofirerow2', get_string('checkpowerof10', 'qtype_varnumericset'),
+        $repeated[] = $mform->createElement('group', 'autofirerow2', '',
                                             $autofirerow2, null, false);
 
-        $repeated[] = $mform->createElement('select', 'syserrorpenalty',
+        $autofirerow3 = array();
+        $autofirerow3[] = $mform->createElement('select', 'syserrorpenalty',
                                                  get_string('syserrorpenalty', 'qtype_varnumericset'), $gradeoptions);
+        $repeated[] = $mform->createElement('group', 'autofirerow3', '',
+                                            $autofirerow3, null, false);
 
         $repeatedoptions['answer']['type'] = PARAM_RAW;
         $repeatedoptions['fraction']['default'] = 0;

@@ -45,7 +45,7 @@ body#page-question-type-varnumericset div[id^=fgroup_id_][id*=autofirerow2_] {
     border-bottom: 0;
 }
 /* Bottom */
-body#page-question-type-varnumericset div[id^=fitem_id_][id*=syserrorpenalty_] {
+body#page-question-type-varnumericset div[id^=fgroup_id_][id*=autofirerow3_] {
     background: #EEE;
     margin-bottom: 2em;
     margin-top: 0;
@@ -77,11 +77,14 @@ body#page-question-type-varnumericset div[id^=fitem_id_][id*=requirescinotation]
 body#page-question-type-varnumericset #fitem_id_answer_0 {
     margin-top: 1em;
 }
-body#page-question-type-varnumericset div[id^=fgroup_id_][id*=answeroptions_] label[for^='id_answer_'],
-body#page-question-type-varnumericset div[id^=fgroup_id_][id*=autofirerow1_] label[for^='id_checknumerical_'],
-body#page-question-type-varnumericset div[id^=fgroup_id_][id*=autofirerow2_] label[for^='id_checkpowerof10_'] {
+body#page-question-type-varnumericset div[id^=fgroup_id_][id*=answeroptions_] label[for^='id_answer_'] {
     position: absolute;
     left: -10000px;
     font-weight: normal;
     font-size: 1em;
+}
+body#page-question-type-varnumericset div[id^=fgroup_id_][id*=autofirerow1_] label[for^='id_checknumerical_'],
+body#page-question-type-varnumericset div[id^=fgroup_id_][id*=autofirerow2_] label[for^='id_checkpowerof10_'],
+body#page-question-type-varnumericset div[id^=fgroup_id_][id*=autofirerow3_] label[for^='id_syserrorpenalty_'] {
+    margin-left: 0;	
 }

@@ -120,7 +120,7 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
     protected function add_value_form_fields($mform, $repeated, $repeatedoptions) {
         global $DB;
         $noofvariants = optional_param('noofvariants', 0, PARAM_INT);
-        $addvariants = optional_param('addvariants', '', PARAM_TEXT);
+        $addvariants = optional_param('addvariants', false, PARAM_BOOL);
         if ($addvariants) {
             $noofvariants += 2;
         }

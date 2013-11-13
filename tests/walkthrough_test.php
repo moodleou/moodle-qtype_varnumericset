@@ -37,7 +37,7 @@ require_once($CFG->dirroot . '/question/type/varnumericset/tests/helper.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @group qtype_varnumericset
  */
-class qtype_varnumericset_walkthrough_test extends qbehaviour_walkthrough_test_base {
+class qtype_varnumericset_walkthrough_testcase extends qbehaviour_walkthrough_test_base {
     public function test_validation_and_interactive_with_one_try_for_3_sig_figs() {
 
         // Create a varnumericset question.
@@ -330,5 +330,44 @@ class qtype_varnumericset_walkthrough_test extends qbehaviour_walkthrough_test_b
             $this->get_does_not_contain_validation_error_expectation(),
             $this->get_no_hint_visible_expectation());
         $this->assertEquals('12300', $this->quba->get_response_summary($this->slot));
+    }
+
+    public function test_deferred_feedback_custom_rounding_feebdack_should_still_show_with_unit() {
+
+        // Create a varnumericset question.
+        $q = test_question_maker::make_question('varnumericset', 'custom_rounding_feebdack');
+        $this->start_attempt_at_question($q, 'deferredfeedback', 1);
+
+        $this->check_current_state(question_state::$todo);
+        $this->check_current_mark(null);
+        $this->check_current_output(
+            $this->get_contains_marked_out_of_summary(),
+            $this->get_does_not_contain_feedback_expectation(),
+            $this->get_does_not_contain_try_again_button_expectation(),
+            $this->get_no_hint_visible_expectation());
+
+        // Now give a worongly-rounded answer with unit.
+        $this->process_submission(array('answer' => '2.2%'));
+
+        $this->check_current_state(question_state::$invalid);
+        $this->check_current_mark(null);
+        $this->check_current_output(
+            $this->get_contains_marked_out_of_summary(),
+            $this->get_contains_validation_error_expectation(),
+            $this->get_no_hint_visible_expectation());
+        $this->assertEquals(null, $this->quba->get_response_summary($this->slot));
+
+        // Finsh the question, the numerical part should be graded, ingoring the %.
+        $this->process_submission(array('-finish' => 1));
+
+        $this->check_current_state(question_state::$gradedpartial);
+        $this->check_current_mark(0.9);
+        $this->check_current_output(
+            $this->get_contains_mark_summary(0.9),
+            $this->get_contains_partcorrect_expectation(),
+            $this->get_does_not_contain_validation_error_expectation(),
+            $this->get_no_hint_visible_expectation(),
+            new question_pattern_expectation('~' . preg_quote($q->answers[2]->feedback, '~') . '~'));
+        $this->assertEquals('2.2%', $this->quba->get_response_summary($this->slot));
     }
 }

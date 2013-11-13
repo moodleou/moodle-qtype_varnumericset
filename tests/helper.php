@@ -37,7 +37,7 @@ class qtype_varnumericset_test_helper extends question_test_helper {
     public function get_test_questions() {
         return array('no_accepted_error', 'numeric_accepted_error', '3_sig_figs', '3_sig_figs_2',
                         '3_sig_figs_trailing_zero', '3_sig_figs_trailing_zero_negative_answer',
-                        '1_sig_fig', 'with_variables');
+                        '1_sig_fig', 'with_variables', 'custom_rounding_feebdack');
     }
 
     /**
@@ -179,6 +179,58 @@ class qtype_varnumericset_test_helper extends question_test_helper {
         $vs->calculator->add_defined_variant(0, 0, 2);
         $vs->calculator->add_defined_variant(1, 0, 3);
         $vs->calculator->evaluate_variant(0);
+
+        return $vs;
+    }
+
+    public function make_varnumericset_question_custom_rounding_feebdack() {
+        $vs = $this->make_varnumericset_question_no_accepted_error();
+
+        $vs->questiontext = '<p>The figure shows selected data ... What is ...? ' .
+                '(Give your answer to one decimal place and do not include the % symbol.) ________ %?</p>';
+        $vs->generalfeedback = '<p>The answer is 2.3.</p>';
+        $vs->requirescinotation = 0;
+
+        $vs->answers[1]->answer = '2.3';
+        $vs->answers[1]->error = 0.000001;
+        $vs->answers[1]->sigfigs = 2;
+        $vs->answers[1]->fraction = 1;
+        $vs->answers[1]->feedback = 'Your answer is correct.';
+        $vs->answers[1]->checkrounding = 1;
+
+        $vs->answers[2]->answer = '2.2';
+        $vs->answers[2]->error = 0.000001;
+        $vs->answers[2]->sigfigs = 2;
+        $vs->answers[2]->fraction = 0.9;
+        $vs->answers[2]->feedback = 'Your answer is acceptable but you should have rounded your answer to 2.3.';
+
+        $vs->answers[3] = new qtype_varnumericset_answer(
+                '3',        // Id.
+                '2.285714', // Answer.
+                '0',        // Fraction.
+                '<p>You have not given your answer to just one decimal place as requested.</p>', // Feedback.
+                'html',     // Feedbackformat.
+                '0',        // Sigfigs.
+                '0.01',     // Error.
+                '0.1',      // Syserrorpenalty.
+                '0',        // Checknumerical.
+                '0',        // Checkscinotation.
+                '0',        // Checkpowerof10.
+                '0');       // Checkrounding.
+
+        $vs->answers[4] = new qtype_varnumericset_answer(
+                '4',        // Id.
+                '*',        // Answer.
+                '0',        // Fraction.
+                '<p>Your answer is incorrect.</p>', // Feedback.
+                'html',     // Feedbackformat.
+                '0',        // Sigfigs.
+                '',         // Error.
+                '0.1',      // Syserrorpenalty.
+                '0',        // Checknumerical.
+                '0',        // Checkscinotation.
+                '0',        // Checkpowerof10.
+                '0');       // Checkrounding.
 
         return $vs;
     }

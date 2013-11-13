@@ -207,13 +207,14 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         if ($answer->answer == '*') {
             return $answer;
         }
-        list($penalty, $feedback) =
-                        self::compare_num_as_string_with_answer($response['answer'], $answer);
+        list($penalty, $feedback, $warning) = self::compare_num_as_string_with_answer(
+                $response['answer'], $answer);
         $answertoreturn = clone($answer);
         $answertoreturn->fraction = $answer->fraction - $penalty;
         if (!empty($feedback)) {
             $answertoreturn->feedback = $feedback;
         }
+        $answertoreturn->feedback .= $warning;
         $state = question_state::graded_state_for_fraction($answertoreturn->fraction);
         if ($penalty == 1 && $feedback == '') {
             return null;
@@ -222,25 +223,40 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         }
     }
 
+    /**
+     * Compare a student's response with one of the answers.
+     * @param string $string a response.
+     * @param qtype_varnumericset_answer $answer and answer.
+     * @return array with three elements: penalty, automatic feedback and warning.
+     * The automatic feedback is something like "you have the wrong number of significant figures."
+     * The warning is something like "Only the numerical part of your response was graded."
+     */
     protected function compare_num_as_string_with_answer($string,
-                                                            qtype_varnumericset_answer $answer) {
+            qtype_varnumericset_answer $answer) {
         $autofireerrorfeedback = '';
+
+        // Evaluate the answer.
         $evaluated = $this->calculator->evaluate($answer->answer);
         $rounded = (float)self::round_to($evaluated, $answer->sigfigs, true);
-        $num = new qtype_varnumericset_number_interpreter_number_with_optional_sci_notation($this->usesupeditor);
-        $num->match($string);
-        $string = $num->get_normalised();
-        $feedback = $this->feedback_for_post_prefix_parts($num->get_prefix(), $num->get_postfix());
         if ($answer->error == '') {
             $allowederror = 0;
         } else {
             $allowederror = $this->calculator->evaluate($answer->error);
         }
+
+        // Parse the response.
+        $num = new qtype_varnumericset_number_interpreter_number_with_optional_sci_notation($this->usesupeditor);
+        $num->match($string);
+        $string = $num->get_normalised();
+        $warning = $this->feedback_for_post_prefix_parts($num->get_prefix(), $num->get_postfix());
+
+        // Evaluate.
         if (self::num_within_allowed_error($string, $rounded, $allowederror) &&
                 (($answer->sigfigs == 0)
                         || self::has_number_of_sig_figs($string, $answer->sigfigs)) &&
                 (!$this->requirescinotation || self::is_sci_notation($string))) {
-            return array(0, $feedback); // This answer is a perfect match 0% penalty.
+            return array(0, '', $warning); // This answer is a perfect match 0% penalty.
+
         } else if ($answer->checknumerical &&
                         self::num_within_allowed_error($string, $rounded, $allowederror)) {
             // Numerically correct.
@@ -250,32 +266,40 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
             } else {
                 $autofireerrors = 0;
             }
+
         } else if (($answer->sigfigs != 0) &&
                         self::has_too_many_sig_figs($string, $evaluated, $answer->sigfigs)) {
             $autofireerrorfeedback = 'toomanysigfigs';
             $autofireerrors = 1;
+
         } else if (($answer->checkpowerof10 != 0) && self::wrong_by_a_factor_of_ten($string,
                                         $rounded, $allowederror, $answer->checkpowerof10)) {
             $autofireerrorfeedback = 'wrongbyfactorof10';
             $autofireerrors = 1;
+
         } else if (($answer->checkrounding != 0) &&
                             self::rounding_incorrect($string, $evaluated, $answer->sigfigs)) {
             $autofireerrorfeedback = 'roundingincorrect';
             $autofireerrors = 1;
+
         } else {
-            return array(1, ''); // This answer is not a match 100% penalty.
+            return array(1, '', ''); // This answer is not a match 100% penalty.
         }
+
         if (!empty($autofireerrorfeedback)
                             && $this->requirescinotation && !self::is_sci_notation($string)) {
-            $autofireerrorfeedback = $autofireerrorfeedback.'andwrongformat';
+            $autofireerrorfeedback = $autofireerrorfeedback . 'andwrongformat';
             $autofireerrors ++;
         }
-        $penalty = ($answer->syserrorpenalty * $autofireerrors);
-        return array($penalty, get_string('ae_'.$autofireerrorfeedback, 'qtype_varnumericset').$feedback);
+
+        $penalty = $answer->syserrorpenalty * $autofireerrors;
+        return array($penalty,
+                get_string('ae_' . $autofireerrorfeedback, 'qtype_varnumericset'),
+                $warning);
     }
 
     protected function feedback_for_post_prefix_parts($prefix, $postfix) {
-        if ($prefix.$postfix != '') {
+        if ($prefix . $postfix !== '') {
             return get_string('preandpostfixesignored', 'qtype_varnumericset');
         } else {
             return '';

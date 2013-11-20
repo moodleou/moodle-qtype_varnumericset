@@ -292,6 +292,43 @@ class qtype_varnumericset_walkthrough_testcase extends qbehaviour_walkthrough_te
         $this->assertEquals('12,300', $this->quba->get_response_summary($this->slot));
     }
 
+    public function test_deferred_feedback_for_3_sig_figs_answer_point_0() {
+
+        // Create a varnumericset question.
+        $q = test_question_maker::make_question('varnumericset', '3_sig_figs_point_0');
+        $this->start_attempt_at_question($q, 'deferredfeedback', 100);
+
+        $this->check_current_state(question_state::$todo);
+        $this->check_current_mark(null);
+        $this->check_current_output(
+            $this->get_contains_marked_out_of_summary(),
+            $this->get_does_not_contain_feedback_expectation(),
+            $this->get_does_not_contain_try_again_button_expectation(),
+            $this->get_no_hint_visible_expectation());
+
+        // Save the correct answer that will be accepted.
+        $this->process_submission(array('answer' => '12.0'));
+
+        $this->check_current_state(question_state::$complete);
+        $this->check_current_mark(null);
+        $this->check_current_output(
+            $this->get_contains_marked_out_of_summary(),
+            $this->get_does_not_contain_validation_error_expectation(),
+            $this->get_no_hint_visible_expectation());
+        $this->assertEquals(null, $this->quba->get_response_summary($this->slot));
+
+        $this->process_submission(array('-finish' => 1));
+
+        $this->check_current_state(question_state::$gradedright);
+        $this->check_current_mark(100);
+        $this->check_current_output(
+            $this->get_contains_mark_summary(100),
+            $this->get_contains_correct_expectation(),
+            $this->get_does_not_contain_validation_error_expectation(),
+            $this->get_no_hint_visible_expectation());
+        $this->assertEquals('12.0', $this->quba->get_response_summary($this->slot));
+    }
+
     public function test_deferred_feedback_for_3_sig_figs_answer_with_correct_answer() {
 
         // Create a varnumericset question.

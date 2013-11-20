@@ -72,6 +72,9 @@ abstract class qtype_varnumericset_number_interpreter_part_using_preg_pattern ex
         if (1 === preg_match($this->pattern(), $string, $matches, PREG_OFFSET_CAPTURE)) {
             $this->prefix = substr($string, 0, $matches[0][1]);
             $this->postfix = substr($string, $matches[0][1] + strlen($matches[0][0]));
+            if ($this->postfix === false) {
+                $this->postfix = '';
+            }
             $this->extract_parts($matches);
             return true;
         } else {
@@ -169,7 +172,7 @@ class qtype_varnumericset_number_interpreter_number_with_optional_decimal_place 
 
         // Add decimal point and stuff after decimal point if there is stuff
         // after decimal point.
-        if ($this->get_post_dec_point()) {
+        if ($this->get_post_dec_point() !== '') {
             $normalised .= '.'.$this->get_post_dec_point();
         }
 

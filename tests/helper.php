@@ -37,7 +37,7 @@ class qtype_varnumericset_test_helper extends question_test_helper {
     public function get_test_questions() {
         return array('no_accepted_error', 'numeric_accepted_error', '3_sig_figs', '3_sig_figs_2',
                         '3_sig_figs_trailing_zero', '3_sig_figs_trailing_zero_negative_answer',
-                        '1_sig_fig', 'with_variables', 'custom_rounding_feebdack');
+                        '1_sig_fig', '3_sig_figs_point_0', 'with_variables', 'custom_rounding_feebdack');
     }
 
     /**
@@ -60,7 +60,7 @@ class qtype_varnumericset_test_helper extends question_test_helper {
                                                  '-4.2',  // Answer.
                                                  '1',     // Fraction.
                                                  '<p>Your answer is correct.</p>', // Feedback.
-                                                 'html',  // Feedbackformat.
+                                                 FORMAT_HTML,  // Feedbackformat.
                                                  '0',     // Sigfigs.
                                                  '',      // Error.
                                                  '0.1',   // Syserrorpenalty.
@@ -72,7 +72,7 @@ class qtype_varnumericset_test_helper extends question_test_helper {
                                                  '*',     // Answer.
                                                  '0',     // Fraction.
                                                  '<p>Your answer is incorrect.</p>', // Feedback.
-                                                 'html',  // Feedbackformat.
+                                                 FORMAT_HTML,  // Feedbackformat.
                                                  '0',     // Sigfigs.
                                                  '',      // Error.
                                                  '0.1000000', // Syserrorpenalty.
@@ -163,6 +163,16 @@ class qtype_varnumericset_test_helper extends question_test_helper {
         return $vs;
     }
 
+    public function make_varnumericset_question_3_sig_figs_point_0() {
+        $vs = $this->make_varnumericset_question_no_accepted_error();
+
+        $vs->questiontext = '<p>The answer is 12.0 to 3 sig figs.</p>';
+        $vs->generalfeedback = '<p>General feedback 12.0.</p>';
+        $vs->answers[1]->answer = '12.0';
+        $vs->answers[1]->sigfigs = 3;
+        return $vs;
+    }
+
     public function make_varnumericset_question_with_variables() {
         $vs = $this->make_varnumericset_question_no_accepted_error();
 
@@ -209,7 +219,7 @@ class qtype_varnumericset_test_helper extends question_test_helper {
                 '2.285714', // Answer.
                 '0',        // Fraction.
                 '<p>You have not given your answer to just one decimal place as requested.</p>', // Feedback.
-                'html',     // Feedbackformat.
+                FORMAT_HTML,     // Feedbackformat.
                 '0',        // Sigfigs.
                 '0.01',     // Error.
                 '0.1',      // Syserrorpenalty.
@@ -223,7 +233,7 @@ class qtype_varnumericset_test_helper extends question_test_helper {
                 '*',        // Answer.
                 '0',        // Fraction.
                 '<p>Your answer is incorrect.</p>', // Feedback.
-                'html',     // Feedbackformat.
+                FORMAT_HTML,     // Feedbackformat.
                 '0',        // Sigfigs.
                 '',         // Error.
                 '0.1',      // Syserrorpenalty.

@@ -226,12 +226,12 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
     /**
      * Compare a student's response with one of the answers.
      * @param string $string a response.
-     * @param qtype_varnumericset_answer $answer and answer.
+     * @param qtype_varnumericset_answer $answer an answer.
      * @return array with three elements: penalty, automatic feedback and warning.
      * The automatic feedback is something like "you have the wrong number of significant figures."
      * The warning is something like "Only the numerical part of your response was graded."
      */
-    protected function compare_num_as_string_with_answer($string,
+    public function compare_num_as_string_with_answer($string,
             qtype_varnumericset_answer $answer) {
         $autofireerrorfeedback = '';
 
@@ -312,11 +312,7 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
             $allowederror = $answer * 1e-6;
         }
         $errorduetofloatprecision = abs($answer * 1e-15);
-        if (abs($answer - $cast) <= abs($allowederror) + $errorduetofloatprecision) {
-            return true;
-        } else {
-            return false;
-        }
+        return abs($answer - $cast) <= abs($allowederror) + $errorduetofloatprecision;
     }
 
     /**

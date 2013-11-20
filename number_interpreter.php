@@ -134,7 +134,7 @@ class qtype_varnumericset_number_interpreter_number_with_optional_decimal_place 
         $decsep = preg_quote(QTYPE_VARNUMERICSET_DECIMAL_SEP, '!');
         return '!(?<sign>[+-]?)\s*'.
                 '(?<predecpoint>[0-9][0-9'.$thousandsep.']*)'.
-                '(\s*'.$decsep.'\s*(?<postdecpoint>[0-9]+))?!i';
+                '(\s*'.$decsep.'\s*(?<postdecpoint>[0-9]*))?!i';
     }
 
     protected function parts_to_extract() {

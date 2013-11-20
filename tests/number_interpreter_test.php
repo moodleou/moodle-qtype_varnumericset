@@ -59,6 +59,11 @@ class qtype_varnumericset_number_interpreter_test extends basic_testcase {
         $this->assertSame('12.0', $num->get_normalised());
         $this->assertSame('', $num->get_prefix());
         $this->assertSame('', $num->get_postfix());
+
+        $this->assertTrue($num->match('12.'));
+        $this->assertSame('12', $num->get_normalised());
+        $this->assertSame('', $num->get_prefix());
+        $this->assertSame('', $num->get_postfix());
     }
 
     public function test_interpret_number_with_optional_sci_notation_not_accepting_html_exponent() {
@@ -86,6 +91,14 @@ class qtype_varnumericset_number_interpreter_test extends basic_testcase {
 
         $this->assertTrue($num->match('12.0'));
         $this->assertSame('12.0', $num->get_normalised());
+
+        $this->assertTrue($num->match('12.'));
+        $this->assertSame('12', $num->get_normalised());
+
+        $this->assertTrue($num->match('12.m'));
+        $this->assertSame('12', $num->get_normalised());
+        $this->assertSame('', $num->get_prefix());
+        $this->assertSame('m', $num->get_postfix());
     }
 
     public function test_interpret_number_with_optional_sci_notation_accepting_html_exponent() {
@@ -113,5 +126,13 @@ class qtype_varnumericset_number_interpreter_test extends basic_testcase {
 
         $this->assertTrue($num->match('12.0'));
         $this->assertSame('12.0', $num->get_normalised());
+
+        $this->assertTrue($num->match('12.'));
+        $this->assertSame('12', $num->get_normalised());
+
+        $this->assertTrue($num->match('12.m'));
+        $this->assertSame('12', $num->get_normalised());
+        $this->assertSame('', $num->get_prefix());
+        $this->assertSame('m', $num->get_postfix());
     }
 }

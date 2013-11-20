@@ -233,7 +233,7 @@ class qtype_varnumericset_question_test extends advanced_testcase {
      * @param array $enteredresponse
      */
     protected function grade($question, $enteredresponse) {
-        list($fraction, $stateforfraction) = $question->grade_response(array('answer'=>$enteredresponse));
+        list($fraction, $stateforfraction) = $question->grade_response(array('answer' => $enteredresponse));
         return $fraction;
     }
 
@@ -338,6 +338,8 @@ class qtype_varnumericset_question_test extends advanced_testcase {
         $this->assertEquals(1, $this->grade($question, '0012300'));
         $this->assertEquals(1, $this->grade($question, '123e2'));
         $this->assertEquals(1, $this->grade($question, '00123e2'));
+        $this->assertEquals(1, $this->grade($question, '1.23e4'));
+        $this->assertEquals(1, $this->grade($question, '123.e2'));
         $this->assertEquals(1, $this->grade($question, '12.3e3'));
         $this->assertEquals(1, $this->grade($question, '1.23e4'));
         $this->assertEquals(1, $this->grade($question, '0.123e5'));

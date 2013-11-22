@@ -135,7 +135,7 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
         }
 
         if ($this->question->formoptions->repeatelements) {
-            $noofvariants = max($noofvariants, 5, $noofvariantsindb + 2);
+            $noofvariants = max($noofvariants, 5, $noofvariantsindb);
         } else {
             $noofvariants = max(5, $noofvariantsindb);
         }

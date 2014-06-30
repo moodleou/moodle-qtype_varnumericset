@@ -133,7 +133,7 @@ class qtype_varnumericset_number_interpreter_number_with_optional_decimal_place 
         $thousandsep = preg_quote(QTYPE_VARNUMERICSET_THOUSAND_SEP, '!');
         $decsep = preg_quote(QTYPE_VARNUMERICSET_DECIMAL_SEP, '!');
         return '!(?<sign>[+-]?)\s*'.
-                '(?<predecpoint>[0-9][0-9'.$thousandsep.']*)'.
+                '(?<predecpoint>[0-9][0-9'.$thousandsep.']*)?'.
                 '(\s*'.$decsep.'\s*(?<postdecpoint>[0-9]*))?!i';
     }
 
@@ -181,6 +181,14 @@ class qtype_varnumericset_number_interpreter_number_with_optional_decimal_place 
             $normalised = $this->get_normalised_sign().$normalised;
         }
         return $normalised;
+    }
+
+    protected function match_pattern($string) {
+        $result = parent::match_pattern($string);
+        if ($result && $this->predecpoint === '' && $this->postdecpoint === '') {
+            return false;
+        }
+        return $result;
     }
 }
 

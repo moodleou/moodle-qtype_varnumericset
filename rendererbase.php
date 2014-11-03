@@ -73,9 +73,9 @@ class qtype_varnumeric_renderer_base extends qtype_renderer {
         if ($usehtml && $options->readonly) {
             $input = html_writer::tag('span', $currentanswer, $generalattributes);
         } else if ($usehtml) {
-            $textareaattributes = array('name' => $inputname, 'rows' => 2, 'cols' => $size);
+            $textareaattributes = array('id' => $inputname, 'name' => $inputname, 'rows' => 2, 'cols' => $size);
             $input = html_writer::tag('span', html_writer::tag('textarea', $currentanswer,
-                    $textareaattributes + $generalattributes), array('class'=>'answerwrap'));
+                    $textareaattributes + $generalattributes), array('class' => 'answerwrap'));
             $supsuboptions = array(
                 'supsub' => 'sup'
             );
@@ -85,7 +85,9 @@ class qtype_varnumeric_renderer_base extends qtype_renderer {
                 'type' => 'text',
                 'size' => $size,
                 'name' => $inputname,
-                'value' => $currentanswer
+                'id'   => $inputname,
+                'value' => $currentanswer,
+                'aria-labelledby' => $inputname . '-label',
             );
             if ($options->readonly) {
                 $inputattributes['readonly'] = 'readonly';
@@ -95,16 +97,20 @@ class qtype_varnumeric_renderer_base extends qtype_renderer {
         $input .= $feedbackimg;
 
         if ($placeholder) {
-            $questiontext = substr_replace($questiontext, $input,
+            $inputinplace = html_writer::tag('label', get_string('answer'),
+                    array('for' => $inputname, 'class' => 'accesshide'));
+            $inputinplace .= $input;
+            $questiontext = substr_replace($questiontext, $inputinplace,
                     strpos($questiontext, $placeholder), strlen($placeholder));
         }
 
         $result = html_writer::tag('div', $questiontext, array('class' => 'qtext'));
 
         if (!$placeholder) {
-            $result .= html_writer::start_tag('div', array('class' => 'ablock'));
-            $result .= get_string('answer', 'qtype_varnumericset',
-                    html_writer::tag('div', $input, array('class' => 'answer')));
+            $result .= html_writer::start_tag('div', array('class' => 'ablock', 'id' => $inputname . '-label'));
+            $result .= html_writer::tag('label', get_string('answercolon', 'qtype_numerical'),
+                    array('for' => $inputname));
+            $result .= html_writer::tag('div', $input, array('class' => 'answer'));
             $result .= html_writer::end_tag('div');
         }
 

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<quiz>
+<!-- question: 0  -->
+  <question type="category">
+    <category>
+        <text>Imported questions</text>
+
+    </category>
+  </question>
+
+<!-- question: 1  -->
+  <question type="varnumericset">
+    <name>
+      <text>Imported variable numeric set question</text>
+    </name>
+    <questiontext format="html">
+      <text>What is [[a]] + [[b]]?</text>
+    </questiontext>
+    <generalfeedback format="html">
+      <text></text>
+    </generalfeedback>
+    <defaultgrade>1.0000000</defaultgrade>
+    <penalty>0.3333333</penalty>
+    <hidden>0</hidden>
+    <randomseed></randomseed>
+    <requirescinotation>0</requirescinotation>
+    <answer fraction="100" format="moodle_auto_format">
+      <text>c</text>
+      <feedback format="html">
+        <text>Well done!</text>
+      </feedback>
+      <sigfigs>0</sigfigs>
+      <error></error>
+      <syserrorpenalty>0.0000000</syserrorpenalty>
+      <checknumerical>0</checknumerical>
+      <checkscinotation>0</checkscinotation>
+      <checkpowerof10>0</checkpowerof10>
+      <checkrounding>0</checkrounding>
+    </answer>
+    <answer fraction="0" format="moodle_auto_format">
+      <text>*</text>
+      <feedback format="html">
+        <text>Sorry, no.</text>
+      </feedback>
+      <sigfigs>0</sigfigs>
+      <error></error>
+      <syserrorpenalty>0.0000000</syserrorpenalty>
+      <checknumerical>0</checknumerical>
+      <checkscinotation>0</checkscinotation>
+      <checkpowerof10>0</checkpowerof10>
+      <checkrounding>0</checkrounding>
+    </answer>
+    <var>
+      <varno>0</varno>
+      <nameorassignment>a</nameorassignment>
+      <variant>
+        <variantno>0</variantno>
+        <value>2</value>
+      </variant>
+      <variant>
+        <variantno>1</variantno>
+        <value>3</value>
+      </variant>
+      <variant>
+        <variantno>2</variantno>
+        <value>5</value>
+      </variant>
+    </var>
+    <var>
+      <varno>1</varno>
+      <nameorassignment>b</nameorassignment>
+      <variant>
+        <variantno>0</variantno>
+        <value>8</value>
+      </variant>
+      <variant>
+        <variantno>1</variantno>
+        <value>5</value>
+      </variant>
+      <variant>
+        <variantno>2</variantno>
+        <value>3</value>
+      </variant>
+    </var>
+    <var>
+      <varno>2</varno>
+      <nameorassignment>c = a + b</nameorassignment>
+      <variant>
+        <variantno>0</variantno>
+        <value>10</value>
+      </variant>
+      <variant>
+        <variantno>1</variantno>
+        <value>8</value>
+      </variant>
+      <variant>
+        <variantno>2</variantno>
+        <value>8</value>
+      </variant>
+    </var>
+    <hint format="html">
+      <text>Please try again.</text>
+    </hint>
+    <hint format="html">
+      <text>You may use a calculator if necessary.</text>
+    </hint>
+  </question>
+</quiz>

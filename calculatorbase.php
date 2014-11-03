@@ -247,7 +247,7 @@ abstract class qtype_varnumeric_calculator_base {
 
     public function load_data_from_form($formdata) {
         foreach ($formdata['varname'] as $varno => $varname) {
-            if ($varname!=='') {
+            if ($varname !== '') {
                 $this->add_variable($varno, $varname);
             }
         }
@@ -257,7 +257,7 @@ abstract class qtype_varnumeric_calculator_base {
                 $variants = $formdata['variant'.$variantno];
                 foreach ($variants as $varno => $value) {
                     if ($formdata['vartype'][$varno] == 1) {
-                        if ($value!=='') {
+                        if ($value !== '') {
                             $this->add_defined_variant($varno, $variantno, $value);
                         }
                     }
@@ -335,7 +335,7 @@ abstract class qtype_varnumeric_calculator_base {
         $dataforform->randomseed = $dataforform->options->randomseed;
         $dataforform->vartype = $this->vartypes;
         $dataforform->varname = $this->variables;
-        for ($variantno=0; $variantno < $this->get_num_variants_in_form(); $variantno++) {
+        for ($variantno = 0; $variantno < $this->get_num_variants_in_form(); $variantno++) {
             $propname = 'variant'.$variantno;
             $dataforform->{$propname} = array();
             if (isset($this->predefinedvariants[$variantno])) {

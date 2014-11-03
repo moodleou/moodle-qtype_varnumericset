@@ -368,7 +368,7 @@ abstract class qtype_varnumeric_base extends question_type {
         parent::initialise_question_instance($question, $questiondata);
         $this->initialise_question_vars_and_variants($question, $questiondata);
         $this->initialise_varnumeric_answers($question, $questiondata);
-        $question->requirescinotation = $question->usesupeditor =  (bool)$questiondata->options->requirescinotation;
+        $question->requirescinotation = $question->usesupeditor = (bool) $questiondata->options->requirescinotation;
     }
     public function load_var_and_variants_from_db($questionid) {
         global $DB;

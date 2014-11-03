@@ -134,10 +134,11 @@ class backup_qtype_varnumericset_plugin extends backup_qtype_plugin {
         // Set the sources.
         $answer->set_source_sql('
                 SELECT vans.*
-                FROM {question_answers} AS ans, {qtype_varnumericset_answers} AS vans
-                WHERE ans.question = :question AND ans.id = vans.answerid
-                ORDER BY id',
+                  FROM {qtype_varnumericset_answers} vans
+                  JOIN {question_answers} ans ON ans.id = vans.answerid
+                 WHERE ans.question = :question
+              ORDER BY id',
                 array('question' => backup::VAR_PARENTID));
-        // Don't need to annotate ids nor files.
+        // Don't need to annotate ids or files.
     }
 }

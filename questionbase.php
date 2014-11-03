@@ -331,12 +331,12 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
 
         for ($wrongby = 1; $wrongby <= $maxfactor; $wrongby++) {
             $multiplier = pow(10, $wrongby);
-            if (self::num_within_allowed_error($normalizedstring, $roundedanswer*$multiplier,
-                                                    $error*$multiplier)) {
+            if (self::num_within_allowed_error($normalizedstring, $roundedanswer * $multiplier,
+                                                    $error * $multiplier)) {
                 return true;
             }
-            if (self::num_within_allowed_error($normalizedstring, $roundedanswer/$multiplier,
-                                                    $error/$multiplier)) {
+            if (self::num_within_allowed_error($normalizedstring, $roundedanswer / $multiplier,
+                                                    $error / $multiplier)) {
                 return true;
             }
         }
@@ -368,22 +368,22 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
             }
             // What power of ten do we multiply by before chopping off bit behind
             // decimal point?
-            $digitsafterdecimalpoint = $sigfigs - $poweroften -1;
+            $digitsafterdecimalpoint = $sigfigs - $poweroften - 1;
             $number = $number * pow(10, $digitsafterdecimalpoint);
             if (!$floor) {
                 $rounded = round($number);
             } else {
                 $rounded = floor($number);
             }
-            $number =  $rounded / pow(10, $digitsafterdecimalpoint);
+            $number = $rounded / pow(10, $digitsafterdecimalpoint);
             // Change to a string so we can do a string compare and check we
             // have the right no of 0s on the end if necessary.
             if ($scinotation) {
                 $f = '%.'.($sigfigs - 1).'e';
             } else if ($digitsafterdecimalpoint >= 0) {
-                $f= '%.'.($digitsafterdecimalpoint).'F';
+                $f = '%.'.($digitsafterdecimalpoint).'F';
             } else {
-                $f= '%.0F'; // No digits after decimal point.
+                $f = '%.0F'; // No digits after decimal point.
             }
             $number = sprintf($f, $number);
         } else {
@@ -478,7 +478,7 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
     }
 
     public function start_attempt(question_attempt_step $step, $variantno) {
-        $this->calculator->evaluate_variant($variantno-1);
+        $this->calculator->evaluate_variant($variantno - 1);
         $this->calculator->save_state_as_qt_data($step);
     }
 
@@ -572,7 +572,6 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
 
         $calculatorname = $this->qtype->calculator_name();
         $responsehtmlized = $calculatorname::htmlize_exponent($num->get_normalised());
-
 
         $responsetodisplay = $num->get_prefix().$responsehtmlized.$num->get_postfix();
         return array($this->id => new question_classified_response($ansid, $responsetodisplay, $fraction));

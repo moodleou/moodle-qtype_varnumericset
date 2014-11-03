@@ -139,9 +139,9 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
         } else {
             $noofvariants = max(5, $noofvariantsindb);
         }
-        for ($i=0; $i < $noofvariants; $i++) {
+        for ($i = 0; $i < $noofvariants; $i++) {
             $repeated[] = $mform->createElement('text', "variant$i",
-                get_string('variant', 'qtype_varnumericset', $i+1), array('size' => 40));
+                get_string('variant', 'qtype_varnumericset', $i + 1), array('size' => 40));
             $repeatedoptions["variant$i"]['disabledif'] = array('vartype', 'eq', 0);
             if ($i == 0) {
                 $repeatedoptions["variant$i"]['helpbutton']
@@ -167,7 +167,7 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
          * the start of the form.
          */
         $repeated[] = $mform->createElement('text', "variant_last",
-                'last variant', '', array('class'=>'last'));
+                'last variant', '', array('class' => 'last'));
         $mform->setType('variant_last', PARAM_TEXT);
     }
 
@@ -316,8 +316,8 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
         }
         $maxvariantno = -1;
         foreach ($data['varname'] as $varno => $varname) {
-            if (trim($varname) !=='') {
-                $isvalidvar =  EvalMath::is_valid_var_or_func_name($varname);
+            if (trim($varname) !== '') {
+                $isvalidvar = EvalMath::is_valid_var_or_func_name($varname);
                 $isvalidassignment = $calculatorname::is_assignment($varname);
                 if ($data['vartype'][$varno] == 1 &&  !$isvalidvar) {
                     $errors["varname[$varno]"] =
@@ -345,7 +345,7 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
         }
         if ($maxvariantno !== -1) {
             foreach ($data['varname'] as $varno => $varname) {
-                if ($data['vartype'][$varno] == 1 && trim($varname) !=='') {
+                if ($data['vartype'][$varno] == 1 && trim($varname) !== '') {
                     for ($variantno = 1; $variantno <= $maxvariantno; $variantno++) {
                         if (empty($data["variant{$variantno}"][$varno])) {
                             $errors["variant{$variantno}[{$varno}]"] =
@@ -366,7 +366,7 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
 
             $errors = $calculator->get_errors();
         }
-        if ($answercount==0) {
+        if ($answercount == 0) {
             $errors['answeroptions[0]'] = get_string('notenoughanswers', 'qtype_varnumericset', 1);
         }
         if ($maxgrade == false) {

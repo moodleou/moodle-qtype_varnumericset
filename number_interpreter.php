@@ -210,7 +210,7 @@ abstract class qtype_varnumericset_number_interpreter_exponent_following_float_b
         if ($exponent < 0) {
             $this->sign = '-';
         } else if ($exponent >= 0) {
-            $this->sign =  '';
+            $this->sign = '';
         }
         $this->exp = abs($exponent);
     }
@@ -313,15 +313,15 @@ class qtype_varnumericset_number_interpreter_number_with_optional_sci_notation e
         $coeffpostdecpoint = $num->get_post_dec_point();
         $exponent = $exp->get_value();
         $coeffpredecpoint = ltrim($coeffpredecpoint, '0');
-        if (strlen($coeffpredecpoint)>1) {
-            $exponent += (int)(strlen($coeffpredecpoint)-1);
+        if (strlen($coeffpredecpoint) > 1) {
+            $exponent += (int) (strlen($coeffpredecpoint) - 1);
             $coeffpostdecpoint = substr($coeffpredecpoint, 1).$coeffpostdecpoint;
             $coeffpredecpoint = substr($coeffpredecpoint, 0, 1);
         }
         while ((strlen($coeffpostdecpoint) !== 0) && ($coeffpredecpoint === '' || $coeffpredecpoint === '0')) {
             $exponent--;
-            $coeffpredecpoint =  substr($coeffpostdecpoint, 0, 1);
-            $coeffpostdecpoint =  substr($coeffpostdecpoint, 1);
+            $coeffpredecpoint = substr($coeffpostdecpoint, 0, 1);
+            $coeffpostdecpoint = substr($coeffpostdecpoint, 1);
         }
         $num->set_pre_dec_point($coeffpredecpoint);
         $num->set_post_dec_point($coeffpostdecpoint);

@@ -86,5 +86,5 @@ body#page-question-type-varnumericset div[id^=fgroup_id_][id*=answeroptions_] la
 body#page-question-type-varnumericset div[id^=fgroup_id_][id*=autofirerow1_] label[for^='id_checknumerical_'],
 body#page-question-type-varnumericset div[id^=fgroup_id_][id*=autofirerow2_] label[for^='id_checkpowerof10_'],
 body#page-question-type-varnumericset div[id^=fgroup_id_][id*=autofirerow3_] label[for^='id_syserrorpenalty_'] {
-    margin-left: 0;	
+    margin-left: 0;
 }

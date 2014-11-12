@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * varnumericset question type version information.
+ * Variable numeric sets question type version information.
  *
  * @package   qtype_varnumericset
  * @copyright 2011 The Open University
@@ -24,9 +24,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2014010800;
-$plugin->requires  = 2013051400;
+$plugin->version   = 2014111200;
+$plugin->requires  = 2013101800;
 $plugin->cron      = 0;
 $plugin->component = 'qtype_varnumericset';
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '1.4 for Moodle 2.5+';
+$plugin->release   = '1.5 for Moodle 2.6+';

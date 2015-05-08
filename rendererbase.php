@@ -64,7 +64,11 @@ class qtype_varnumeric_renderer_base extends qtype_renderer {
 
         $usehtml = false;
         if ($question->usesupeditor) {
-            $editor = get_texteditor('supsub');
+            if (class_exists('editor_ousupsub_helper')) {
+                $editor = editor_ousupsub_helper::get_editor();
+            } else {
+                $editor = get_texteditor('supsub');
+            }
             if ($editor !== false) {
                 $usehtml = true;
             }

@@ -176,8 +176,6 @@ class qtype_varnumericset_walkthrough_testcase extends qbehaviour_walkthrough_te
             $this->get_contains_try_again_button_expectation(true),
             $this->get_does_not_contain_correctness_expectation(),
             new question_pattern_expectation('/' .
-                preg_quote(get_string('notcomplete', 'qbehaviour_interactive')) . '/'),
-            new question_pattern_expectation('/' .
                 preg_quote(get_string('ae_toomanysigfigs', 'qtype_varnumericset')) . '/'));
 
         // Do try again.

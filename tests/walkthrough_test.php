@@ -107,7 +107,6 @@ class qtype_varnumericset_walkthrough_testcase extends qbehaviour_walkthrough_te
         $this->check_current_mark(100);
         $this->check_current_output(
                 $this->get_contains_mark_summary(100),
-                $this->get_contains_submit_button_expectation(false),
                 $this->get_contains_correct_expectation(),
                 $this->get_does_not_contain_validation_error_expectation(),
                 $this->get_no_hint_visible_expectation());
@@ -172,7 +171,6 @@ class qtype_varnumericset_walkthrough_testcase extends qbehaviour_walkthrough_te
         $this->check_current_mark(null);
         $this->check_current_output(
             $this->get_contains_marked_out_of_summary(),
-            $this->get_contains_submit_button_expectation(false),
             $this->get_contains_try_again_button_expectation(true),
             $this->get_does_not_contain_correctness_expectation(),
             new question_pattern_expectation('/' .
@@ -200,7 +198,6 @@ class qtype_varnumericset_walkthrough_testcase extends qbehaviour_walkthrough_te
         $this->check_current_mark(90);
         $this->check_current_output(
             $this->get_contains_mark_summary(90),
-            $this->get_contains_submit_button_expectation(false),
             $this->get_contains_correct_expectation(),
             $this->get_does_not_contain_validation_error_expectation(),
             $this->get_no_hint_visible_expectation());

@@ -64,8 +64,9 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
     }
 
     public function get_question_summary() {
-        return $this->html_to_text($this->calculator->evaluate_variables_in_text(
-                $this->questiontext), $this->questiontextformat);
+        return trim($this->html_to_text($this->calculator->evaluate_variables_in_text(
+                $this->questiontext), $this->questiontextformat),
+                "\n\r \t");
     }
 
     public function summarise_response(array $response) {

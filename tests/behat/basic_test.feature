@@ -1,4 +1,4 @@
-@ou @ou_vle @qtype @qtype_varnumericset
+@ou @ou_vle @qtype @qtype_varnumericset @_switch_window @javascript
 Feature: Test all the basic functionality of this question type
   In order evaluate students calculating ability
   As an teacher
@@ -18,7 +18,6 @@ Feature: Test all the basic functionality of this question type
     And I follow "Course 1"
     And I navigate to "Question bank" node in "Course administration"
 
-  @javascript @_switch_window
   Scenario: Create, edit then preview a variable numeric sets question.
     # Create a new question.
     And I add a "Variable numeric set" question filling the form with:

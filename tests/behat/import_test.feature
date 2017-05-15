@@ -33,6 +33,7 @@ Feature: Import and export variable numeric set questions
     # Now export again.
     When I navigate to "Export" node in "Course administration > Question bank"
     And I set the field "id_format_xml" to "1"
+    And I set the field "category" to "Imported questions (1)"
     And I press "Export questions to file"
     Then following "click here" should download between "2000" and "3000" bytes
     # If the download step is the last in the scenario then we can sometimes run

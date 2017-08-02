@@ -1,5 +1,5 @@
 @ou @ou_vle @qtype @qtype_varnumericset
-Feature: Test all the basic functionality of this question type
+Feature: Test all the basic functionality of varnumericset question type
   In order evaluate students calculating ability
   As an teacher
   I need to create and preview variable numeric questions.

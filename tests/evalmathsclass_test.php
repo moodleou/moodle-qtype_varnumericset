@@ -41,7 +41,7 @@ class qtype_varnumericset_evalmath_test extends basic_testcase {
 
         $this->assertEquals($ev->evaluate('a=2'), 2);
 
-        $this->setExpectedException('PHPUnit_Framework_Error');
+        $this->expectException('PHPUnit\Framework\Error\Warning');
         $this->assertFalse($ev->evaluate('b=2+'));
         $this->assertEquals($ev->last_error, get_string('operatorlacksoperand', 'mathslib', '+'));
 

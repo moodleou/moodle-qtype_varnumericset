@@ -19,12 +19,12 @@ Alternatively, download the zip from
 unzip it into the question/type folder, and then rename the new folder to varnumericset.
 
 You may want to install Tim's stripped down tinymce editor that only allows the use of
-superscript and subscript see (https://github.com/moodleou/moodle-editor_supsub).
+superscript and subscript see (https://github.com/moodleou/moodle-editor_ousupsub).
 To install this editor using git, type this command in the root of your Moodle install:
 
-    git clone git://github.com/moodleou/moodle-editor_supsub.git lib/editor/supsub
+    git clone git://github.com/moodleou/moodle-editor_ousupsub.git lib/editor/ousupsub
 
-Then add lib/editor/supsub to your git ignore.
+Then add lib/editor/ousupsub to your git ignore.
 
 If the editor is not installed the question type can still be used but if it is
 installed when you make a question that requires scientific notation then this

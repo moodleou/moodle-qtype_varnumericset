@@ -116,3 +116,4 @@ $string['vartypecalculated'] = 'Calculated variable';
 $string['vartypepredefined'] = 'Predefined variable';
 $string['youmustprovideavalueforatleastonevariant'] = 'You must provide a value here.';
 $string['youmustprovideavalueforallvariants'] = 'Please fill out an equal number of blanks for all predefined variables, ie. a value for each predefined variable for all question variants you require.';
+$string['privacy:metadata'] = 'The Variable numeric set plugin does not store any personal data.';

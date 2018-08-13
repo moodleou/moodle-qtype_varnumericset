@@ -1,4 +1,5 @@
 Variable Numeric Sets question type
+https://moodle.org/plugins/qtype_varnumericset
 
 Question type for Moodle - for numeric questions with variable and expression
 evaluation. All values are precalculated although a question can have several
@@ -7,24 +8,20 @@ variants with different variable values for each variant.
 The question type was created by Jamie Pratt (http://jamiep.org/) for
 the Open University (http://www.open.ac.uk/).
 
-This version of this question type is compatible with Moodle 2.5+. There are
+This version of this question type is compatible with Moodle 3.4+. There are
 other versions available for Moodle 2.3+.
 
-To install using git, type this command in the root of your Moodle install:
+Either install from the Moodle plugins database, using the link above, or to
+install using git, type this command in the root of your Moodle install:
+
     git clone git://github.com/moodleou/moodle-qtype_varnumericset.git question/type/varnumericset
-Then add question/type/varnumericset to your git ignore.
+    echo /question/type/varnumericset/ >> .git/info/exclude
 
-Alternatively, download the zip from
-    https://github.com/moodleou/moodle-qtype_varnumericset/zipball/master
-unzip it into the question/type folder, and then rename the new folder to varnumericset.
-
-You may want to install Tim's stripped down tinymce editor that only allows the use of
-superscript and subscript see (https://github.com/moodleou/moodle-editor_ousupsub).
-To install this editor using git, type this command in the root of your Moodle install:
+You probably also want to install the optional superscript/subscript editor, either from
+https://moodle.org/plugins/editor_ousupsub, or using git:
 
     git clone git://github.com/moodleou/moodle-editor_ousupsub.git lib/editor/ousupsub
-
-Then add lib/editor/ousupsub to your git ignore.
+    echo /lib/editor/ousupsub/ >> .git/info/exclude
 
 If the editor is not installed the question type can still be used but if it is
 installed when you make a question that requires scientific notation then this

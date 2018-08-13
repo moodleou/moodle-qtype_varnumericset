@@ -26,7 +26,6 @@ defined('MOODLE_INTERNAL') || die();
 
 $plugin->version   = 2018081300;
 $plugin->requires  = 2017111300;
-$plugin->cron      = 0;
 $plugin->component = 'qtype_varnumericset';
 $plugin->maturity  = MATURITY_STABLE;
 $plugin->release   = '1.7 for Moodle 3.4+';

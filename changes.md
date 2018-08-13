@@ -1,4 +1,4 @@
-# Change log for the Pattern match with JME question type
+# Change log for the Variable numeric sets question type
 
 
 ## Changes in 1.7

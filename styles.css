@@ -4,7 +4,7 @@
     display: inline;
 }
 .que.varnumericset span.answerwrap {
-    display : inline-block;
+    display: inline-block;
 }
 .que.varnumericset .answer input {
     width: 99%;
@@ -14,12 +14,12 @@
 body#page-question-type-varnumericset div[id^=fitem_id_][id*=vartype_],
 body#page-question-type-varnumericset #fitem_id_addanswers + .fitem,
 body#page-question-type-varnumericset div[id^=fgroup_id_][id*=answeroptions_] {
-    background: #EEE;
+    background: #eee;
     margin-top: 0;
     margin-bottom: 0;
     padding-bottom: 5px;
     padding-top: 5px;
-    border: 1px solid #BBB;
+    border: 1px solid #bbb;
     border-bottom: 0;
 }
 
@@ -35,43 +35,41 @@ body#page-question-type-varnumericset div[id^=fitem_id_][id*=feedback_],
 body#page-question-type-varnumericset div[id^=fitem_id_][id*=feedback_] + .fitem,
 body#page-question-type-varnumericset div[id^=fgroup_id_][id*=autofirerow1_],
 body#page-question-type-varnumericset div[id^=fgroup_id_][id*=autofirerow2_] {
-    background: #EEE;
+    background: #eee;
     margin-bottom: 0;
     margin-top: 0;
     padding-bottom: 5px;
     padding-top: 5px;
-    border: 1px solid #BBB;
+    border: 1px solid #bbb;
     border-top: 0;
     border-bottom: 0;
 }
 /* Bottom */
 body#page-question-type-varnumericset div[id^=fgroup_id_][id*=autofirerow3_] {
-    background: #EEE;
+    background: #eee;
     margin-bottom: 2em;
     margin-top: 0;
     padding-bottom: 5px;
     padding-top: 5px;
-    border: 1px solid #BBB;
+    border: 1px solid #bbb;
     border-top: 0;
 }
 /* Variant Bottom */
 body#page-question-type-varnumericset div[id^=fitem_id_][id*=_variant_last] {
     margin-bottom: 1em;
     margin-top: 0;
-    padding-bottom: 5px;
-    padding-top: 2em;
-    border: 1px solid #BBB;
+    padding: 0;
+    border: 1px solid #bbb;
     border-bottom: 0;
     border-left: 0;
     border-right: 0;
     background: #fff;
-    padding: 0;
 }
 body#page-question-type-varnumericset div[id^=fitem_id_][id*=_variant_last] div {
     display: none;
 }
 body#page-question-type-varnumericset #fitem_id_addvariants,
-body#page-question-type-varnumericset div[id^=fitem_id_][id*=requirescinotation]  + .fitem {
+body#page-question-type-varnumericset div[id^=fitem_id_][id*=requirescinotation] + .fitem {
     margin-bottom: 2em;
 }
 body#page-question-type-varnumericset #fitem_id_answer_0 {

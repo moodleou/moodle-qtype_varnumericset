@@ -1,4 +1,4 @@
-Variable Numeric Sets question type
+Variable numeric sets question type
 https://moodle.org/plugins/qtype_varnumericset
 
 Question type for Moodle - for numeric questions with variable and expression

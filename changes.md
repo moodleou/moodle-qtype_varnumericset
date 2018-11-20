@@ -1,6 +1,11 @@
 # Change log for the Variable numeric sets question type
 
 
+## Changes in 1.8
+
+* Fix automated tests for Moodle 3.6.
+
+
 ## Changes in 1.7
 
 * Privacy API implementation.

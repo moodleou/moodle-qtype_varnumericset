@@ -16,7 +16,7 @@ Feature: Test all the basic functionality of varnumericset question type
       | teacher | C1     | editingteacher |
     And I log in as "teacher"
     And I am on "Course 1" course homepage
-    And I navigate to "Question bank" node in "Course administration"
+    And I navigate to "Question bank" in current page administration
 
   @javascript
   Scenario: Create, edit then preview a variable numeric sets question.
@@ -76,7 +76,7 @@ Feature: Test all the basic functionality of varnumericset question type
     When I restore "test_backup.mbz" backup into a new course using this options:
       | Schema | Course name | Course 2 |
     Then I should see "Course 2"
-    When I navigate to "Question bank" node in "Course administration"
+    When I navigate to "Question bank" in current page administration
     Then I should see "My first variable numeric set question"
 
     # Edit the copy and verify the form field contents.

@@ -1,0 +1,11 @@
+<section ion-list *ngIf="question.text || question.text === ''" class="qtype-varnumericset">
+    <ion-item text-wrap>
+        <p>
+            <core-format-text [component]="component" [componentId]="componentId" [text]="question.text"></core-format-text>
+        </p>
+    </ion-item>
+
+    <ion-item text-wrap *ngIf="question.ousupsub" class="core-danger-item">
+        <p class="core-question-warning">{{ 'plugin.qtype_varnumericset.err_ousupsubnotsupportedonmobile' | translate }}</p>
+    </ion-item>
+</section>

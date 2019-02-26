@@ -51,6 +51,7 @@ $string['correctansweriserror'] = '{$a->answer} <sup>+</sup>/<sub>-</sub> {$a->e
 $string['correctanswerissigfigs'] = '{$a->answer} ({$a->sigfigs} significant figures)';
 $string['correctanswers'] = 'Correct answers';
 $string['error'] = 'Accepted error +/-';
+$string['err_ousupsubnotsupportedonmobile'] = 'This question requires superscripts or subscripts and so does not yet work in this app. Please answer this question in the web browser.';
 $string['expectingassignment'] = 'You must use a mathematical expression to assign a value to a \'Calculated variable\'.';
 $string['expectingvariablename'] = 'Expecting a variable name here';
 $string['expressionevaluatesasinfinite'] = 'Result is infinite.';

@@ -46,12 +46,12 @@ class qtype_varnumericset_question_test extends advanced_testcase {
      */
     public function num_within_allowed_error_cases() {
         return [
-            ['1.230001e4', 1.23e4, '', true],
-            ['1.230002e4', 1.23e4, '', false],
-            ['-1.230001e4', -1.23e4, '', true],
-            ['-1.230002e4', -1.23e4, '', false],
-            ['-9.000009e-4', -9e-4, '', true],
-            ['-9.000010e-4', -9e-4, '', false],
+            ['1.23000000000001e4', 1.23e4, '', true],
+            ['1.23000000000002e4', 1.23e4, '', false],
+            ['-1.23000000000001e4', -1.23e4, '', true],
+            ['-1.23000000000002e4', -1.23e4, '', false],
+            ['-9.00000000000009e-4', -9e-4, '', true],
+            ['-9.00000000000010e-4', -9e-4, '', false],
             ['1.2301e4', 1.23e4, '1', true],
             ['1.23015e4', 1.23e4, '1', false],
             ['12299', 1.23e4, '1', true],

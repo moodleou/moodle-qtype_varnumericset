@@ -309,10 +309,7 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
 
     public static function num_within_allowed_error($string, $answer, $allowederror) {
         $cast = (float)$string;
-        if ($allowederror == 0) {
-            $allowederror = $answer * 1e-6;
-        }
-        $errorduetofloatprecision = abs($answer * 1e-15);
+        $errorduetofloatprecision = abs($answer * 1e-14);
         return abs($answer - $cast) <= abs($allowederror) + $errorduetofloatprecision;
     }
 
@@ -326,18 +323,14 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
      */
     public static function wrong_by_a_factor_of_ten($normalizedstring, $roundedanswer,
                                                         $error, $maxfactor) {
-        if ($error == '') {
-            $error = $roundedanswer * 1e-6;
-        }
-
         for ($wrongby = 1; $wrongby <= $maxfactor; $wrongby++) {
             $multiplier = pow(10, $wrongby);
             if (self::num_within_allowed_error($normalizedstring, $roundedanswer * $multiplier,
-                                                    $error * $multiplier)) {
+                    (float) $error * $multiplier)) {
                 return true;
             }
             if (self::num_within_allowed_error($normalizedstring, $roundedanswer / $multiplier,
-                                                    $error / $multiplier)) {
+                    (float) $error / $multiplier)) {
                 return true;
             }
         }

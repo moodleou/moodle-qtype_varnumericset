@@ -238,7 +238,7 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
 
         // Evaluate the answer.
         $evaluated = $this->calculator->evaluate($answer->answer);
-        $rounded = (float)self::round_to($evaluated, $answer->sigfigs, true);
+        $rounded = (float)self::round_to($evaluated, $answer->sigfigs, false);
         if ($answer->error == '') {
             $allowederror = 0;
         } else {
@@ -382,6 +382,7 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
             $number = sprintf($f, $number);
         } else {
             if ($scinotation) {
+                // Warning, this rounds to 7 sig figs, whether we want it to or not.
                 $f = '%e';
                 $number = sprintf($f, $number);
             }

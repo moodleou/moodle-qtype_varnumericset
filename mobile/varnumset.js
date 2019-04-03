@@ -26,6 +26,7 @@ var result = {
 
         // Get useful parts of the provided question html data.
         var questiontext = div.querySelector('.qtext');
+        var ablock = div.querySelector('.ablock');
         var ousupsub = div.querySelector('.answerwrap');
 
         // Add the useful parts back into the question object ready for rendering in the template.
@@ -35,13 +36,22 @@ var result = {
             return that.CoreQuestionHelperProvider.showComponentError(that.onAbort);
         }
 
+        // Display the answer block.
+        if (ablock !== null) {
+            this.question.ablock = ablock.innerHTML;
+        }
+
         // The question allows ousupsub editor.
         // Since the app cannot process ousupsub editor yet we will prevent submitting the question.
         if (ousupsub !== null) {
             // If the question text (before it is rendered) has number of underscores to
             // adjust the width of ousupsub editor, replace the corresponding textara with blank.
-            this.question.text = this.question.text.replace(ousupsub.innerHTML, '<Span class="varnumericset-ousupsub-box"></Span>');
-            
+            if (ablock !== null) {
+                this.question.ablock = this.question.ablock.replace(ousupsub.innerHTML, '<Span class="varnumericset-ousupsub-box"></Span>');
+            } else {
+                this.question.text = this.question.text.replace(ousupsub.innerHTML, '<Span class="varnumericset-ousupsub-box"></Span>');
+            }
+
             // This is used to provide error message (<ion-item text-wrap *ngIf="question.ousupsub" class="core-danger-item"> in varnumset.html. 
             this.question.ousupsub = ousupsub;
         }

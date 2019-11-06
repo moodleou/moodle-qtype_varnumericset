@@ -45,7 +45,7 @@ Feature: Test all the basic functionality of varnumericset question type
     Then I should see "My first variable numeric set question"
 
     # Preview it.
-    When I click on "Preview" "link" in the "My first variable numeric set question" "table_row"
+    When I choose "Preview" action for "My first variable numeric set question" in the question bank
     And I switch to "questionpreview" window
     And I set the following fields to these values:
       | How questions behave | Interactive with multiple tries |
@@ -80,7 +80,7 @@ Feature: Test all the basic functionality of varnumericset question type
     Then I should see "My first variable numeric set question"
 
     # Edit the copy and verify the form field contents.
-    When I click on "Edit" "link" in the "My first variable numeric set question" "table_row"
+    When I choose "Edit question" action for "My first variable numeric set question" in the question bank
     Then the following fields match these values:
       | Question name | My first variable numeric set question |
       | Question text | What is [[a]] + [[b]]?                 |

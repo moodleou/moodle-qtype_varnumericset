@@ -1,6 +1,13 @@
 # Change log for the Variable numeric sets question type
 
 
+## Changes in 1.9
+
+* Support for Moodle mobile app for questions that don't use the superscripts/subscript editor.
+* Better grading when the allowed error is very small.
+* Update Behat tests to pass with Moodle 3.8.
+
+
 ## Changes in 1.8
 
 * Fix automated tests for Moodle 3.6.

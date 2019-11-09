@@ -17,7 +17,7 @@ Feature: Import and export variable numeric set questions
     And I log in as "teacher"
     And I am on "Course 1" course homepage
 
-  @javascript
+  @javascript @_file_upload
   Scenario: Import and export variable numeric set questions
     # Import sample file.
     When I navigate to "Question bank > Import" in current page administration

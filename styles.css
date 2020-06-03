@@ -6,9 +6,7 @@
 .que.varnumericset span.answerwrap {
     display: inline-block;
 }
-.que.varnumericset .answer input {
-    width: 99%;
-}
+
 /* Editing form. Style repeated elements*/
 /* Top */
 body#page-question-type-varnumericset div[id^=fitem_id_][id*=vartype_],

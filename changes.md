@@ -1,6 +1,11 @@
 # Change log for the Variable numeric sets question type
 
 
+## Changes in 2.0
+
+* Improve styling of answer boxes when reviewing.
+
+
 ## Changes in 1.9
 
 * Support for Moodle mobile app for questions that don't use the superscripts/subscript editor.

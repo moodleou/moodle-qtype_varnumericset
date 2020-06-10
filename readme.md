@@ -1,4 +1,4 @@
-# Variable numeric sets question type [![Build Status](https://travis-ci.org/moodleou/moodle-qtype_varnumericset.svg?branch=master)](https://travis-ci.org/moodleou/moodle-qtype_varnumericset)
+# Variable numeric sets question type [![Build Status](https://travis-ci.com/moodleou/moodle-qtype_varnumericset.svg?branch=master)](https://travis-ci.com/moodleou/moodle-qtype_varnumericset)
 
 A numerical question type for Moodle where one question can have
 several variants with different numerical values. These variants

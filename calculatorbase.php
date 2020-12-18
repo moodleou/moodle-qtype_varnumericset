@@ -96,7 +96,7 @@ abstract class qtype_varnumeric_calculator_base {
             if ($fromformfield == '') {
                 $fromformfield = $key;
             } else {
-                $fromformfield .= "[$key]";
+                $fromformfield .= '[' . $key . ']';
             }
             if (isset($value[$key])) {
                 $value = $value[$key];
@@ -154,10 +154,10 @@ abstract class qtype_varnumeric_calculator_base {
                     }
                     if (self::is_assignment($answer->{$prop})) {
                         // This is an assignment not legal here.
-                        $this->errors["{$prop}[{$answerno}]"] =
+                        $this->errors[$prop . '[' . $answerno . ']'] =
                             get_string('expressionmustevaluatetoanumber', 'qtype_varnumericset');
                     } else {
-                        $this->evaluate($answer->{$prop}, "{$prop}[{$answerno}]");
+                        $this->evaluate($answer->{$prop}, $prop . '[' . $answerno . ']');
                     }
                 }
             }
@@ -206,11 +206,11 @@ abstract class qtype_varnumeric_calculator_base {
             if (!$recalculatecalculated || !self::is_assignment($variablenameorassignment)) {
                 $varname = self::var_in_assignment($variablenameorassignment);
                 $this->evaluate($varname.'='.$this->get_defined_variant($varno, $variantno),
-                        "variant{$variantno}[{$varno}]");
+                        'variant' . $variantno . '[' . $varno . ']');
             } else {
                 $varname = self::var_in_assignment($variablenameorassignment);
                 EvalMathFuncs::set_random_seed($this->randomseed.$variantno.$varname);
-                $this->evaluate($variablenameorassignment, "varname[$varno]");
+                $this->evaluate($variablenameorassignment, 'varname[' . $varno . ']');
             }
         }
     }
@@ -221,7 +221,7 @@ abstract class qtype_varnumeric_calculator_base {
             if (self::is_assignment($variablenameorassignment)) {
                 $varname = self::var_in_assignment($variablenameorassignment);
                 $calculatedvariants[$varno]
-                            = $this->evaluate($varname, "variant$variantno[$varno]");
+                            = $this->evaluate($varname, 'variant' . $variantno . '[' . $varno . ']');
             }
         }
         return $calculatedvariants;
@@ -235,7 +235,8 @@ abstract class qtype_varnumeric_calculator_base {
     public function save_state_as_qt_data($step) {
         foreach ($this->variables as $varno => $variablenameorassignment) {
             $varname = self::var_in_assignment($variablenameorassignment);
-            $step->set_qt_var("_var$varname", $this->evaluate($varname));
+            $step->set_qt_var('_var' . $varname, $this->evaluate($varname));
+            $step->set_qt_var('_var' . $varname, $this->evaluate($varname));
         }
     }
 
@@ -243,7 +244,7 @@ abstract class qtype_varnumeric_calculator_base {
         $this->ev = new EvalMath(true, true);
         foreach ($this->variables as $varno => $variablenameorassignment) {
             $varname = self::var_in_assignment($variablenameorassignment);
-            $this->evaluate("$varname=".$step->get_qt_var("_var$varname"));
+            $this->evaluate($varname . '=' . $step->get_qt_var('_var' . $varname));
         }
     }
 

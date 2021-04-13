@@ -52,12 +52,12 @@ class qtype_varnumericset_walkthrough_testcase extends qbehaviour_walkthrough_te
         $this->check_current_state(question_state::$todo);
         $this->check_current_mark(null);
         $this->check_current_output(
-                $this->get_contains_marked_out_of_summary(),
-                $this->get_contains_submit_button_expectation(true),
-                $this->get_does_not_contain_feedback_expectation(),
-                $this->get_does_not_contain_validation_error_expectation(),
-                $this->get_does_not_contain_try_again_button_expectation(),
-                $this->get_no_hint_visible_expectation());
+            $this->get_contains_marked_out_of_summary(),
+            $this->get_contains_submit_button_expectation(true),
+            $this->get_does_not_contain_feedback_expectation(),
+            $this->get_does_not_contain_validation_error_expectation(),
+            $this->get_does_not_contain_try_again_button_expectation(),
+            $this->get_no_hint_visible_expectation());
 
         // Submit blank.
         $this->process_submission(array('-submit' => 1, 'answer' => ''));
@@ -106,14 +106,77 @@ class qtype_varnumericset_walkthrough_testcase extends qbehaviour_walkthrough_te
         $this->check_current_state(question_state::$gradedright);
         $this->check_current_mark(100);
         $this->check_current_output(
-                $this->get_contains_mark_summary(100),
-                $this->get_contains_correct_expectation(),
-                $this->get_does_not_contain_validation_error_expectation(),
-                $this->get_no_hint_visible_expectation());
+            $this->get_contains_mark_summary(100),
+            $this->get_contains_correct_expectation(),
+            $this->get_does_not_contain_validation_error_expectation(),
+            $this->get_no_hint_visible_expectation());
         $this->assertEquals('12300', $this->quba->get_response_summary($this->slot));
     }
 
-    public function test_validation_and_interactive_with_several_tries_for_3_sig_figs() {
+    public function test_validation_and_interactive_with_several_tries_for_3_sig_figs_with_standard_penalty() {
+
+        // Create a varnumericset question.
+        $q = test_question_maker::make_question('varnumericset', '3_sig_figs');
+        $q->hints = array(
+            // Fourth param for hint constructor is clearwrong.
+            // In this case controls if the suppression of the hint and the penalty when numerical error 'auto fires'.
+            new question_hint_with_parts(1, 'This is the first hint.', FORMAT_HTML, null, false),
+            new question_hint_with_parts(2, 'This is the second hint.', FORMAT_HTML, null, false),
+        );
+        $this->start_attempt_at_question($q, 'interactive', 100);
+
+        // Check the initial state.
+        $this->check_current_state(question_state::$todo);
+        $this->check_current_mark(null);
+        $this->check_current_output(
+            $this->get_contains_marked_out_of_summary(),
+            $this->get_contains_submit_button_expectation(true),
+            $this->get_does_not_contain_feedback_expectation(),
+            $this->get_does_not_contain_validation_error_expectation(),
+            $this->get_does_not_contain_try_again_button_expectation(),
+            $this->get_no_hint_visible_expectation());
+
+        // Submit something partially correct (too many sig figs 10% penalty).
+        $this->process_submission(array('-submit' => 1, 'answer' => '12350'));
+
+        $this->check_current_state(question_state::$todo);
+        $this->check_current_mark(null);
+        $this->check_current_output(
+            $this->get_contains_marked_out_of_summary(),
+            $this->get_contains_try_again_button_expectation(true),
+            $this->get_does_not_contain_correctness_expectation(),
+            new question_pattern_expectation('/' .
+                preg_quote(get_string('ae_toomanysigfigs', 'qtype_varnumericset')) . '/'));
+
+        // Do try again.
+        $this->process_submission(array('-tryagain' => 1));
+
+        $this->check_current_state(question_state::$todo);
+        $this->check_current_mark(null);
+        $this->check_current_output(
+            $this->get_contains_marked_out_of_summary(),
+            $this->get_does_not_contain_feedback_expectation(),
+            $this->get_contains_submit_button_expectation(true),
+            $this->get_does_not_contain_correctness_expectation(),
+            $this->get_does_not_contain_try_again_button_expectation());
+
+        $this->check_current_state(question_state::$todo);
+        $this->check_current_mark(null);
+
+        // Now get it right.
+        $this->process_submission(array('-submit' => 1, 'answer' => '12300'));
+
+        $this->check_current_state(question_state::$gradedright);
+        $this->check_current_mark(66.66667);
+        $this->check_current_output(
+            $this->get_contains_mark_summary(66.67),
+            $this->get_contains_correct_expectation(),
+            $this->get_does_not_contain_validation_error_expectation(),
+            $this->get_no_hint_visible_expectation());
+        $this->assertEquals('12300', $this->quba->get_response_summary($this->slot));
+    }
+
+    public function test_validation_and_interactive_with_several_tries_for_3_sig_figs_with_autocheck_penalty() {
 
         // Create a varnumericset question.
         $q = test_question_maker::make_question('varnumericset', '3_sig_figs');

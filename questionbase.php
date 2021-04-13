@@ -529,8 +529,9 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
                     // Auto fire error penalty applied to answer before it is returned from get_matching_answer() method.
                     $syserrorpenalty = $answerbeforesyserrorpenalty->fraction - $answerwithsyserrorpenalty->fraction;
                     if ($syserrorpenalty !== 0) {
-                        $totalpenalty += $syserrorpenalty;
-                        if (!(isset($this->hints[$i]) && $this->hints[$i]->clearwrong)) {
+                        if (isset($this->hints[$i]) && $this->hints[$i]->clearwrong) {
+                            $totalpenalty += $syserrorpenalty;
+                        } else {
                             $totalpenalty += $this->penalty;
                         }
                     } else if ($answerwithsyserrorpenalty->fraction != '1') {

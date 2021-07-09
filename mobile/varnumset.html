@@ -1,15 +1,19 @@
 <section ion-list *ngIf="question.text || question.text === ''" class="qtype-varnumericset">
-    <ion-item text-wrap>
-        <p>
-            <core-format-text [component]="component" [componentId]="componentId" [text]="question.text"></core-format-text>
-        </p>
+    <ion-item text-wrap class="ion-text-wrap">
+        <ion-label>
+            <p>
+                <core-format-text [component]="component" [componentId]="componentId" [text]="question.text"></core-format-text>
+            </p>
+        </ion-label>
     </ion-item>
-    <ion-item text-wrap *ngIf="question.ablock || question.ablock === ''" class="qtype-varnumunit">
-        <div>
+    <ion-item text-wrap *ngIf="question.ablock || question.ablock === ''" class="qtype-varnumunit ion-text-wrap">
+        <ion-label>
             <core-format-text [component]="component" [componentId]="componentId" [text]="question.ablock"></core-format-text>
-        </div>
+        </ion-label>
     </ion-item>
-    <ion-item text-wrap *ngIf="question.ousupsub" class="core-danger-item">
-        <p class="core-question-warning">{{ 'plugin.qtype_varnumericset.err_ousupsubnotsupportedonmobile' | translate }}</p>
+    <ion-item text-wrap *ngIf="question.ousupsub" class="core-danger-item ion-text-wrap">
+        <ion-label>
+            <p class="core-question-warning">{{ 'plugin.qtype_varnumericset.err_ousupsubnotsupportedonmobile' | translate }}</p>
+        </ion-label>
     </ion-item>
 </section>

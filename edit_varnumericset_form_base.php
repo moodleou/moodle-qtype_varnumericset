@@ -186,7 +186,7 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
         $answeroptions[] = $mform->createElement('select', 'sigfigs', get_string('sigfigs', 'qtype_varnumericset'),
                                                  $sigfigsoptions);
 
-        $answeroptions[] = $mform->createElement('select', 'fraction', get_string('grade'), $gradeoptions);
+        $answeroptions[] = $mform->createElement('select', 'fraction', get_string('gradeverb'), $gradeoptions);
         $repeated[] = $mform->createElement('group', 'answeroptions',
                                             $label, $answeroptions, null, false);
 

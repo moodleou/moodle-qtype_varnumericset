@@ -14,9 +14,7 @@ Feature: Test all the basic functionality of varnumericset question type
     And the following "course enrolments" exist:
       | user    | course | role           |
       | teacher | C1     | editingteacher |
-    And I log in as "teacher"
-    And I am on "Course 1" course homepage
-    And I navigate to "Question bank" in current page administration
+    When I am on the "Course 1" "core_question > course question bank" page logged in as "teacher"
 
   @javascript
   Scenario: Create, edit then preview a variable numeric sets question.
@@ -45,8 +43,7 @@ Feature: Test all the basic functionality of varnumericset question type
     Then I should see "My first variable numeric set question"
 
     # Preview it.
-    When I choose "Preview" action for "My first variable numeric set question" in the question bank
-    And I switch to "questionpreview" window
+    When I am on the "My first variable numeric set question" "core_question > preview" page logged in as "teacher"
     And I set the following fields to these values:
       | How questions behave | Interactive with multiple tries |
       | Marked out of        | 3                               |
@@ -69,11 +66,10 @@ Feature: Test all the basic functionality of varnumericset question type
     And I switch to the main window
 
     # Backup the course and restore it.
-    When I log out
-    And I log in as "admin"
-    When I backup "Course 1" course using this options:
+    When I am on the "Course 1" course page logged in as "admin"
+    And I backup "Course 1" course using this options:
       | Confirmation | Filename | test_backup.mbz |
-    When I restore "test_backup.mbz" backup into a new course using this options:
+    And I restore "test_backup.mbz" backup into a new course using this options:
       | Schema | Course name | Course 2 |
     Then I should see "Course 2"
     When I navigate to "Question bank" in current page administration

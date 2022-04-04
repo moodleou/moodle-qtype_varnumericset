@@ -44,9 +44,9 @@ abstract class qtype_varnumeric_base extends question_type {
      * @return boolean whether or not expressions are evaluated on the fly or only during
      * question editing.
      */
-    public abstract function recalculate_every_time();
+    abstract public function recalculate_every_time();
 
-    public abstract function db_table_prefix();
+    abstract public function db_table_prefix();
 
     public function calculator_name() {
         return $this->db_table_prefix().'_calculator';

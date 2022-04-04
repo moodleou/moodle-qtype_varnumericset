@@ -243,7 +243,7 @@ class qtype_varnumericset_question_test extends advanced_testcase {
             // Always round down when incorrect rounding requested.
             ['1234.56', 1234.5600, 6, false, true],
             ['1.23456e3', 1234.5600, 6, true, true],
-            // Test default precision
+            // Test default precision.
             ['1234.56', 1234.5600, 0, false, false],
             ['1.234560e3', 1234.5600, 0, true, false],
             ['75497472', 75497472, 0, false, false],

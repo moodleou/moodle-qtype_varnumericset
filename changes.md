@@ -1,5 +1,11 @@
 # Change log for the Variable numeric sets question type
 
+## Changes in 2.1
+
+* This version works with Moodle 4.0.
+* Automated test failures are fixed.
+* Switch from Travis to Github actions.
+
 
 ## Changes in 2.0
 

@@ -23,10 +23,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-
-defined('MOODLE_INTERNAL') || die();
-
-
 /**
  * Test helper class for the varnumericset question type.
  *
@@ -191,6 +187,49 @@ class qtype_varnumericset_test_helper extends question_test_helper {
         $vs->calculator->evaluate_variant(0);
 
         return $vs;
+    }
+    public function get_varnumericset_question_form_data_with_variables() {
+        $form = new stdClass();
+        $form->name = 'Pi to two d.p.';
+        $form->questiontext = ['text' => '<p>What is [[a]] + [[b]]?</p>', 'format' => FORMAT_HTML];
+        $form->defaultmark = 1;
+        $form->generalfeedback = ['text' => '<p>General feedback 1e9.</p>', 'format' => FORMAT_HTML];
+        $form->requirescinotation = 0;
+        $form->randomseed = '';
+        $form->vartype = ['0' => 1, '1' => 1, '2' => 1]; // Set to 'Predefined variable'.
+        $form->novars = 3;
+        $form->noofvariants = 3;
+        $form->varname[0] = 'a';
+        $form->variant0[0] = 2;
+        $form->variant1[0] = 3;
+        $form->variant2[0] = 5;
+        $form->varname[1] = 'b';
+        $form->variant0[1] = 8;
+        $form->variant1[1] = 5;
+        $form->variant2[1] = 3;
+        $form->varname[2] = 'c = a + b';
+        $form->variant_last = ['0' => '', '1' => ''];
+        $form->requirescinotation = 0;
+        $form->answer = ['0' => 'c', '1' => '*'];
+        $form->sigfigs = ['0' => 0, '1' => 0];
+        $form->error = ['0' => '', '1' => ''];
+        $form->checknumerical = ['0' => 0, '1' => 0, '2' => 0];
+        $form->checkscinotation = ['0' => 0, '1' => 0, '2' => 0];
+        $form->checkpowerof10 = ['0' => 0, '1' => 0, '2' => 0];
+        $form->checkrounding = ['0' => 0, '1' => 0, '2' => 0];
+        $form->syserrorpenalty = ['0' => 0.0, '1' => 0.0, '2' => 0.0];
+        $form->fraction = ['0' => '1.0', '1' => '0.0', '2' => '0.0'];
+        $form->feedback = [
+                '0' => ['format' => FORMAT_HTML, 'text' => 'Well done!'],
+                '1' => ['format' => FORMAT_HTML, 'text' => 'Sorry, no.']
+        ];
+        $form->penalty = '0.3333333';
+        $form->hint = [
+                ['text' => 'Please try again.', 'format' => FORMAT_HTML],
+                ['text' => 'You may use a calculator if necessary.', 'format' => FORMAT_HTML]
+            ];
+
+        return $form;
     }
 
     public function make_varnumericset_question_custom_rounding_feebdack() {

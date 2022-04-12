@@ -16,8 +16,6 @@
 
 namespace qtype_varnumericset\output;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Mobile output class for question type varnumericset.
  *

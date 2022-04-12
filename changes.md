@@ -3,6 +3,7 @@
 ## Changes in 2.1
 
 * This version works with Moodle 4.0.
+* Fixed a bug with how penaties were applied to marks.
 * Automated test failures are fixed.
 * Switch from Travis to Github actions.
 

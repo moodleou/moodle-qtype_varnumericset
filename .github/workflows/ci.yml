@@ -44,9 +44,6 @@ jobs:
         with:
           path: plugin
 
-      - name: Install node
-        uses: actions/setup-node@v1
-
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:

@@ -25,7 +25,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->version   = 2022041100;
-$plugin->requires  = 2020061500;
+$plugin->requires  = 2021051700;
 $plugin->component = 'qtype_varnumericset';
 $plugin->maturity  = MATURITY_STABLE;
 $plugin->release   = '2.1 for Moodle 3.11+';

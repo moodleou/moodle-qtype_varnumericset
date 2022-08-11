@@ -308,17 +308,16 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
     }
 
     public static function num_within_allowed_error($string, $answer, $allowederror) {
-        $cast = (float)$string;
         $errorduetofloatprecision = abs($answer * 1e-14);
-        return abs($answer - $cast) <= abs($allowederror) + $errorduetofloatprecision;
+        return abs($answer - (float) $string) <= abs((float) $allowederror) + $errorduetofloatprecision;
     }
 
     /**
      * Check to see if $normalizedstring is out by a (positive or negative) factor of ten
      * @param string $normalizedstring number as a normalized string
-     * @param $roundedanswer
-     * @param $error accepted error
-     * @param $maxfactor maximum factor of ten
+     * @param float $roundedanswer
+     * @param float $error accepted error
+     * @param int $maxfactor maximum factor of ten
      * @return boolean
      */
     public static function wrong_by_a_factor_of_ten($normalizedstring, $roundedanswer,
@@ -354,7 +353,7 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
 
     public static function round_to($number, $sigfigs, $scinotation, $floor = false) {
         // Do the rounding ourselves so we can get it wrong (round down) if requested.
-        if ($sigfigs != 0) {
+        if ((int) $sigfigs != 0) {
             if ($number == 0.0) {
                 $poweroften = 0; // Avoid NaN result for log10.
             } else {

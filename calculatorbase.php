@@ -336,16 +336,16 @@ abstract class qtype_varnumeric_calculator_base {
             $this->evaluate_all(true);
         }
         $dataforform->randomseed = $dataforform->options->randomseed;
-        $dataforform->vartype = $this->vartypes;
-        $dataforform->varname = $this->variables;
+        $dataforform->vartype = array_values($this->vartypes);
+        $dataforform->varname = array_values($this->variables);
         for ($variantno = 0; $variantno < $this->get_num_variants_in_form(); $variantno++) {
             $propname = 'variant'.$variantno;
             $dataforform->{$propname} = array();
             if (isset($this->predefinedvariants[$variantno])) {
-                $dataforform->{$propname} += $this->predefinedvariants[$variantno];
+                $dataforform->{$propname} += array_values($this->predefinedvariants[$variantno]);
             }
             if (isset($this->calculatedvariants[$variantno])) {
-                $dataforform->{$propname} += $this->calculatedvariants[$variantno];
+                $dataforform->{$propname} += array_values($this->calculatedvariants[$variantno]);
             }
         }
         return $dataforform;

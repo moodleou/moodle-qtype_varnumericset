@@ -24,10 +24,10 @@ Feature: Test editing a Variable numeric set (varnumericset) question type
   Scenario: Edit a Variable numeric set question
     When I am on the "Variable numeric set 001 for editing" "core_question > edit" page logged in as teacher
     Then the following fields match these values:
-      | Question name | Variable numeric set 001 for editing |
-      | Question text | What is [[a]] + [[b]]?               |
-      | id_vartype_0  | Predefined variable                  |
-      | Variable 1    | a                                    |
+      | Question name | Variable numeric set 001 for editing   |
+      | Question text | What is [[a]] + [[b]]?                 |
+      | id_vartype_0  | Predefined variable                    |
+      | Variable 1    | a                                      |
       | id_variant0_0 | 2                                      |
       | id_variant1_0 | 3                                      |
       | id_variant2_0 | 5                                      |
@@ -44,8 +44,9 @@ Feature: Test editing a Variable numeric set (varnumericset) question type
       | id_feedback_1 | Sorry, no.                             |
       | Hint 1        | Please try again.                      |
       | Hint 2        | You may use a calculator if necessary. |
+    And I should not see "Value for variant 4"
     And I set the following fields to these values:
-      | Question name | |
+      | Question name |  |
     And I press "id_submitbutton"
     And I should see "You must supply a value here."
     And I set the following fields to these values:

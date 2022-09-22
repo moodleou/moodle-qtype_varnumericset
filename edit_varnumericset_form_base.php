@@ -64,18 +64,12 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
 
         if (isset($this->question->id)) {
             $prefix = $this->db_table_prefix();
-            $sql = 'SELECT MAX(varno)+1 '.
-                    "FROM {{$prefix}_vars} vars ".
-                    'WHERE questionid = ?';
-            $noofvarsindb = $DB->get_field_sql($sql, array($this->question->id));
+            $sql = "SELECT COUNT(id)
+                      FROM {{$prefix}_vars} vars
+                     WHERE questionid = ?";
+            $noofvarsatstart = $DB->get_field_sql($sql, [$this->question->id]);
         } else {
-            $noofvarsindb = 0;
-        }
-
-        if ($this->question->formoptions->repeatelements) {
-            $noofvarsatstart = max($noofvarsindb + 2, 5);
-        } else {
-            $noofvarsatstart = $noofvarsindb;
+            $noofvarsatstart = 5;
         }
 
         $this->repeat_elements($repeated, $noofvarsatstart, $repeatedoptions,
@@ -126,18 +120,12 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
         }
         if (isset($this->question->id)) {
             $prefix = $this->db_table_prefix();
-            $sql = 'SELECT MAX(vari.variantno)+1 '.
-                "FROM {{$prefix}_variants} vari, {{$prefix}_vars} vars ".
-                'WHERE vars.questionid = ? AND vars.id = vari.varid';
-            $noofvariantsindb = $DB->get_field_sql($sql, array($this->question->id));
+            $sql = "SELECT MAX(vari.variantno)+1
+                      FROM {{$prefix}_variants} vari, {{$prefix}_vars} vars
+                     WHERE vars.questionid = ? AND vars.id = vari.varid";
+            $noofvariants = max($noofvariants, $DB->get_field_sql($sql, [$this->question->id]));
         } else {
-            $noofvariantsindb = 0;
-        }
-
-        if ($this->question->formoptions->repeatelements) {
-            $noofvariants = max($noofvariants, 5, $noofvariantsindb);
-        } else {
-            $noofvariants = max(5, $noofvariantsindb);
+            $noofvariants = max($noofvariants, 5);
         }
         for ($i = 0; $i < $noofvariants; $i++) {
             $repeated[] = $mform->createElement('text', "variant$i",

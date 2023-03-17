@@ -167,13 +167,12 @@ abstract class qtype_varnumeric_calculator_base {
         }
     }
 
-
     public function evaluate($item, $placetoputanyerror = null) {
         $result = $this->ev->evaluate($item);
         $error = '';
         if ($result === false) {
-            $error = get_string('errorreportedbyexpressionevaluator',
-                                                    'qtype_varnumericset', $this->ev->last_error);
+            $error = get_string('errorreportedbyexpressionevaluator', 'qtype_varnumericset',
+                    $this->ev->last_error);
         }
         if (is_nan($result)) {
             $error = get_string('expressionevaluatesasnan', 'qtype_varnumericset');
@@ -181,15 +180,15 @@ abstract class qtype_varnumeric_calculator_base {
         if (is_infinite($result)) {
             $error = get_string('expressionevaluatesasinfinite', 'qtype_varnumericset');
         }
-        if (!empty($error) && !is_null($placetoputanyerror)) {
+        if ($error) {
             $this->errors[$placetoputanyerror] = $error;
         }
         return $result;
     }
 
     /**
+     * Load all variable assignments for a given variant.
      *
-     * Load all variable assignments.
      * @param integer $variantno
      * @param boolean $forcerecalculate force recalculate calculated values
      *                        or load calculated values as predefined values?
@@ -229,6 +228,7 @@ abstract class qtype_varnumeric_calculator_base {
 
     /**
      * Save internal state of calculator as question type step data.
+     *
      * @param question_attempt_step $step
      * @param integer $variantno
      */
@@ -313,7 +313,6 @@ abstract class qtype_varnumeric_calculator_base {
     }
 
     public function load_data_from_database($vars, $variants) {
-        global $DB;
         // Declare and load data whether or not we will use calculator.
         $varidtovarno = array();
         foreach ($vars as $varid => $var) {
@@ -377,40 +376,88 @@ abstract class qtype_varnumeric_calculator_base {
     }
 
     public function evaluate_variables_in_text($text, $wheretoputerror = null) {
-        $match = array();
-        $offset = 0;
+        $done = [];
+        $errors = [];
+
         // Match anything surrounded by [[ ]].
-        while (0 !== preg_match('!\[\[(.+?)(\s*,\s*(.+?))?\]\]!', $text, $match,
-                                                PREG_OFFSET_CAPTURE, $offset)) {
-            $variableorexpression = $match[1][0];
-            if (self::is_assignment($variableorexpression)) {
-                // This is an assignment, not legal here.
-                $this->errors[$wheretoputerror] =
-                        get_string('expressionmustevaluatetoanumber', 'qtype_varnumericset');
-            } else {
-                $evaluated = $this->evaluate($variableorexpression, $wheretoputerror);
+        preg_match_all('~\[\[(.+?)(\s*,\s*(.*?))?]]~', $text, $matches, PREG_SET_ORDER);
+        foreach ($matches as $match) {
+            // Since the format may, or may not, be present, append an extra empty string to $match;
+            [$placeholder, $variableorexpression, $hasformat, $format] = array_merge($match, ['', '']);
+            if (isset($done[$placeholder])) {
+                // The same placeholder always gets replaced by the same value.
+                continue;
             }
 
-            if (!empty($match[3][0])) {
-                $sprintfcode = $match[3][0];
-                $numberasstring = self::format_number($evaluated, $sprintfcode);
+            if (self::is_assignment($variableorexpression)) {
+                // This is an assignment, not legal here.
+                $errors[] = get_string('expressionmustevaluatetoanumber', 'qtype_varnumericset');
+                continue;
             } else {
-                $numberasstring = (string)$evaluated;
+                $this->errors['temp'] = '';
+                $evaluated = $this->evaluate($variableorexpression, 'temp');
+                if ($this->errors['temp']) {
+                    $errors[] = get_string('errorvalidationissue', 'qtype_varnumericset',
+                        ['placeholder' => $placeholder, 'message' => $this->errors['temp']]);
+                }
+                unset($this->errors['temp']);
+            }
+
+            if ($hasformat) {
+                if (strpos($format, '&nbsp') !== false) {
+                    $errors[] = get_string('errorvalidationformatnumbernonbsp', 'qtype_varnumericset', $placeholder);
+                    continue;
+                } else {
+                    try {
+                        $numberasstring = self::format_number($evaluated, $format);
+                    } catch (Throwable $e) {
+                        $errors[] = get_string('errorvalidationissue', 'qtype_varnumericset',
+                            ['placeholder' => $placeholder, 'message' => s($e->getMessage())]);
+                        continue;
+                    }
+                }
+            } else {
+                $numberasstring = (string) $evaluated;
             }
 
             $numberasstring = self::htmlize_exponent($numberasstring);
 
-            $text = substr_replace($text, $numberasstring, $match[0][1], strlen($match[0][0]));
-            $offset = $match[0][1] + strlen($numberasstring);
+            $text = str_replace($placeholder, $numberasstring, $text);
+            $done[$placeholder] = true;
         }
+
+        // Store errors, if any, and if required.
+        if ($wheretoputerror && $errors) {
+            if (count($errors) == 1) {
+                $message = $errors[0];
+            } else {
+                $message = html_writer::alist($errors);
+            }
+            $this->errors[$wheretoputerror] = get_string(
+                    'errorvalidationformatnumber', 'qtype_varnumericset', $message);
+        }
+
         return $text;
     }
 
-    public static function format_number($number, $sprintfcode) {
-        return sprintf('%'.$sprintfcode, $number);
+    /**
+     * Format a number using a sprintf code.
+     *
+     * @param $number a number
+     * @param string $sprintfcode a printf code, without the leading '%'.
+     * @return string the formatted number.
+     */
+    public static function format_number($number, string $sprintfcode): string {
+        return sprintf('%' . $sprintfcode, $number);
     }
 
-    public static function htmlize_exponent($numberasstring) {
-        return preg_replace('!e([+-]?[0-9]+)$!i', ' × 10<sup>$1</sup>', $numberasstring);
+    /**
+     * Typeset any scientific notation in the formatted number string.
+     *
+     * @param string|null $numberasstring the number to improve the display of.
+     * @return string prettier string.
+     */
+    public static function htmlize_exponent(?string $numberasstring): string {
+        return preg_replace('!e([+-]?\d+)$!i', ' × 10<sup>$1</sup>', $numberasstring);
     }
 }

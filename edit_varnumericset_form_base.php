@@ -344,7 +344,7 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
                 }
             }
         }
-        if (count($errors) == 0) {
+        if (empty($errors)) {
             $calculator = new $calculatorname();
             // Don't need to bother setting the random seed here as the
             // results of the evaluation are not important, we are just seeing

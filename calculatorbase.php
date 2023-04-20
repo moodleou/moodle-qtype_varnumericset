@@ -411,6 +411,6 @@ abstract class qtype_varnumeric_calculator_base {
     }
 
     public static function htmlize_exponent($numberasstring) {
-        return preg_replace('!e([+-]?[0-9]+)$!i', 'x10<sup>$1</sup>', $numberasstring);
+        return preg_replace('!e([+-]?[0-9]+)$!i', ' × 10<sup>$1</sup>', $numberasstring);
     }
 }

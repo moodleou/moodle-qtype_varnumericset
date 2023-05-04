@@ -161,9 +161,8 @@ abstract class qtype_varnumeric_base extends question_type {
             $varnumericanswer->checkrounding = $form->checkrounding[$key];
             $DB->insert_record($this->db_table_prefix().'_answers', $varnumericanswer);
         }
-
-        list ($varschanged, $varnotovarid, $assignments, $predefined) =
-                                                    $this->save_vars($form->id, $form->varname);
+        $form->varname = $form->varname ?? null;
+        [$varschanged, $varnotovarid, $assignments, $predefined] = $this->save_vars($form->id, $form->varname);
 
         $variants = array();
         for ($variantno = 0; $variantno < $form->noofvariants; $variantno++) {
@@ -301,44 +300,46 @@ abstract class qtype_varnumeric_base extends question_type {
         $varnotovarid = array();
         $predefined = array();
         $assignments = array();
-        foreach ($varnames as $varno => $varname) {
-            if ($varname == '') {
-                continue;
-            }
-            $foundold = false;
-            // Update an existing var if possible.
-            foreach ($oldvars as $oldvarid => $var) {
-                if ($var->varno == $varno) {
-                    $foundold = true;
-                    $varfromdb = $var;
-                    unset($oldvars[$oldvarid]);
-                    break;
+        if (isset($varnames)) {
+            foreach ($varnames as $varno => $varname) {
+                if ($varname == '') {
+                    continue;
                 }
-            }
-            if (!$foundold) {
-                $var = new stdClass();
-                $var->questionid = $questionid;
-                $var->varno = $varno;
-                $var->nameorassignment = $varname;
-                $var->id = $DB->insert_record($this->db_table_prefix().'_vars', $var);
-                $varid = $var->id;
-                $changed = true;
-            } else {
-                if ($varfromdb->nameorassignment != $varname) {
-                    $varfromdb->nameorassignment = $varname;
-                    $DB->update_record($this->db_table_prefix().'_vars', $varfromdb);
+                $foundold = false;
+                // Update an existing var if possible.
+                foreach ($oldvars as $oldvarid => $var) {
+                    if ($var->varno == $varno) {
+                        $foundold = true;
+                        $varfromdb = $var;
+                        unset($oldvars[$oldvarid]);
+                        break;
+                    }
+                }
+                if (!$foundold) {
+                    $var = new stdClass();
+                    $var->questionid = $questionid;
+                    $var->varno = $varno;
+                    $var->nameorassignment = $varname;
+                    $var->id = $DB->insert_record($this->db_table_prefix().'_vars', $var);
+                    $varid = $var->id;
                     $changed = true;
+                } else {
+                    if ($varfromdb->nameorassignment != $varname) {
+                        $varfromdb->nameorassignment = $varname;
+                        $DB->update_record($this->db_table_prefix().'_vars', $varfromdb);
+                        $changed = true;
+                    }
+                    $varid = $varfromdb->id;
                 }
-                $varid = $varfromdb->id;
-            }
-            $varnotovarid[$varno] = $varid;
-            $calculatorname = $this->calculator_name();
-            if ($calculatorname::is_assignment($varname)) {
-                $assignments[] = $varid;
-            } else {
-                $predefined[] = $varid;
-            }
+                $varnotovarid[$varno] = $varid;
+                $calculatorname = $this->calculator_name();
+                if ($calculatorname::is_assignment($varname)) {
+                    $assignments[] = $varid;
+                } else {
+                    $predefined[] = $varid;
+                }
 
+            }
         }
         // Delete any remaining old vars.
         if (!empty($oldvars)) {

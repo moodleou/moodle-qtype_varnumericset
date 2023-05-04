@@ -69,6 +69,7 @@ abstract class qtype_varnumericset_number_interpreter_part_using_preg_pattern ex
     abstract protected function pattern();
 
     protected function match_pattern($string) {
+        $string = $string ?? '';
         $matches = array();
         if (1 === preg_match($this->pattern(), $string, $matches, PREG_OFFSET_CAPTURE)) {
             $this->prefix = substr($string, 0, $matches[0][1]);

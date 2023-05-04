@@ -43,9 +43,10 @@ class form_test extends \advanced_testcase {
     /**
      * Prepare test data.
      *
+     * @param string $qtype Question type.
      * @return object Moodle form object.
      */
-    private function prepare_test_data(): object {
+    protected function prepare_test_data(string $qtype): object {
         $this->resetAfterTest(true);
         $this->setAdminUser();
         $gen = $this->getDataGenerator();
@@ -58,7 +59,7 @@ class form_test extends \advanced_testcase {
         $question = new \stdClass();
         $question->category = $category->id;
         $question->contextid = $category->contextid;
-        $question->qtype = 'varnumericset';
+        $question->qtype = $qtype;
         $question->createdby = 1;
         $question->questiontext = 'varnumericset question type';
         $question->timecreated = '1234567890';
@@ -94,13 +95,13 @@ class form_test extends \advanced_testcase {
      * Test editing form validation with wrong variables format.
      *
      * @dataProvider form_validation_testcases
-     * @param array $fields Submitted responses.
-     * @param array $errormessage Expected result.
+     * @param array $fromform Submitted responses.
+     * @param array $expectederrors Expected result.
      */
-    public function test_form_validation(array $fields, array $errormessage): void {
-        $mform = $this->prepare_test_data();
+    public function test_form_validation(array $fromform, array $expectederrors): void {
+        $mform = $this->prepare_test_data('varnumericset');
 
-        $fromform = [
+        $defaults = [
             'category' => '6,21',
             'answer' => ['y', 'y'],
             'fraction' => ['1.0', '0.0'],
@@ -111,9 +112,8 @@ class form_test extends \advanced_testcase {
             'variant1' => ['2.0'],
             'error' => ['0.05*y', '0.05*y'],
         ];
-        $fromform = array_merge($fields, $fromform);
-        $error = $mform->validation($fromform, []);
-        $this->assertEquals($errormessage, $error);
+        $fromform = array_merge($defaults, $fromform);
+        $this->assertEquals($expectederrors, $mform->validation($fromform, []));
     }
 
     /**
@@ -178,6 +178,20 @@ class form_test extends \advanced_testcase {
                                             "<li>[[x,i]] - Unknown format specifier &quot;i&quot;.</li>\n</ul>"),
                 ],
             ],
+            [
+                'Require at least 1 pre-define variable' => [
+                    'varname' => [
+                        'x = 4',
+                        'y = 2',
+                    ],
+                    'vartype' => ['0.0', '0.0'],
+                    'variant0' => [],
+                    'variant1' => [],
+                ],
+                [
+                    'vartype[0]' => 'At least one of the variables must be a predefined variable.'
+                ]
+            ]
         ];
     }
 }

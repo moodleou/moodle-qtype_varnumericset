@@ -412,7 +412,7 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
 
         // We need this test to stop Moodle adding zeroes onto the end of the
         // normalized string and giving a false positive.
-        if (strlen($roundednormalizedstring) > strlen($normalizedstring)) {
+        if (strlen($roundednormalizedstring) > strlen($normalizedstring ?? '')) {
             return false;
         }
         if ($roundednormalizedstring === $rounded || $roundednormalizedstring === $roundedfloored) {
@@ -440,7 +440,7 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
      * @return boolean
      */
     public static function is_sci_notation($normalizedstring) {
-        if (strpos($normalizedstring, 'e') !== false) {
+        if (strpos($normalizedstring ?? '', 'e') !== false) {
             return true;
         } else {
             return false;

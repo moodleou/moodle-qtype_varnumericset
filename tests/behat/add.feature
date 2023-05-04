@@ -15,7 +15,7 @@ Feature: Test creating a variable numeric (varnumeric) question type
       | user    | course | role           |
       | teacher | C1     | editingteacher |
 
-  Scenario: Create, edit then preview a variable numeric sets question.
+  Scenario: Create a variable numeric sets question
     When I am on the "Course 1" "core_question > course question bank" page logged in as "teacher"
     And I add a "Variable numeric set" question filling the form with:
       | Question name | My first variable numeric set question |

@@ -249,9 +249,11 @@ abstract class qtype_varnumeric_calculator_base {
     }
 
     public function load_data_from_form($formdata) {
-        foreach ($formdata['varname'] as $varno => $varname) {
-            if ($varname !== '') {
-                $this->add_variable($varno, $varname);
+        if (isset($formdata['varname'])) {
+            foreach ($formdata['varname'] as $varno => $varname) {
+                if ($varname !== '') {
+                    $this->add_variable($varno, $varname);
+                }
             }
         }
 
@@ -458,6 +460,6 @@ abstract class qtype_varnumeric_calculator_base {
      * @return string prettier string.
      */
     public static function htmlize_exponent(?string $numberasstring): string {
-        return preg_replace('!e([+-]?\d+)$!i', ' × 10<sup>$1</sup>', $numberasstring);
+        return preg_replace('!e([+-]?\d+)$!i', ' × 10<sup>$1</sup>', $numberasstring ?? '');
     }
 }

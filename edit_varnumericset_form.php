@@ -41,11 +41,6 @@ class qtype_varnumericset_edit_form extends qtype_varnumeric_edit_form_base {
 
     protected function definition_inner($mform) {
         parent::definition_inner($mform);
-
-        // Add a button to add more form fields for variants.
-        $mform->registerNoSubmitButton('addvariants');
-        $addvariantel = $mform->createElement('submit', 'addvariants',
-                                        get_string('addmorevariants', 'qtype_varnumericset', 2));
-        $mform->insertElementBefore($addvariantel, 'vartype[1]');
+        $this->add_add_more_variant_button($mform);
     }
 }

@@ -45,6 +45,7 @@ $string['checkpowerof10'] = 'If power of 10 is off';
 $string['checkrounding'] = 'If rounding is incorrect';
 $string['checkscinotation'] = 'If scientific notation required but not used';
 $string['errorreportedbyexpressionevaluator'] = 'Expression evaluation error: {$a}';
+$string['errorvalidationatleastonepredefinedvariables'] = 'At least one of the variables must be a predefined variable.';
 $string['errorvalidationformatnumber'] = 'Some number formatting expressions generated errors:<br>{$a}<br>A correct example looks like [[variable,format]] or [[expression,format]], with format in <a href="http://php.net/manual/en/function.sprintf.php">sprintf</a> form. Common formats are<br>[[x,d]] - integer<br>[[x,.03f]] - three decimal places<br>[[x,.03e]] - scientific notation with three digits after the decimal point.';
 $string['errorvalidationformatnumbernonbsp'] = '{$a} - The format specifier must not contain non-breaking space characters.';
 $string['errorvalidationissue'] = '{$a->placeholder} - {$a->message}.';

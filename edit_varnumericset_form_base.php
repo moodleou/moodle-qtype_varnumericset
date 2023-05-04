@@ -100,6 +100,24 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
         $this->add_interactive_settings($mform, $repeated, $repeatedoptions);
     }
 
+    /**
+     * Add more variant button.
+     *
+     * @param MoodleQuickForm $mform.
+     */
+    protected function add_add_more_variant_button(MoodleQuickForm $mform) {
+        // Add a button to add more form fields for variants.
+        $addvariantel = $mform->createElement('submit', 'addvariants',
+                get_string('addmorevariants', 'qtype_varnumericset', 2));
+        $mform->registerNoSubmitButton('addvariants');
+
+        if ($mform->elementExists('vartype[1]')) {
+            $mform->insertElementBefore($addvariantel, 'vartype[1]');
+        } else if ($mform->elementExists('vartype[0]')) {
+            $mform->insertElementBefore($addvariantel, 'addvars');
+        }
+    }
+
 
     /**
      * Add answer section of the form. In varnumeric unit question type this is overridden to add also the units to this
@@ -303,31 +321,35 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
             }
         }
         $maxvariantno = -1;
-        foreach ($data['varname'] as $varno => $varname) {
-            if (trim($varname) !== '') {
-                $isvalidvar = EvalMath::is_valid_var_or_func_name($varname);
-                $isvalidassignment = $calculatorname::is_assignment($varname);
-                if ($data['vartype'][$varno] == 1 &&  !$isvalidvar) {
-                    $errors["varname[$varno]"] =
-                            get_string('expectingvariablename', 'qtype_varnumericset');
-                }
-                if ($data['vartype'][$varno] == 0) {
-                    if (!$isvalidassignment) {
+        $countvariable = 0;
+        if (isset($data['varname'])) {
+            foreach ($data['varname'] as $varno => $varname) {
+                if (trim($varname) !== '') {
+                    $isvalidvar = EvalMath::is_valid_var_or_func_name($varname);
+                    $isvalidassignment = $calculatorname::is_assignment($varname);
+                    if ($data['vartype'][$varno] == 1 &&  !$isvalidvar) {
                         $errors["varname[$varno]"] =
-                            get_string('expectingassignment', 'qtype_varnumericset');
+                            get_string('expectingvariablename', 'qtype_varnumericset');
                     }
-                }
-                if ($data['vartype'][$varno] == 1 && empty($data['variant0'][$varno])) {
-                    $errors["variant0[$varno]"] =
-                                get_string('youmustprovideavalueforatleastonevariant',
-                                                                'qtype_varnumericset');
-                }
-                if ($data['vartype'][$varno] == 1) {
-                    for ($i = 0; $i < $data['noofvariants']; $i++) {
-                        if (!empty($data["variant{$i}"][$varno])) {
-                            $maxvariantno = max($maxvariantno, $i);
+                    if ($data['vartype'][$varno] == 0) {
+                        if (!$isvalidassignment) {
+                            $errors["varname[$varno]"] =
+                                get_string('expectingassignment', 'qtype_varnumericset');
                         }
                     }
+                    if ($data['vartype'][$varno] == 1 && empty($data['variant0'][$varno])) {
+                        $errors["variant0[$varno]"] =
+                            get_string('youmustprovideavalueforatleastonevariant',
+                                'qtype_varnumericset');
+                    }
+                    if ($data['vartype'][$varno] == 1) {
+                        for ($i = 0; $i < $data['noofvariants']; $i++) {
+                            if (!empty($data["variant{$i}"][$varno])) {
+                                $maxvariantno = max($maxvariantno, $i);
+                            }
+                        }
+                    }
+                    $countvariable++;
                 }
             }
         }
@@ -357,11 +379,28 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
         if ($answercount == 0) {
             $errors['answeroptions[0]'] = get_string('notenoughanswers', 'qtype_varnumericset', 1);
         }
+        $errors += $this->validate_variables($countvariable, $maxvariantno);
         if ($maxgrade == false) {
             $errors['answeroptions[0]'] = get_string('fractionsnomax', 'question');
         }
-        if (!empty($data['recalculatenow']) && count($errors)) {
+        if (!empty($data['recalculatenow']) && empty($errors)) {
             $errors['recalculatenow'] = get_string('cannotrecalculate', 'qtype_varnumericset');
+        }
+        return $errors;
+    }
+
+    /**
+     * Varnumunit/Varnumericset must have at least 1 predefined vartype.
+     *
+     * @param int $countvariable number of valid variables in the form.
+     * @param int $maxvariantno The maximum number of variants in the form.
+     * @return array $errors Error message.
+     */
+    protected function validate_variables(int $countvariable, int $maxvariantno): array {
+        $errors = [];
+        if ($countvariable > 0 && $maxvariantno === -1) {
+            $errors['vartype[0]'] = get_string('errorvalidationatleastonepredefinedvariables',
+                'qtype_varnumericset');
         }
         return $errors;
     }

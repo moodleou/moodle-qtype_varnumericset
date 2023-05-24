@@ -46,12 +46,12 @@ class qtype_varnumericset_question_test extends advanced_testcase {
      */
     public function num_within_allowed_error_cases() {
         return [
-            ['1.23000000000001e4', 1.23e4, '', true],
-            ['1.23000000000002e4', 1.23e4, '', false],
-            ['-1.23000000000001e4', -1.23e4, '', true],
-            ['-1.23000000000002e4', -1.23e4, '', false],
-            ['-9.00000000000009e-4', -9e-4, '', true],
-            ['-9.00000000000010e-4', -9e-4, '', false],
+            ['1.23000000000001e4', 1.23e4, '0', true],
+            ['1.23000000000002e4', 1.23e4, '0', false],
+            ['-1.23000000000001e4', -1.23e4, '0', true],
+            ['-1.23000000000002e4', -1.23e4, '0', false],
+            ['-9.00000000000009e-4', -9e-4, '0', true],
+            ['-9.00000000000010e-4', -9e-4, '0', false],
             ['1.2301e4', 1.23e4, '1', true],
             ['1.23015e4', 1.23e4, '1', false],
             ['12299', 1.23e4, '1', true],
@@ -64,18 +64,18 @@ class qtype_varnumericset_question_test extends advanced_testcase {
             ['-1.2985', -1.23, '0.001', false],
             ['12301', 1.23e4, '1', true],
             ['12301.5', 1.23e4, '1', false],
-            ['-4', -4, '', true],
-            ['4', -4, '', false],
+            ['-4', -4, '0', true],
+            ['4', -4, '0', false],
             ['-4', -4, '0.0001', true],
             ['4', -4, '0.0001', false],
             [-4.20, -4.2, 0, true],
             [12, 12, 0, true],
-            ['9437183', 9437184, '', false],
-            ['9437184', 9437184, '', true],
-            ['9437185', 9437184, '', false],
-            ['75497471', 75497472, '', false],
-            ['75497472', 75497472, '', true],
-            ['75497473', 75497472, '', false],
+            ['9437183', 9437184, '0', false],
+            ['9437184', 9437184, '0', true],
+            ['9437185', 9437184, '0', false],
+            ['75497471', 75497472, '0', false],
+            ['75497472', 75497472, '0', true],
+            ['75497473', 75497472, '0', false],
         ];
     }
 
@@ -365,7 +365,7 @@ class qtype_varnumericset_question_test extends advanced_testcase {
                 '1',         // Fraction.
                 '<p>Your answer is correct.</p>', // Feedback.
                 FORMAT_HTML, // Feedbackformat.
-                '',          // Sigfigs.
+                '0',          // Sigfigs.
                 '',          // Error.
                 '0.1',       // Syserrorpenalty.
                 '0',         // Checknumerical.

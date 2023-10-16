@@ -139,7 +139,6 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         return $this->answers;
     }
 
-
     public function get_matching_answer($response) {
         foreach ($this->get_answers() as $aid => $answer) {
             $thisanswer = $this->compare_response_with_answer($response, $answer);
@@ -205,6 +204,9 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
     }
 
     public function compare_response_with_answer(array $response, question_answer $answer) {
+        if (!isset($response['answer'])) {
+            return null;
+        }
         if ($answer->answer == '*') {
             return $answer;
         }

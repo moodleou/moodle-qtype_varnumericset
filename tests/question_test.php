@@ -307,6 +307,12 @@ class qtype_varnumericset_question_test extends advanced_testcase {
         $answertoreturn = $q->compare_response_with_answer(['answer' => '12.0'], $answer);
         $this->assertNotNull($answertoreturn);
         $this->assertEquals(12345, $answertoreturn->id);
+        // Check the answer is empty string.
+        $answertoreturn = $q->compare_response_with_answer(['answer' => ''], $answer);
+        $this->assertNull($answertoreturn);
+        // Check the answer is null.
+        $answertoreturn = $q->compare_response_with_answer([], $answer);
+        $this->assertNull($answertoreturn);
     }
 
     public function test_compare_num_as_string_with_answer() {
@@ -458,6 +464,7 @@ class qtype_varnumericset_question_test extends advanced_testcase {
         $this->assertEquals(1, $this->grade($question, '-1e9'));
         $this->assertEquals(1, $this->grade($question, '-1x10<sup>9</sup>'));
         $this->assertEquals(1, $this->grade($question, '-1x10<sup>+9</sup>'));
+        $this->assertEquals(0, $this->grade($question, ''));
     }
 
     public function test_get_question_summary() {

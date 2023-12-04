@@ -47,7 +47,6 @@ class qtype_varnumericset_test_helper extends question_test_helper {
         $vs->questiontext = '<p>The correct answer is -4.2.</p>';
         $vs->generalfeedback = '<p>General feedback -4.2.</p>';
         $vs->penalty = 0.3333333;
-        $vs->randomseed = '';
         $vs->requirescinotation = false;
         $vs->usesupeditor = false;
         $vs->qtype = question_bank::get_qtype('varnumericset');

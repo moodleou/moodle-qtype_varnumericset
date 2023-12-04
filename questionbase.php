@@ -59,6 +59,12 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
     /** @var array of question_answer. */
     public $answers = array();
 
+    /**
+     * @var string not really used here, the value used is stored in the calculator,
+     * but this gets set because of extra_question_fields() so we need to declare it.
+     */
+    public $randomseed;
+
     public function get_expected_data() {
         return array('answer' => PARAM_RAW_TRIMMED);
     }

@@ -36,6 +36,7 @@
       <checkscinotation>0</checkscinotation>
       <checkpowerof10>0</checkpowerof10>
       <checkrounding>0</checkrounding>
+      <checkscinotationformat>0</checkscinotationformat>
     </answer>
     <answer fraction="0" format="moodle_auto_format">
       <text>*</text>
@@ -49,6 +50,7 @@
       <checkscinotation>0</checkscinotation>
       <checkpowerof10>0</checkpowerof10>
       <checkrounding>0</checkrounding>
+      <checkscinotationformat>0</checkscinotationformat>
     </answer>
     <var>
       <varno>0</varno>

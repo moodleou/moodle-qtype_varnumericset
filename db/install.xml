@@ -50,7 +50,8 @@
         <FIELD NAME="checknumerical" TYPE="int" LENGTH="4" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="syserrorpenalty" NEXT="checkscinotation"/>
         <FIELD NAME="checkscinotation" TYPE="int" LENGTH="4" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="checknumerical" NEXT="checkpowerof10"/>
         <FIELD NAME="checkpowerof10" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="checkscinotation" NEXT="checkrounding"/>
-        <FIELD NAME="checkrounding" TYPE="int" LENGTH="4" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="checkpowerof10"/>
+        <FIELD NAME="checkrounding" TYPE="int" LENGTH="4" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="checkpowerof10" NEXT="checkscinotationformat"/>
+        <FIELD NAME="checkscinotationformat" TYPE="int" LENGTH="4" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="checkrounding"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="mdl_qtypevaransw_quesansw_ix"/>

@@ -18,8 +18,9 @@ Feature: Preview a Variable numeric set question
       | contextlevel | reference | name           |
       | Course       | C1        | Test questions |
     And the following "questions" exist:
-      | questioncategory | qtype         | name                     | template       |
-      | Test questions   | varnumericset | Variable numeric set 001 | with_variables |
+      | questioncategory | qtype         | name                     | template               |
+      | Test questions   | varnumericset | Variable numeric set 001 | with_variables         |
+      | Test questions   | varnumericset | Variable numeric set 002 | sci_notation_formatted |
 
   @javascript @_switch_window
   Scenario: Preview a a Variable numeric set question and submit a correct response.

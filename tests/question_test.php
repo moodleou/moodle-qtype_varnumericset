@@ -285,7 +285,8 @@ class qtype_varnumericset_question_test extends advanced_testcase {
                                                  '0',     // Checknumerical.
                                                  '0',     // Checkscinotation.
                                                  '0',     // Checkpowerof10.
-                                                 '0');    // Checkrounding.
+                                                 '0',     // Checkrounding.
+                                                 '0');    // Checkscinotationformat.
 
         $answertoreturn = $q->compare_response_with_answer(['answer' => '-4.20'], $answer);
         $this->assertNotNull($answertoreturn);
@@ -302,7 +303,8 @@ class qtype_varnumericset_question_test extends advanced_testcase {
                                                  '0',     // Checknumerical.
                                                  '0',     // Checkscinotation.
                                                  '0',     // Checkpowerof10.
-                                                 '0');    // Checkrounding.
+                                                 '0',     // Checkrounding.
+                                                 '0');    // Checkscinotationformat.
 
         $answertoreturn = $q->compare_response_with_answer(['answer' => '12.0'], $answer);
         $this->assertNotNull($answertoreturn);
@@ -329,7 +331,8 @@ class qtype_varnumericset_question_test extends advanced_testcase {
                                                  '0',     // Checknumerical.
                                                  '0',     // Checkscinotation.
                                                  '0',     // Checkpowerof10.
-                                                 '0');    // Checkrounding.
+                                                 '0',     // Checkrounding.
+                                                 '0');    // Checkscinotationformat.
 
         /** @var qtype_varnumericset_question $q */
         [$penalty] = $q->compare_num_as_string_with_answer(
@@ -363,6 +366,53 @@ class qtype_varnumericset_question_test extends advanced_testcase {
         [$penalty] = $q->compare_num_as_string_with_answer(
                 '12.', $answer);
         $this->assertEquals(1, $penalty);
+
+        // Test check scinotation format.
+        $question = test_question_maker::make_question('varnumericset', 'sci_notation_formatted');
+        $answer = new qtype_varnumericset_answer(12345, // Id.
+            '12',     // Answer.
+            1.0000000,     // Fraction.
+            '<p>Your answer is correct.</p>',     // Feedback.
+            FORMAT_HTML,  // Feedbackformat.
+            '0',     // Sigfigs.
+            '',      // Error.
+            '0.25',  // Syserrorpenalty.
+            '0',     // Checknumerical.
+            '1',     // Checkscinotation.
+            '0',     // Checkpowerof10.
+            '0',     // Checkrounding.
+            '1');    // Checkscinotationformat.
+        [$penalty, $autofireerrorfeedback, $warning] = $question->compare_num_as_string_with_answer(
+            '1.200000 × 10<sup>1</sup>', $answer);
+        $this->assertEquals(0, $penalty);
+        $this->assertStringContainsString('', $autofireerrorfeedback);
+        $this->assertStringContainsString('', $warning);
+
+        [$penalty, $autofireerrorfeedback, $warning] = $question->compare_num_as_string_with_answer(
+            '1.200000 ×     10<sup>1</sup>', $answer);
+        $this->assertEquals(0.25, $penalty);
+        $this->assertStringContainsString(get_string('ae_scinotationformatted', 'qtype_varnumericset'),
+            $autofireerrorfeedback);
+        $this->assertStringContainsString('', $warning);
+
+        [$penalty] = $question->compare_num_as_string_with_answer(
+            '1.200000 × 10<sup>+1</sup>', $answer);
+        $this->assertEquals(0, $penalty);
+        [$penalty] = $question->compare_num_as_string_with_answer(
+            '1.200000  ×10<sup>1</sup>', $answer);
+        $this->assertEquals(0.25, $penalty);
+        [$penalty] = $question->compare_num_as_string_with_answer(
+            '1.200000×10<sup>1</sup>', $answer);
+        $this->assertEquals(0.25, $penalty);
+        [$penalty] = $question->compare_num_as_string_with_answer(
+            '1.200000 × 10<sup>   1</sup>', $answer);
+        $this->assertEquals(0.25, $penalty);
+        [$penalty] = $question->compare_num_as_string_with_answer(
+            '+   1.200000 × 10<sup>1</sup>', $answer);
+        $this->assertEquals(0.25, $penalty);
+        [$penalty] = $question->compare_num_as_string_with_answer(
+            '1.200000 × 10<sup>+  1</sup>', $answer);
+        $this->assertEquals(0.25, $penalty);
     }
 
     public function test_compare_num_as_string_with_answer_no_rounding() {
@@ -379,7 +429,8 @@ class qtype_varnumericset_question_test extends advanced_testcase {
                 '0',         // Checknumerical.
                 '0',         // Checkscinotation.
                 '0',         // Checkpowerof10.
-                '0');        // Checkrounding.
+                '0',         // Checkrounding.
+                '0');        // Checkscinotationformat.
 
         /** @var qtype_varnumericset_question $q */
         [$penalty] = $q->compare_num_as_string_with_answer('123456789', $answer);
@@ -465,6 +516,16 @@ class qtype_varnumericset_question_test extends advanced_testcase {
         $this->assertEquals(1, $this->grade($question, '-1x10<sup>9</sup>'));
         $this->assertEquals(1, $this->grade($question, '-1x10<sup>+9</sup>'));
         $this->assertEquals(0, $this->grade($question, ''));
+
+        /** @var qtype_varnumericset_question $question */
+        $question = test_question_maker::make_question('varnumericset', 'sci_notation_formatted');
+        $this->assertEquals(1, $this->grade($question, '1.200000 x 10<sup>1</sup>'));
+        $this->assertEquals(1, $this->grade($question, '1.200000 x 10<sup>+1</sup>'));
+        $this->assertEquals(0.75, $this->grade($question, '1.200000x 10<sup>1</sup>'));
+        $this->assertEquals(0.75, $this->grade($question, '1.200000 x10<sup>1</sup>'));
+        $this->assertEquals(0.75, $this->grade($question, '1.200000 x 10<sup>     1</sup>'));
+        $this->assertEquals(0.75, $this->grade($question, '+  1.200000 x 10<sup>1</sup>'));
+        $this->assertEquals(0.75, $this->grade($question, '1.200000 x 10<sup>+    1</sup>'));
     }
 
     public function test_get_question_summary() {

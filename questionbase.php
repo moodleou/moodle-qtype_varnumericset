@@ -242,6 +242,7 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
      */
     public function compare_num_as_string_with_answer($string,
             qtype_varnumericset_answer $answer) {
+        $htmlresponse = $string;
         $autofireerrorfeedback = '';
 
         // Evaluate the answer.
@@ -259,12 +260,22 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         $string = $num->get_normalised();
         $warning = $this->feedback_for_post_prefix_parts($num->get_prefix(), $num->get_postfix());
 
+        // Get the correct answer.
+        $correcthtmlanswer = $this->round_to($evaluated, $answer->sigfigs, $this->requirescinotation);
+        $correcthtmlanswer = $this->qtype->calculator_name()::htmlize_exponent($correcthtmlanswer);
+
+        // Get the float value of the response and answer.
+        $floatvalresponse = floatval($string);
+        $num->match($correcthtmlanswer);
+        $floatvalanswer = floatval($num->get_normalised());
+
         // Evaluate.
         if (self::num_within_allowed_error($string, $rounded, $allowederror) &&
-                (($answer->sigfigs == 0)
-                        || self::has_number_of_sig_figs($string, $answer->sigfigs)) &&
-                (!$this->requirescinotation || self::is_sci_notation($string))) {
-            return array(0, '', $warning); // This answer is a perfect match 0% penalty.
+                (($answer->sigfigs == 0) || self::has_number_of_sig_figs($string, $answer->sigfigs)) &&
+                (!$this->requirescinotation || self::is_sci_notation($string)) &&
+                ($answer->checkscinotationformat == 0 || !$this->wrong_sci_notation_format($htmlresponse,
+                    $correcthtmlanswer, $floatvalresponse, $floatvalanswer))) {
+            return [0, '', $warning]; // This answer is a perfect match 0% penalty.
 
         } else if ($answer->checknumerical &&
                         self::num_within_allowed_error($string, $rounded, $allowederror)) {
@@ -291,8 +302,16 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
             $autofireerrorfeedback = 'roundingincorrect';
             $autofireerrors = 1;
 
+        } else if ($answer->checkscinotationformat != 0 &&
+                $this->wrong_sci_notation_format($htmlresponse, $correcthtmlanswer,
+                    $floatvalresponse, $floatvalanswer)) {
+            if ($answer->checkscinotation == 0) {
+                return [0, '', $warning];
+            }
+            $autofireerrorfeedback = 'scinotationformatted';
+            $autofireerrors = 1;
         } else {
-            return array(1, '', ''); // This answer is not a match 100% penalty.
+            return [1, '', '']; // This answer is not a match 100% penalty.
         }
 
         if (!empty($autofireerrorfeedback)
@@ -302,9 +321,12 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         }
 
         $penalty = $answer->syserrorpenalty * $autofireerrors;
-        return array($penalty,
-                get_string('ae_' . $autofireerrorfeedback, 'qtype_varnumericset'),
-                $warning);
+
+        return [
+            $penalty,
+            get_string('ae_' . $autofireerrorfeedback, 'qtype_varnumericset'),
+            $warning
+        ];
     }
 
     protected function feedback_for_post_prefix_parts($prefix, $postfix) {
@@ -557,6 +579,50 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         return max(0, $finalanswer->fraction);
     }
 
+
+    /**
+     * Wrong scientific notation format.
+     *
+     * @param string $responses A responses of the answer.
+     * @param string $answer The answer.
+     * @param float $floatvalresponse The float value of the response.
+     * @param float $floatvalanswer The float value of the answer.
+     * @return bool
+     */
+    public function wrong_sci_notation_format(string $responses, string $answer, float $floatvalresponse,
+            float $floatvalanswer): bool {
+        // Find the spacing in the response and answer.
+        // Group the spacing in group 1, 5, 7, 8, 9 and 10.
+        $pattern = "/\S?(\s*)?(\d+)(\.\d+)?((\s*)(\S)*?(\s*)?10(\s*)?<sup>(\s*)?\S?(\s*)?\d+(\.\d+)?\s*?<\/sup>)?/";
+        // Match pattern against $responses.
+        preg_match($pattern, $responses, $matchresponse);
+
+        // Match pattern against $answer.
+        preg_match($pattern, $answer, $matchanswer);
+
+        // The correct format to check for in the array of responses is equal to or greater than 8 elements.
+        if (count($matchresponse) >= 8) {
+            // Check if the response and answer is the same, and the spacing is correct.
+            if (count($matchresponse) === count($matchanswer) && $floatvalresponse === $floatvalanswer) {
+                // Check spacing format using the length of the group.
+                // If the length of the group is not the same, then the spacing format is wrong.
+                $checkspacingformat = (strlen($matchresponse[1]) !== strlen($matchanswer[1]) ||
+                    strlen($matchresponse[5]) !== strlen($matchanswer[5]) ||
+                    strlen($matchresponse[7]) !== strlen($matchanswer[7]) ||
+                    strlen($matchresponse[8]) !== strlen($matchanswer[8]) ||
+                    strlen($matchresponse[9]) !== strlen($matchanswer[9]) ||
+                    strlen($matchresponse[10]) !== strlen($matchanswer[10]));
+                // The $checkspacingformat is true if the length of the group is not the same.
+                // Meaning the spacing format is wrong.
+                if ($checkspacingformat) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     public function classify_response(array $response) {
         if (!$this->is_gradable_response($response)) {
             return array($this->id => question_classified_response::no_response());
@@ -597,6 +663,7 @@ class qtype_varnumericset_answer extends question_answer {
     public $checkscinotation;
     public $checkpowerof10;
     public $checkrounding;
+    public $checkscinotationformat;
 
     /**
      * Constructor.
@@ -609,7 +676,7 @@ class qtype_varnumericset_answer extends question_answer {
      */
     public function __construct($id, $answer, $fraction, $feedback, $feedbackformat,
                             $sigfigs, $error, $syserrorpenalty, $checknumerical, $checkscinotation,
-                            $checkpowerof10, $checkrounding) {
+                            $checkpowerof10, $checkrounding, $checkscinotationformat) {
         parent::__construct($id, $answer, $fraction, $feedback, $feedbackformat);
         $this->sigfigs = $sigfigs;
         $this->error = $error;
@@ -618,5 +685,6 @@ class qtype_varnumericset_answer extends question_answer {
         $this->checkscinotation = $checkscinotation;
         $this->checkpowerof10 = $checkpowerof10;
         $this->checkrounding = $checkrounding;
+        $this->checkscinotationformat = $checkscinotationformat;
     }
 }

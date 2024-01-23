@@ -212,14 +212,16 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
                                             $autofirerow1, null, false);
 
         $autofirerow2 = array();
+        $autofirerow2[] = $mform->createElement('selectyesno', 'checkscinotationformat',
+            get_string('checkscinotationformat', 'qtype_varnumericset'));
         $autofirerow2[] = $mform->createElement('select', 'checkpowerof10',
                                             get_string('checkpowerof10', 'qtype_varnumericset'), $checkpowerof10options);
-        $autofirerow2[] = $mform->createElement('selectyesno', 'checkrounding',
-                                                 get_string('checkrounding', 'qtype_varnumericset'));
         $repeated[] = $mform->createElement('group', 'autofirerow2', '',
                                             $autofirerow2, null, false);
 
         $autofirerow3 = array();
+        $autofirerow3[] = $mform->createElement('selectyesno', 'checkrounding',
+            get_string('checkrounding', 'qtype_varnumericset'));
         $autofirerow3[] = $mform->createElement('select', 'syserrorpenalty',
                                                  get_string('syserrorpenalty', 'qtype_varnumericset'), $gradeoptions);
         $repeated[] = $mform->createElement('group', 'autofirerow3', '',

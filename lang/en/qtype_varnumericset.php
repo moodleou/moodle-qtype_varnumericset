@@ -30,6 +30,8 @@ $string['ae_numericallycorrect'] = 'Your answer is almost correct. You have the 
 $string['ae_numericallycorrectandwrongformat'] = 'Your answer is almost correct. You have the correct value and it is rounded correctly but it is not in scientific notation.';
 $string['ae_roundingincorrect'] = 'Your answer is almost correct, but it is rounded incorrectly.';
 $string['ae_roundingincorrectandwrongformat'] = 'Your answer is almost correct, but it is rounded incorrectly and it is not in scientific notation.';
+$string['ae_scinotationformatted'] = 'Your answer is almost correct, but the scientific notation is not formatted correctly.';
+$string['ae_scinotationformattedandwrongformat'] = 'Your answer is almost correct, but the scientific notation is not formatted correctly and it is not in scientific notation.';
 $string['ae_toomanysigfigs'] = 'Your answer is almost correct, but it is given to too many significant figures.';
 $string['ae_toomanysigfigsandwrongformat'] = 'Your answer is almost correct, but it is given to too many significant figures and it is not in scientific notation.';
 $string['ae_wrongbyfactorof10'] = 'Your answer is almost correct, but you have the factor of 10 wrong.';
@@ -44,6 +46,7 @@ $string['checknumerical'] = 'If numerically correct';
 $string['checkpowerof10'] = 'If power of 10 is off';
 $string['checkrounding'] = 'If rounding is incorrect';
 $string['checkscinotation'] = 'If scientific notation required but not used';
+$string['checkscinotationformat'] = 'If scientific notation is not formatted correctly';
 $string['errorreportedbyexpressionevaluator'] = 'Expression evaluation error: {$a}';
 $string['errorvalidationatleastonepredefinedvariables'] = 'At least one of the variables must be a predefined variable.';
 $string['errorvalidationformatnumber'] = 'Some number formatting expressions generated errors:<br>{$a}<br>A correct example looks like [[variable,format]] or [[expression,format]], with format in <a href="http://php.net/manual/en/function.sprintf.php">sprintf</a> form. Common formats are<br>[[x,d]] - integer<br>[[x,.03f]] - three decimal places<br>[[x,.03e]] - scientific notation with three digits after the decimal point.';

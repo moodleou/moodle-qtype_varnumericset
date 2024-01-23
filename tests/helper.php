@@ -33,7 +33,8 @@ class qtype_varnumericset_test_helper extends question_test_helper {
     public function get_test_questions() {
         return array('no_accepted_error', 'numeric_accepted_error', '3_sig_figs', '3_sig_figs_2',
                         '3_sig_figs_trailing_zero', '3_sig_figs_trailing_zero_negative_answer',
-                        '1_sig_fig', '3_sig_figs_point_0', 'with_variables', 'custom_rounding_feebdack');
+                        '1_sig_fig', '3_sig_figs_point_0', 'with_variables', 'custom_rounding_feebdack',
+                        'sci_notation_formatted');
     }
 
     /**
@@ -62,7 +63,8 @@ class qtype_varnumericset_test_helper extends question_test_helper {
                                                  '0',     // Checknumerical.
                                                  '0',     // Checkscinotation.
                                                  '0',     // Checkpowerof10.
-                                                 '0'),    // Checkrounding.
+                                                 '0',     // Checkrounding.
+                                                 '0'),    // Checkscinotationformat.
                             2 => new qtype_varnumericset_answer('2', // Id.
                                                  '*',     // Answer.
                                                  '0',     // Fraction.
@@ -74,7 +76,8 @@ class qtype_varnumericset_test_helper extends question_test_helper {
                                                  '0',     // Checknumerical.
                                                  '0',     // Checkscinotation.
                                                  '0',     // Checkpowerof10.
-                                                 '0'));   // Checkrounding.
+                                                 '0',     // Checkrounding.
+                                                 '0'));   // Checkscinotationformat.
         $calculatorname = $vs->qtype->calculator_name();
         $vs->calculator = new $calculatorname();
         $vs->calculator->evaluate_variant(0);
@@ -214,6 +217,7 @@ class qtype_varnumericset_test_helper extends question_test_helper {
         $form->error = ['0' => '', '1' => ''];
         $form->checknumerical = ['0' => 0, '1' => 0, '2' => 0];
         $form->checkscinotation = ['0' => 0, '1' => 0, '2' => 0];
+        $form->checkscinotationformat = ['0' => 0, '1' => 0, '2' => 0];
         $form->checkpowerof10 = ['0' => 0, '1' => 0, '2' => 0];
         $form->checkrounding = ['0' => 0, '1' => 0, '2' => 0];
         $form->syserrorpenalty = ['0' => 0.0, '1' => 0.0, '2' => 0.0];
@@ -264,7 +268,8 @@ class qtype_varnumericset_test_helper extends question_test_helper {
                 '0',        // Checknumerical.
                 '0',        // Checkscinotation.
                 '0',        // Checkpowerof10.
-                '0');       // Checkrounding.
+                '0',        // Checkrounding.
+                '0');       // Checkscinotationformat.
 
         $vs->answers[4] = new qtype_varnumericset_answer(
                 '4',        // Id.
@@ -278,7 +283,79 @@ class qtype_varnumericset_test_helper extends question_test_helper {
                 '0',        // Checknumerical.
                 '0',        // Checkscinotation.
                 '0',        // Checkpowerof10.
-                '0');       // Checkrounding.
+                '0',        // Checkrounding.
+                '0');       // Checkscinotationformat.
+
+        return $vs;
+    }
+
+    /**
+     * Get a varnumericset with scinotation formatted.
+     */
+    public function get_varnumericset_question_form_data_sci_notation_formatted() {
+        $form = new stdClass();
+        $form->name = 'Pi to two d.p.';
+        $form->questiontext = ['text' => '<p>What is [[a]] + [[b]]?</p>', 'format' => FORMAT_HTML];
+        $form->defaultmark = 1;
+        $form->generalfeedback = ['text' => '<p>General feedback 1e9.</p>', 'format' => FORMAT_HTML];
+        $form->requirescinotation = 1;
+        $form->randomseed = '';
+        $form->vartype = ['0' => 1, '1' => 1, '2' => 1]; // Set to 'Predefined variable'.
+        $form->novars = 3;
+        $form->noofvariants = 3;
+        $form->varname[0] = 'a';
+        $form->variant0[0] = 3;
+        $form->varname[1] = 'b';
+        $form->variant0[1] = 5;
+        $form->varname[2] = 'c = a + b';
+        $form->variant_last = ['0' => '', '1' => ''];
+        $form->requirescinotation = 1;
+        $form->answer = ['0' => 'c', '1' => '*'];
+        $form->sigfigs = ['0' => 0, '1' => 0];
+        $form->error = ['0' => '', '1' => ''];
+        $form->checknumerical = ['0' => 0, '1' => 0, '2' => 0];
+        $form->checkscinotation = ['0' => 1, '1' => 0, '2' => 0];
+        $form->checkscinotationformat = ['0' => 1, '1' => 0, '2' => 0];
+        $form->checkpowerof10 = ['0' => 0, '1' => 0, '2' => 0];
+        $form->checkrounding = ['0' => 0, '1' => 0, '2' => 0];
+        $form->syserrorpenalty = ['0' => 0.5, '1' => 0.0, '2' => 0.0];
+        $form->fraction = ['0' => '1.0', '1' => '0.0', '2' => '0.0'];
+        $form->feedback = [
+            '0' => ['format' => FORMAT_HTML, 'text' => 'Well done!'],
+            '1' => ['format' => FORMAT_HTML, 'text' => 'Sorry, no.']
+        ];
+        $form->penalty = '0.3333333';
+        $form->hint = [
+            ['text' => 'Please try again.', 'format' => FORMAT_HTML],
+            ['text' => 'You may use a calculator if necessary.', 'format' => FORMAT_HTML]
+        ];
+
+        return $form;
+    }
+
+    /**
+     * Makes a varnumericset with scinotation formatted.
+     */
+    public function make_varnumericset_question_sci_notation_formatted() {
+        $vs = $this->make_varnumericset_question_no_accepted_error();
+
+        $vs->answers = [1 => new qtype_varnumericset_answer(
+            '1',        // Id.
+            '12',       // Answer.
+            1.0000000,  // Fraction.
+            '<p>Your answer is correct.</p>',  // Feedback.
+            FORMAT_HTML,// Feedbackformat.
+            '0',        // Sigfigs.
+            '',         // Error.
+            '0.25',     // Syserrorpenalty.
+            '0',        // Checknumerical.
+            '1',        // Checkscinotation.
+            '0',        // Checkpowerof10.
+            '0',        // Checkrounding.
+            '1',        // Checkscinotationformat.
+        )];
+        $vs->requirescinotation = true;
+        $vs->usesupeditor = true;
 
         return $vs;
     }

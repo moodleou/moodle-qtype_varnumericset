@@ -64,7 +64,8 @@ abstract class qtype_varnumeric_base extends question_type {
                         'checknumerical',
                         'checkscinotation',
                         'checkpowerof10',
-                        'checkrounding');
+                        'checkrounding',
+                        'checkscinotationformat');
     }
 
     public function move_files($questionid, $oldcontextid, $newcontextid) {
@@ -159,6 +160,7 @@ abstract class qtype_varnumeric_base extends question_type {
             $varnumericanswer->checkscinotation = $form->checkscinotation[$key];
             $varnumericanswer->checkpowerof10 = $form->checkpowerof10[$key];
             $varnumericanswer->checkrounding = $form->checkrounding[$key];
+            $varnumericanswer->checkscinotationformat = $form->checkscinotationformat[$key];
             $DB->insert_record($this->db_table_prefix().'_answers', $varnumericanswer);
         }
         $form->varname = $form->varname ?? null;
@@ -415,7 +417,7 @@ abstract class qtype_varnumeric_base extends question_type {
             $question->answers[$a->id] = new qtype_varnumericset_answer($a->id, $a->answer,
                     $a->fraction, $a->feedback, $a->feedbackformat, $a->sigfigs, $a->error,
                     $a->syserrorpenalty, $a->checknumerical, $a->checkscinotation,
-                    $a->checkpowerof10, $a->checkrounding);
+                    $a->checkpowerof10, $a->checkrounding, $a->checkscinotationformat);
         }
     }
     public function get_random_guess_score($questiondata) {

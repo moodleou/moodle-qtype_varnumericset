@@ -121,7 +121,7 @@ class backup_qtype_varnumericset_plugin extends backup_qtype_plugin {
         $answers = new backup_nested_element('varnumericset_answers');
         $answer = new backup_nested_element('varnumericset_answer', array('id'), array(
             'answerid', 'error', 'sigfigs', 'checknumerical', 'checkscinotation',
-            'checkpowerof10', 'checkrounding', 'syserrorpenalty'));
+            'checkpowerof10', 'checkrounding', 'syserrorpenalty', 'checkscinotationformat'));
 
         // Build the tree.
         $element->add_child($answers);

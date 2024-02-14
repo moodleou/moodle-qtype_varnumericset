@@ -14,6 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace qtype_varnumericset;
+
+use basic_testcase;
+use qtype_varnumericset;
+use question_possible_response;
+use stdClass;
+
 /**
  * Unit tests for the varnumericset question type class.
  *
@@ -35,13 +42,9 @@ require_once($CFG->dirroot . '/question/type/varnumericset/questiontype.php');
  *
  * @copyright  2012 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @group      qtype_varnumericset
+ * @covers     \qtype_varnumericset
  */
-class qtype_varnumericset_test extends basic_testcase {
-    public static $includecoverage = array(
-        'question/type/questiontype.php',
-        'question/type/varnumericset/questiontype.php',
-    );
+class questiontype_test extends basic_testcase {
 
     protected $qtype;
 
@@ -49,18 +52,18 @@ class qtype_varnumericset_test extends basic_testcase {
         $this->qtype = new qtype_varnumericset();
     }
 
-    protected function get_test_question_data() {
+    protected function get_test_question_data(): stdClass {
         $q = new stdClass();
         $q->id = 1;
         $q->options = new stdClass();
-        $q->options->answers[1] = (object) array('answer' => 'frog', 'fraction' => 1);
-        $q->options->answers[2] = (object) array('answer' => '*', 'fraction' => 0.1);
+        $q->options->answers[1] = (object) ['answer' => 'frog', 'fraction' => 1];
+        $q->options->answers[2] = (object) ['answer' => '*', 'fraction' => 0.1];
 
         return $q;
     }
 
     public function test_name() {
-        $this->assertEquals($this->qtype->name(), 'varnumericset');
+        $this->assertEquals('varnumericset', $this->qtype->name());
     }
 
     public function test_can_analyse_responses() {
@@ -75,11 +78,11 @@ class qtype_varnumericset_test extends basic_testcase {
     public function test_get_possible_responses() {
         $q = $this->get_test_question_data();
 
-        $this->assertEquals(array(
-            $q->id => array(
+        $this->assertEquals([
+            $q->id => [
                 1 => new question_possible_response('frog', 1),
                 2 => new question_possible_response('*', 0.1),
-                null => question_possible_response::no_response()),
-        ), $this->qtype->get_possible_responses($q));
+                null => question_possible_response::no_response()],
+        ], $this->qtype->get_possible_responses($q));
     }
 }

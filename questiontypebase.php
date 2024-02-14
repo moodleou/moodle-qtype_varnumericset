@@ -53,11 +53,11 @@ abstract class qtype_varnumeric_base extends question_type {
     }
 
     public function extra_question_fields() {
-        return array($this->db_table_prefix(), 'randomseed', 'requirescinotation');
+        return [$this->db_table_prefix(), 'randomseed', 'requirescinotation'];
     }
 
     public function extra_answer_fields() {
-        return array($this->db_table_prefix().'_answers',
+        return [$this->db_table_prefix().'_answers',
                         'sigfigs',
                         'error',
                         'syserrorpenalty',
@@ -65,7 +65,7 @@ abstract class qtype_varnumeric_base extends question_type {
                         'checkscinotation',
                         'checkpowerof10',
                         'checkrounding',
-                        'checkscinotationformat');
+                        'checkscinotationformat'];
     }
 
     public function move_files($questionid, $oldcontextid, $newcontextid) {
@@ -83,20 +83,20 @@ abstract class qtype_varnumeric_base extends question_type {
     public function delete_question($questionid, $contextid) {
         global $DB;
         $prefix = $this->db_table_prefix();
-        $DB->delete_records($prefix, array('questionid' => $questionid));
+        $DB->delete_records($prefix, ['questionid' => $questionid]);
         $ids = $DB->get_fieldset_sql("SELECT qva.id FROM {{$prefix}_answers} qva
                                         JOIN {question_answers} qa ON qa.id = qva.answerid
-                                       WHERE qa.question = ?", array($questionid));
+                                       WHERE qa.question = ?", [$questionid]);
         if (!empty($ids)) {
             $DB->delete_records_list("{$prefix}_answers", 'id', $ids);
         }
         $ids = $DB->get_fieldset_sql("SELECT va.id FROM {{$prefix}_variants} va
                                         JOIN {{$prefix}_vars} v ON va.varid = v.id
-                                       WHERE v.questionid = ?", array($questionid));
+                                       WHERE v.questionid = ?", [$questionid]);
         if (!empty($ids)) {
             $DB->delete_records_list("{$prefix}_variants", 'id', $ids);
         }
-        $DB->delete_records("{$prefix}_vars", array('questionid' => $questionid));
+        $DB->delete_records("{$prefix}_vars", ['questionid' => $questionid]);
 
         parent::delete_question($questionid, $contextid);
     }
@@ -108,7 +108,7 @@ abstract class qtype_varnumeric_base extends question_type {
         $context = $form->context;
 
         $oldanswers = $DB->get_records('question_answers',
-                array('question' => $form->id), 'id ASC');
+                ['question' => $form->id], 'id ASC');
 
         if (!empty($oldanswers)) {
             $oldanswerids = array_keys($oldanswers);
@@ -116,10 +116,10 @@ abstract class qtype_varnumeric_base extends question_type {
             $DB->delete_records_select($this->db_table_prefix().'_answers',
                                                 "answerid $oldansweridsql", $oldansweridparams);
         } else {
-            $oldanswers = array();
+            $oldanswers = [];
         }
 
-        $answers = array();
+        $answers = [];
         $maxfraction = -1;
 
         // Insert all the new answers.
@@ -166,7 +166,7 @@ abstract class qtype_varnumeric_base extends question_type {
         $form->varname = $form->varname ?? null;
         [$varschanged, $varnotovarid, $assignments, $predefined] = $this->save_vars($form->id, $form->varname);
 
-        $variants = array();
+        $variants = [];
         for ($variantno = 0; $variantno < $form->noofvariants; $variantno++) {
             $propname = 'variant'.$variantno;
             if (isset($form->{$propname})) {
@@ -193,7 +193,7 @@ abstract class qtype_varnumeric_base extends question_type {
             $calculatorname = $this->calculator_name();
             $calculator = new $calculatorname();
             if (empty($form->randomseed)) {
-                $questionstamp = $DB->get_field('question', 'stamp', array('id' => $form->id));
+                $questionstamp = $DB->get_field('question', 'stamp', ['id' => $form->id]);
             } else {
                 $questionstamp = '';
             }
@@ -214,7 +214,7 @@ abstract class qtype_varnumeric_base extends question_type {
         $fs = get_file_storage();
         foreach ($oldanswers as $oldanswer) {
             $fs->delete_area_files($context->id, 'question', 'answerfeedback', $oldanswer->id);
-            $DB->delete_records('question_answers', array('id' => $oldanswer->id));
+            $DB->delete_records('question_answers', ['id' => $oldanswer->id]);
         }
 
         $this->save_hints($form, true);
@@ -297,11 +297,11 @@ abstract class qtype_varnumeric_base extends question_type {
         global $DB;
         $changed = false;
         $oldvars = $DB->get_records($this->db_table_prefix().'_vars',
-                                       array('questionid' => $questionid),
+                                       ['questionid' => $questionid],
                                        'id ASC');
-        $varnotovarid = array();
-        $predefined = array();
-        $assignments = array();
+        $varnotovarid = [];
+        $predefined = [];
+        $assignments = [];
         if (isset($varnames)) {
             foreach ($varnames as $varno => $varname) {
                 if ($varname == '') {
@@ -345,7 +345,7 @@ abstract class qtype_varnumeric_base extends question_type {
         }
         // Delete any remaining old vars.
         if (!empty($oldvars)) {
-            $oldvarids = array();
+            $oldvarids = [];
             foreach ($oldvars as $oldvar) {
                 $oldvarids[] = $oldvar->id;
             }
@@ -355,7 +355,7 @@ abstract class qtype_varnumeric_base extends question_type {
                                         $oldvaridslist);
             $changed = true;
         }
-        return array($changed, $varnotovarid, $assignments, $predefined);
+        return [$changed, $varnotovarid, $assignments, $predefined];
     }
 
     public function finished_edit_wizard($fromform) {
@@ -376,20 +376,20 @@ abstract class qtype_varnumeric_base extends question_type {
     public function load_var_and_variants_from_db($questionid) {
         global $DB;
         $vars = $DB->get_records($this->db_table_prefix().'_vars',
-                                        array('questionid' => $questionid),
+                                        ['questionid' => $questionid],
                                         'id ASC', 'id, nameorassignment, varno');
         if ($vars) {
             list($varidsql, $varids) = $DB->get_in_or_equal(array_keys($vars));
             $variants = $DB->get_records_select($this->db_table_prefix().'_variants',
                                                     'varid '.$varidsql, $varids);
             if (!$variants) {
-                $variants = array();
+                $variants = [];
             }
         } else {
-            $vars = array();
-            $variants = array();
+            $vars = [];
+            $variants = [];
         }
-        return array($vars, $variants);
+        return [$vars, $variants];
     }
     protected function initialise_question_vars_and_variants(question_definition $question,
                                                                                 $questiondata) {
@@ -409,7 +409,7 @@ abstract class qtype_varnumeric_base extends question_type {
      * @param object $questiondata the question data loaded from the database.
      */
     protected function initialise_varnumeric_answers(question_definition $question, $questiondata) {
-        $question->answers = array();
+        $question->answers = [];
         if (empty($questiondata->options->answers)) {
             return;
         }
@@ -430,7 +430,7 @@ abstract class qtype_varnumeric_base extends question_type {
     }
 
     public function get_possible_responses($questiondata) {
-        $responses = array();
+        $responses = [];
 
         $starfound = false;
         foreach ($questiondata->options->answers as $aid => $answer) {
@@ -448,7 +448,7 @@ abstract class qtype_varnumeric_base extends question_type {
 
         $responses[null] = question_possible_response::no_response();
 
-        return array($questiondata->id => $responses);
+        return [$questiondata->id => $responses];
     }
 
     protected function make_hint($hint) {
@@ -473,9 +473,9 @@ abstract class qtype_varnumeric_base extends question_type {
         if (isset($data['#']['var'])) {
             $vars = $data['#']['var'];
             foreach ($vars as $var) {
-                $varno = $format->getpath($var, array('#', 'varno', 0, '#'), false);
+                $varno = $format->getpath($var, ['#', 'varno', 0, '#'], false);
                 $qo->varname[$varno] =
-                    $format->getpath($var, array('#', 'nameorassignment', 0, '#'), false);
+                    $format->getpath($var, ['#', 'nameorassignment', 0, '#'], false);
                 $calculatorname = $this->calculator_name();
                 if ($calculatorname::is_assignment($qo->varname[$varno])) {
                     $qo->vartype[$varno] = 0;
@@ -485,17 +485,17 @@ abstract class qtype_varnumeric_base extends question_type {
                 if (isset($var['#']['variant'])) {
                     $variants = $var['#']['variant'];
                     foreach ($variants as $variant) {
-                        $variantno = $format->getpath($variant, array('#', 'variantno', 0, '#'), false);
+                        $variantno = $format->getpath($variant, ['#', 'variantno', 0, '#'], false);
                         $variantpropname = 'variant'.$variantno;
                         $qo->{$variantpropname}[$varno] =
-                                        $format->getpath($variant, array('#', 'value', 0, '#'), false);
+                                        $format->getpath($variant, ['#', 'value', 0, '#'], false);
                         $qo->noofvariants = max($qo->noofvariants, $variantno + 1);
                     }
                 }
             }
         } else {
-            $qo->varname = array();
-            $qo->vartype = array();
+            $qo->varname = [];
+            $qo->vartype = [];
         }
         $format->import_hints($qo, $data, true, false,
                                                 $format->get_format($qo->questiontextformat));
@@ -513,14 +513,14 @@ abstract class qtype_varnumeric_base extends question_type {
         list($vars, $variants) = self::load_var_and_variants_from_db($question->id);
         foreach ($vars as $var) {
             $expout .= "    <var>\n";
-            foreach (array('varno', 'nameorassignment') as $field) {
+            foreach (['varno', 'nameorassignment'] as $field) {
                 $exportedvalue = $format->xml_escape($var->$field);
                 $expout .= "      <$field>{$exportedvalue}</$field>\n";
             }
             foreach ($variants as $variant) {
                 if ($variant->varid == $var->id) {
                     $expout .= "      <variant>\n";
-                    foreach (array('variantno', 'value') as $field) {
+                    foreach (['variantno', 'value'] as $field) {
                         $exportedvalue = $format->xml_escape($variant->$field);
                         $expout .= "        <$field>{$exportedvalue}</$field>\n";
                     }

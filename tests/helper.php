@@ -31,10 +31,10 @@
  */
 class qtype_varnumericset_test_helper extends question_test_helper {
     public function get_test_questions() {
-        return array('no_accepted_error', 'numeric_accepted_error', '3_sig_figs', '3_sig_figs_2',
+        return ['no_accepted_error', 'numeric_accepted_error', '3_sig_figs', '3_sig_figs_2',
                         '3_sig_figs_trailing_zero', '3_sig_figs_trailing_zero_negative_answer',
                         '1_sig_fig', '3_sig_figs_point_0', 'with_variables', 'custom_rounding_feebdack',
-                        'sci_notation_formatted');
+                        'sci_notation_formatted'];
     }
 
     /**
@@ -52,7 +52,7 @@ class qtype_varnumericset_test_helper extends question_test_helper {
         $vs->usesupeditor = false;
         $vs->qtype = question_bank::get_qtype('varnumericset');
 
-        $vs->answers = array(1 => new qtype_varnumericset_answer('1', // Id.
+        $vs->answers = [1 => new qtype_varnumericset_answer('1', // Id.
                                                  '-4.2',  // Answer.
                                                  '1',     // Fraction.
                                                  '<p>Your answer is correct.</p>', // Feedback.
@@ -77,7 +77,7 @@ class qtype_varnumericset_test_helper extends question_test_helper {
                                                  '0',     // Checkscinotation.
                                                  '0',     // Checkpowerof10.
                                                  '0',     // Checkrounding.
-                                                 '0'));   // Checkscinotationformat.
+                                                 '0')];   // Checkscinotationformat.
         $calculatorname = $vs->qtype->calculator_name();
         $vs->calculator = new $calculatorname();
         $vs->calculator->evaluate_variant(0);
@@ -224,12 +224,12 @@ class qtype_varnumericset_test_helper extends question_test_helper {
         $form->fraction = ['0' => '1.0', '1' => '0.0', '2' => '0.0'];
         $form->feedback = [
                 '0' => ['format' => FORMAT_HTML, 'text' => 'Well done!'],
-                '1' => ['format' => FORMAT_HTML, 'text' => 'Sorry, no.']
+                '1' => ['format' => FORMAT_HTML, 'text' => 'Sorry, no.'],
         ];
         $form->penalty = '0.3333333';
         $form->hint = [
                 ['text' => 'Please try again.', 'format' => FORMAT_HTML],
-                ['text' => 'You may use a calculator if necessary.', 'format' => FORMAT_HTML]
+                ['text' => 'You may use a calculator if necessary.', 'format' => FORMAT_HTML],
             ];
 
         return $form;

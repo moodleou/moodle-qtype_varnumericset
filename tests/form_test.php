@@ -35,8 +35,8 @@ require_once($CFG->dirroot . '/question/type/varnumericset/question.php');
  *
  * @copyright 2023 The Open University
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @group qtype_varnumericset
- * @covers qtype_varnumericset_edit_form
+ * @covers \qtype_varnumeric_edit_form_base
+ * @covers \qtype_varnumericset_edit_form
  */
 class form_test extends \advanced_testcase {
 
@@ -53,7 +53,7 @@ class form_test extends \advanced_testcase {
         $course = $gen->create_course();
         $context = \context_course::instance($course->id);
 
-        $contexts = $this->question_edit_contexts($context);
+        $contexts = new \core_question\local\bank\question_edit_contexts($context);
         $category = question_make_default_categories($contexts->all());
 
         $question = new \stdClass();
@@ -71,24 +71,7 @@ class form_test extends \advanced_testcase {
 
         $qtypeobj = \question_bank::get_qtype($question->qtype);
 
-        $mform = $qtypeobj->create_editing_form('question.php', $question, $category, $contexts, true);
-        return $mform;
-    }
-
-    /**
-     * Retrieve the context object.
-     *
-     * @param \context $context The current context.
-     * @return object The context object.
-     */
-    private function question_edit_contexts(\context $context): object {
-        if (class_exists('\core_question\local\bank\question_edit_contexts')) {
-            $contexts = new \core_question\local\bank\question_edit_contexts($context);
-        } else {
-            $contexts = new \question_edit_contexts($context);
-        }
-
-        return $contexts;
+        return $qtypeobj->create_editing_form('question.php', $question, $category, $contexts, true);
     }
 
     /**

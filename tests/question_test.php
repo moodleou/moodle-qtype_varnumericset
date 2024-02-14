@@ -35,9 +35,10 @@ require_once($CFG->dirroot . '/question/engine/tests/helpers.php');
  *
  * @copyright 2012 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @group qtype_varnumericset
+ * @covers \qtype_varnumeric_question_base
+ * @covers \qtype_varnumericset_question
  */
-class qtype_varnumericset_question_test extends advanced_testcase {
+class question_test extends advanced_testcase {
 
     /**
      * Test-cases for test_num_within_allowed_error

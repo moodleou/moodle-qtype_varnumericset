@@ -47,27 +47,27 @@ abstract class qtype_varnumeric_calculator_base {
      * @var array two dimensional array first key is varno,
      *      2nd is variant no, contents is value of variant.
      */
-    protected $predefinedvariants = array();
+    protected $predefinedvariants = [];
 
     /**
      * @var array two dimensional array first key is varno,
      *      2nd is variant no, contents is value of variant
      */
-    protected $calculatedvariants = array();
+    protected $calculatedvariants = [];
 
     /** @var array one dimensional array key is varno. **/
-    protected $variables = array();
+    protected $variables = [];
 
     /** @var array one dimensional array first key is varno. **/
-    protected $vartypes = array();
+    protected $vartypes = [];
 
     protected $noofvariants = 0;
 
-    protected $answers = array();
+    protected $answers = [];
 
-    protected $textswithembeddedvars = array();
+    protected $textswithembeddedvars = [];
 
-    protected $errors = array();
+    protected $errors = [];
 
     public function add_variable($varno, $variablenameorassignment) {
         $this->variables[$varno] = $variablenameorassignment;
@@ -76,7 +76,7 @@ abstract class qtype_varnumeric_calculator_base {
     public function add_defined_variant($varno, $variantno, $value) {
         $this->noofvariants = max($this->noofvariants, $variantno + 1);
         if (!isset($this->predefinedvariants[$variantno])) {
-            $this->predefinedvariants[$variantno] = array();
+            $this->predefinedvariants[$variantno] = [];
         }
         $this->predefinedvariants[$variantno][$varno] = $value;
     }
@@ -148,7 +148,7 @@ abstract class qtype_varnumeric_calculator_base {
             $this->calculatedvariants[$variantno]
                             = $this->calculate_calculated_variant_values($variantno);
             foreach ($this->answers as $answerno => $answer) {
-                foreach (array('answer', 'error') as $prop) {
+                foreach (['answer', 'error'] as $prop) {
                     if ($prop == 'error' && $answer->{$prop} == '') {
                         continue; // No error messages for blank allowed error fields in answer.
                     }
@@ -215,7 +215,7 @@ abstract class qtype_varnumeric_calculator_base {
     }
 
     protected function calculate_calculated_variant_values($variantno) {
-        $calculatedvariants = array();
+        $calculatedvariants = [];
         foreach ($this->variables as $varno => $variablenameorassignment) {
             if (self::is_assignment($variablenameorassignment)) {
                 $varname = self::var_in_assignment($variablenameorassignment);
@@ -276,13 +276,13 @@ abstract class qtype_varnumeric_calculator_base {
             }
         }
 
-        $this->add_text_with_embedded_variables($formdata, array('questiontext'));
-        $this->add_text_with_embedded_variables($formdata, array('generalfeedback'));
+        $this->add_text_with_embedded_variables($formdata, ['questiontext']);
+        $this->add_text_with_embedded_variables($formdata, ['generalfeedback']);
 
-        foreach (array('feedback', 'hint') as $itemname) {
+        foreach (['feedback', 'hint'] as $itemname) {
             if (isset($formdata[$itemname])) {
                 foreach ($formdata[$itemname] as $indexno => $item) {
-                    $this->add_text_with_embedded_variables($formdata, array($itemname, $indexno));
+                    $this->add_text_with_embedded_variables($formdata, [$itemname, $indexno]);
                 }
             }
         }
@@ -316,7 +316,7 @@ abstract class qtype_varnumeric_calculator_base {
 
     public function load_data_from_database($vars, $variants) {
         // Declare and load data whether or not we will use calculator.
-        $varidtovarno = array();
+        $varidtovarno = [];
         foreach ($vars as $varid => $var) {
             if (self::is_assignment($var->nameorassignment)) {
                 $this->vartypes[$var->varno] = 0;
@@ -341,7 +341,7 @@ abstract class qtype_varnumeric_calculator_base {
         $dataforform->varname = array_values($this->variables);
         for ($variantno = 0; $variantno < $this->get_num_variants_in_form(); $variantno++) {
             $propname = 'variant'.$variantno;
-            $dataforform->{$propname} = array();
+            $dataforform->{$propname} = [];
             if (isset($this->predefinedvariants[$variantno])) {
                 $dataforform->{$propname} += array_values($this->predefinedvariants[$variantno]);
             }
@@ -384,7 +384,7 @@ abstract class qtype_varnumeric_calculator_base {
         // Match anything surrounded by [[ ]].
         preg_match_all('~\[\[(.+?)(\s*,\s*(.*?))?]]~', $text, $matches, PREG_SET_ORDER);
         foreach ($matches as $match) {
-            // Since the format may, or may not, be present, append an extra empty string to $match;
+            // Since the format may, or may not, be present, append an extra empty string to $match.
             [$placeholder, $variableorexpression, $hasformat, $format] = array_merge($match, ['', '']);
             if (isset($done[$placeholder])) {
                 // The same placeholder always gets replaced by the same value.

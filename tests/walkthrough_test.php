@@ -14,6 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace qtype_varnumericset;
+
+use qbehaviour_walkthrough_test_base;
+use question_hint;
+use question_hint_with_parts;
+use question_pattern_expectation;
+use question_state;
+use test_question_maker;
+
 /**
  * This file contains overall tests of varnumericset questions.
  *
@@ -35,17 +44,18 @@ require_once($CFG->dirroot . '/question/type/varnumericset/tests/helper.php');
  *
  * @copyright 2011 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @group qtype_varnumericset
+ * @covers \qtype_varnumeric_question_base
+ * @covers \qtype_varnumericset_question
  */
-class qtype_varnumericset_walkthrough_testcase extends qbehaviour_walkthrough_test_base {
+class walkthrough_test extends qbehaviour_walkthrough_test_base {
     public function test_validation_and_interactive_with_one_try_for_3_sig_figs() {
 
         // Create a varnumericset question.
         $q = test_question_maker::make_question('varnumericset', '3_sig_figs');
-        $q->hints = array(
+        $q->hints = [
             new question_hint(1, 'This is the first hint.', FORMAT_HTML),
             new question_hint(2, 'This is the second hint.', FORMAT_HTML),
-        );
+        ];
         $this->start_attempt_at_question($q, 'interactive', 100);
 
         // Check the initial state.
@@ -60,7 +70,7 @@ class qtype_varnumericset_walkthrough_testcase extends qbehaviour_walkthrough_te
             $this->get_no_hint_visible_expectation());
 
         // Submit blank.
-        $this->process_submission(array('-submit' => 1, 'answer' => ''));
+        $this->process_submission(['-submit' => 1, 'answer' => '']);
 
         $this->check_current_state(question_state::$invalid);
         $this->check_current_mark(null);
@@ -75,7 +85,7 @@ class qtype_varnumericset_walkthrough_testcase extends qbehaviour_walkthrough_te
             $this->get_no_hint_visible_expectation());
 
         // Submit something that does not look like a number.
-        $this->process_submission(array('-submit' => 1, 'answer' => 'newt'));
+        $this->process_submission(['-submit' => 1, 'answer' => 'newt']);
         $this->check_current_state(question_state::$invalid);
         $this->check_current_mark(null);
         $this->check_current_output(
@@ -88,7 +98,7 @@ class qtype_varnumericset_walkthrough_testcase extends qbehaviour_walkthrough_te
             $this->get_does_not_contain_try_again_button_expectation(),
             $this->get_no_hint_visible_expectation());
 
-        $this->process_submission(array('-submit' => 1, 'answer' => '12,300'));
+        $this->process_submission(['-submit' => 1, 'answer' => '12,300']);
 
         $this->check_current_state(question_state::$invalid);
         $this->check_current_mark(null);
@@ -101,7 +111,7 @@ class qtype_varnumericset_walkthrough_testcase extends qbehaviour_walkthrough_te
             $this->get_no_hint_visible_expectation());
 
         // Now get it right.
-        $this->process_submission(array('-submit' => 1, 'answer' => '12300'));
+        $this->process_submission(['-submit' => 1, 'answer' => '12300']);
 
         $this->check_current_state(question_state::$gradedright);
         $this->check_current_mark(100);
@@ -117,12 +127,12 @@ class qtype_varnumericset_walkthrough_testcase extends qbehaviour_walkthrough_te
 
         // Create a varnumericset question.
         $q = test_question_maker::make_question('varnumericset', '3_sig_figs');
-        $q->hints = array(
+        $q->hints = [
             // Fourth param for hint constructor is clearwrong.
             // In this case controls if the suppression of the hint and the penalty when numerical error 'auto fires'.
             new question_hint_with_parts(1, 'This is the first hint.', FORMAT_HTML, null, false),
             new question_hint_with_parts(2, 'This is the second hint.', FORMAT_HTML, null, false),
-        );
+        ];
         $this->start_attempt_at_question($q, 'interactive', 100);
 
         // Check the initial state.
@@ -137,7 +147,7 @@ class qtype_varnumericset_walkthrough_testcase extends qbehaviour_walkthrough_te
             $this->get_no_hint_visible_expectation());
 
         // Submit something partially correct (too many sig figs 10% penalty).
-        $this->process_submission(array('-submit' => 1, 'answer' => '12350'));
+        $this->process_submission(['-submit' => 1, 'answer' => '12350']);
 
         $this->check_current_state(question_state::$todo);
         $this->check_current_mark(null);
@@ -149,7 +159,7 @@ class qtype_varnumericset_walkthrough_testcase extends qbehaviour_walkthrough_te
                 preg_quote(get_string('ae_toomanysigfigs', 'qtype_varnumericset')) . '/'));
 
         // Do try again.
-        $this->process_submission(array('-tryagain' => 1));
+        $this->process_submission(['-tryagain' => 1]);
 
         $this->check_current_state(question_state::$todo);
         $this->check_current_mark(null);
@@ -164,7 +174,7 @@ class qtype_varnumericset_walkthrough_testcase extends qbehaviour_walkthrough_te
         $this->check_current_mark(null);
 
         // Now get it right.
-        $this->process_submission(array('-submit' => 1, 'answer' => '12300'));
+        $this->process_submission(['-submit' => 1, 'answer' => '12300']);
 
         $this->check_current_state(question_state::$gradedright);
         $this->check_current_mark(66.66667);
@@ -180,12 +190,12 @@ class qtype_varnumericset_walkthrough_testcase extends qbehaviour_walkthrough_te
 
         // Create a varnumericset question.
         $q = test_question_maker::make_question('varnumericset', '3_sig_figs');
-        $q->hints = array(
+        $q->hints = [
             // Fourth param for hint constructor is clearwrong.
             // In this case controls if the suppression of the hint and the penalty when numerical error 'auto fires'.
             new question_hint_with_parts(1, 'This is the first hint.', FORMAT_HTML, null, true),
             new question_hint_with_parts(2, 'This is the second hint.', FORMAT_HTML, null, true),
-        );
+        ];
         $this->start_attempt_at_question($q, 'interactive', 100);
 
         // Check the initial state.
@@ -200,7 +210,7 @@ class qtype_varnumericset_walkthrough_testcase extends qbehaviour_walkthrough_te
             $this->get_no_hint_visible_expectation());
 
         // Submit blank.
-        $this->process_submission(array('-submit' => 1, 'answer' => ''));
+        $this->process_submission(['-submit' => 1, 'answer' => '']);
 
         $this->check_current_state(question_state::$invalid);
         $this->check_current_mark(null);
@@ -213,7 +223,7 @@ class qtype_varnumericset_walkthrough_testcase extends qbehaviour_walkthrough_te
             $this->get_no_hint_visible_expectation());
 
         // Submit something that does not look like a number.
-        $this->process_submission(array('-submit' => 1, 'answer' => 'newt'));
+        $this->process_submission(['-submit' => 1, 'answer' => 'newt']);
 
         $this->check_current_state(question_state::$invalid);
         $this->check_current_mark(null);
@@ -228,7 +238,7 @@ class qtype_varnumericset_walkthrough_testcase extends qbehaviour_walkthrough_te
             $this->get_no_hint_visible_expectation());
 
         // Submit something partially correct (too many sig figs 10% penalty).
-        $this->process_submission(array('-submit' => 1, 'answer' => '12350'));
+        $this->process_submission(['-submit' => 1, 'answer' => '12350']);
 
         $this->check_current_state(question_state::$todo);
         $this->check_current_mark(null);
@@ -240,7 +250,7 @@ class qtype_varnumericset_walkthrough_testcase extends qbehaviour_walkthrough_te
                 preg_quote(get_string('ae_toomanysigfigs', 'qtype_varnumericset')) . '/'));
 
         // Do try again.
-        $this->process_submission(array('-tryagain' => 1));
+        $this->process_submission(['-tryagain' => 1]);
 
         $this->check_current_state(question_state::$todo);
         $this->check_current_mark(null);
@@ -255,7 +265,7 @@ class qtype_varnumericset_walkthrough_testcase extends qbehaviour_walkthrough_te
         $this->check_current_mark(null);
 
         // Now get it right.
-        $this->process_submission(array('-submit' => 1, 'answer' => '12300'));
+        $this->process_submission(['-submit' => 1, 'answer' => '12300']);
 
         $this->check_current_state(question_state::$gradedright);
         $this->check_current_mark(90);
@@ -271,10 +281,10 @@ class qtype_varnumericset_walkthrough_testcase extends qbehaviour_walkthrough_te
 
         // Create a varnumericset question.
         $q = test_question_maker::make_question('varnumericset', '3_sig_figs');
-        $q->hints = array(
+        $q->hints = [
             new question_hint_with_parts(1, 'This is the first hint.', FORMAT_HTML, null, true),
             new question_hint_with_parts(2, 'This is the second hint.', FORMAT_HTML, null, true),
-        );
+        ];
         $this->start_attempt_at_question($q, 'deferredfeedback', 100);
 
         // Check the initial state.
@@ -288,7 +298,7 @@ class qtype_varnumericset_walkthrough_testcase extends qbehaviour_walkthrough_te
             $this->get_no_hint_visible_expectation());
 
         // Submit blank.
-        $this->process_submission(array('answer' => ''));
+        $this->process_submission(['answer' => '']);
 
         $this->check_current_state(question_state::$todo);
         $this->check_current_mark(null);
@@ -298,7 +308,7 @@ class qtype_varnumericset_walkthrough_testcase extends qbehaviour_walkthrough_te
             $this->get_no_hint_visible_expectation());
         $this->assertEquals('', $this->quba->get_response_summary($this->slot));
 
-        $this->process_submission(array('-finish' => 1));
+        $this->process_submission(['-finish' => 1]);
 
         $this->check_current_state(question_state::$gaveup);
         $this->check_current_mark(null);
@@ -314,10 +324,10 @@ class qtype_varnumericset_walkthrough_testcase extends qbehaviour_walkthrough_te
 
         // Create a varnumericset question.
         $q = test_question_maker::make_question('varnumericset', '3_sig_figs');
-        $q->hints = array(
+        $q->hints = [
             new question_hint_with_parts(1, 'This is the first hint.', FORMAT_HTML, null, true),
             new question_hint_with_parts(2, 'This is the second hint.', FORMAT_HTML, null, true),
-        );
+        ];
         $this->start_attempt_at_question($q, 'deferredfeedback', 100);
 
         $this->check_current_state(question_state::$todo);
@@ -328,7 +338,7 @@ class qtype_varnumericset_walkthrough_testcase extends qbehaviour_walkthrough_te
             $this->get_does_not_contain_try_again_button_expectation(),
             $this->get_no_hint_visible_expectation());
 
-        $this->process_submission(array('answer' => '12,300'));
+        $this->process_submission(['answer' => '12,300']);
 
         $this->check_current_state(question_state::$invalid);
         $this->check_current_mark(null);
@@ -338,7 +348,7 @@ class qtype_varnumericset_walkthrough_testcase extends qbehaviour_walkthrough_te
             $this->get_no_hint_visible_expectation());
         $this->assertEquals(null, $this->quba->get_response_summary($this->slot));
 
-        $this->process_submission(array('-finish' => 1));
+        $this->process_submission(['-finish' => 1]);
 
         $this->check_current_state(question_state::$gradedright);
         $this->check_current_mark(100);
@@ -365,7 +375,7 @@ class qtype_varnumericset_walkthrough_testcase extends qbehaviour_walkthrough_te
             $this->get_no_hint_visible_expectation());
 
         // Save the correct answer that will be accepted.
-        $this->process_submission(array('answer' => '12.0'));
+        $this->process_submission(['answer' => '12.0']);
 
         $this->check_current_state(question_state::$complete);
         $this->check_current_mark(null);
@@ -375,7 +385,7 @@ class qtype_varnumericset_walkthrough_testcase extends qbehaviour_walkthrough_te
             $this->get_no_hint_visible_expectation());
         $this->assertEquals(null, $this->quba->get_response_summary($this->slot));
 
-        $this->process_submission(array('-finish' => 1));
+        $this->process_submission(['-finish' => 1]);
 
         $this->check_current_state(question_state::$gradedright);
         $this->check_current_mark(100);
@@ -391,10 +401,10 @@ class qtype_varnumericset_walkthrough_testcase extends qbehaviour_walkthrough_te
 
         // Create a varnumericset question.
         $q = test_question_maker::make_question('varnumericset', '3_sig_figs');
-        $q->hints = array(
+        $q->hints = [
             new question_hint_with_parts(1, 'This is the first hint.', FORMAT_HTML, null, true),
             new question_hint_with_parts(2, 'This is the second hint.', FORMAT_HTML, null, true),
-        );
+        ];
         $this->start_attempt_at_question($q, 'deferredfeedback', 100);
 
         $this->check_current_state(question_state::$todo);
@@ -406,7 +416,7 @@ class qtype_varnumericset_walkthrough_testcase extends qbehaviour_walkthrough_te
             $this->get_no_hint_visible_expectation());
 
         // Now give an answer that will be accepted.
-        $this->process_submission(array('answer' => '12300'));
+        $this->process_submission(['answer' => '12300']);
 
         $this->check_current_state(question_state::$complete);
         $this->check_current_mark(null);
@@ -416,7 +426,7 @@ class qtype_varnumericset_walkthrough_testcase extends qbehaviour_walkthrough_te
             $this->get_no_hint_visible_expectation());
         $this->assertEquals(null, $this->quba->get_response_summary($this->slot));
 
-        $this->process_submission(array('-finish' => 1));
+        $this->process_submission(['-finish' => 1]);
 
         $this->check_current_mark(100);
         $this->check_current_output(
@@ -442,7 +452,7 @@ class qtype_varnumericset_walkthrough_testcase extends qbehaviour_walkthrough_te
             $this->get_no_hint_visible_expectation());
 
         // Now give a worongly-rounded answer with unit.
-        $this->process_submission(array('answer' => '2.2%'));
+        $this->process_submission(['answer' => '2.2%']);
 
         $this->check_current_state(question_state::$invalid);
         $this->check_current_mark(null);
@@ -453,7 +463,7 @@ class qtype_varnumericset_walkthrough_testcase extends qbehaviour_walkthrough_te
         $this->assertEquals(null, $this->quba->get_response_summary($this->slot));
 
         // Finsh the question, the numerical part should be graded, ingoring the %.
-        $this->process_submission(array('-finish' => 1));
+        $this->process_submission(['-finish' => 1]);
 
         $this->check_current_state(question_state::$gradedpartial);
         $this->check_current_mark(0.9);

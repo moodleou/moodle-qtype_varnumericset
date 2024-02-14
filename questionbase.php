@@ -57,7 +57,7 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
     public $requirescinotation;
 
     /** @var array of question_answer. */
-    public $answers = array();
+    public $answers = [];
 
     /**
      * @var string not really used here, the value used is stored in the calculator,
@@ -66,7 +66,7 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
     public $randomseed;
 
     public function get_expected_data() {
-        return array('answer' => PARAM_RAW_TRIMMED);
+        return ['answer' => PARAM_RAW_TRIMMED];
     }
 
     public function get_question_summary() {
@@ -159,22 +159,22 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
     public function grade_response(array $response) {
         $answer = $this->get_matching_answer($response);
         if (!is_null($answer)) {
-            return array($answer->fraction,
-                    question_state::graded_state_for_fraction($answer->fraction));
+            return [$answer->fraction,
+                    question_state::graded_state_for_fraction($answer->fraction)];
         } else {
-            return array(0, question_state::$gradedwrong);
+            return [0, question_state::$gradedwrong];
         }
     }
 
     public function get_correct_response() {
         $answer = clone($this->get_first_answer_graded_correct());
         if (!$answer) {
-            return array();
+            return [];
         }
         $evaluated = $this->calculator->evaluate($answer->answer);
         $answer->answer =
                     $this->round_to($evaluated, $answer->sigfigs, $this->requirescinotation);
-        return array('answer' => $answer->answer);
+        return ['answer' => $answer->answer];
     }
 
     public function get_correct_answer() {
@@ -325,7 +325,7 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         return [
             $penalty,
             get_string('ae_' . $autofireerrorfeedback, 'qtype_varnumericset'),
-            $warning
+            $warning,
         ];
     }
 
@@ -480,7 +480,7 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
     public function check_file_access($qa, $options, $component, $filearea, $args, $forcedownload) {
         if ($component == 'question' && $filearea == 'answerfeedback') {
             $currentanswer = $qa->get_last_qt_var('answer');
-            $answer = $qa->get_question()->get_matching_answer(array('answer' => $currentanswer));
+            $answer = $qa->get_question()->get_matching_answer(['answer' => $currentanswer]);
             $answerid = reset($args); // The itemid is answer id.
             return $options->feedback && $answerid == $answer->id;
 
@@ -527,7 +527,7 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
     public function get_hint($hintnumber, question_attempt $qa) {
         $question = $qa->get_question();
         $currentanswer = $qa->get_last_qt_var('answer');
-        $answer = $question->get_matching_answer(array('answer' => $currentanswer));
+        $answer = $question->get_matching_answer(['answer' => $currentanswer]);
         if ($answer) {
             $fraction = $answer->fraction;
         } else {
@@ -625,7 +625,7 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
 
     public function classify_response(array $response) {
         if (!$this->is_gradable_response($response)) {
-            return array($this->id => question_classified_response::no_response());
+            return [$this->id => question_classified_response::no_response()];
         }
 
         $ans = $this->get_matching_answer($response);
@@ -643,7 +643,7 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         $responsehtmlized = $calculatorname::htmlize_exponent($num->get_normalised());
 
         $responsetodisplay = $num->get_prefix().$responsehtmlized.$num->get_postfix();
-        return array($this->id => new question_classified_response($ansid, $responsetodisplay, $fraction));
+        return [$this->id => new question_classified_response($ansid, $responsetodisplay, $fraction)];
     }
 }
 

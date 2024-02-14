@@ -14,13 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- *
- * @package   qtype_varnumericset
- * @copyright 2012 The Open University
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
+namespace qtype_varnumericset;
 
+use basic_testcase;
+use EvalMath;
 
 defined('MOODLE_INTERNAL') || die();
 global $CFG;
@@ -31,26 +28,27 @@ require_once($CFG->libdir . '/evalmath/evalmath.class.php');
 /**
  * Unit tests for the EvalMath expression evaluator, specific to this question type.
  *
+ * @package   qtype_varnumericset
  * @copyright 2012 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @group qtype_varnumericset
+ * @covers    \EvalMath
  */
-class qtype_varnumericset_evalmath_test extends basic_testcase {
+class evalmath_test extends basic_testcase {
     public function test_basic_expressions() {
         $ev = new EvalMath(true, true);
 
-        $this->assertEquals($ev->evaluate('a=2'), 2);
+        $this->assertEquals(2, $ev->evaluate('a=2'));
 
         $this->expectWarning();
         $this->assertFalse($ev->evaluate('b=2+'));
-        $this->assertEquals($ev->last_error, get_string('operatorlacksoperand', 'mathslib', '+'));
+        $this->assertEquals(get_string('operatorlacksoperand', 'mathslib', '+'), $ev->last_error);
 
-        $this->assertEquals($ev->evaluate('a'), 2);
+        $this->assertEquals(2, $ev->evaluate('a'));
 
     }
     public function test_random_expressions() {
         $ev = new EvalMath(true, true);
-        $results = array();
+        $results = [];
         for ($i = 0; $i < 500; $i++) {
             $ev->evaluate("a$i=rand_float()");
             $results[] = $ev->evaluate("a$i");
@@ -58,7 +56,7 @@ class qtype_varnumericset_evalmath_test extends basic_testcase {
         $this->assertTrue(min($results) >= 0 && max($results) <= 1);
 
         $ev = new EvalMath(true, true);
-        $results = array();
+        $results = [];
         for ($i = 0; $i < 500; $i++) {
             $ev->evaluate("a$i=rand_int(500,1000)");
             $results[] = $ev->evaluate("a$i");

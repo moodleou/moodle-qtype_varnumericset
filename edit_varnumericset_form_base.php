@@ -45,19 +45,19 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
 
         $answersoption = '';
 
-        $typemenu = array(0 => get_string('vartypecalculated', 'qtype_varnumericset'),
-                            1 => get_string('vartypepredefined', 'qtype_varnumericset'));
+        $typemenu = [0 => get_string('vartypecalculated', 'qtype_varnumericset'),
+                            1 => get_string('vartypepredefined', 'qtype_varnumericset')];
 
-        $repeated = array();
-        $repeatedoptions = array();
+        $repeated = [];
+        $repeatedoptions = [];
         $mform->addElement('header', 'variables',
                                 get_string('variables', 'qtype_varnumericset'));
         $repeated[] = $mform->createElement('select', 'vartype', '', $typemenu);
         $repeated[] = $mform->createElement('text', 'varname',
-                                get_string('varheader', 'qtype_varnumericset'), array('size' => 40));
+                                get_string('varheader', 'qtype_varnumericset'), ['size' => 40]);
 
         $mform->setType('varname', PARAM_RAW_TRIMMED);
-        $repeatedoptions['varname']['helpbutton'] = array('varname', 'qtype_varnumericset');
+        $repeatedoptions['varname']['helpbutton'] = ['varname', 'qtype_varnumericset'];
 
         list($repeated, $repeatedoptions) =
                                 $this->add_value_form_fields($mform, $repeated, $repeatedoptions);
@@ -147,11 +147,11 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
         }
         for ($i = 0; $i < $noofvariants; $i++) {
             $repeated[] = $mform->createElement('text', "variant$i",
-                get_string('variant', 'qtype_varnumericset', $i + 1), array('size' => 40));
-            $repeatedoptions["variant$i"]['disabledif'] = array('vartype', 'eq', 0);
+                get_string('variant', 'qtype_varnumericset', $i + 1), ['size' => 40]);
+            $repeatedoptions["variant$i"]['disabledif'] = ['vartype', 'eq', 0];
             if ($i == 0) {
                 $repeatedoptions["variant$i"]['helpbutton']
-                    = array('variants', 'qtype_varnumericset');
+                    = ['variants', 'qtype_varnumericset'];
             }
             $mform->setType("variant$i", PARAM_RAW_TRIMMED);
         }
@@ -160,7 +160,7 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
         $mform->addElement('hidden', 'noofvariants', $noofvariants);
         $mform->setConstant('noofvariants', $noofvariants);
         $mform->setType('noofvariants', PARAM_INT);
-        return array($repeated, $repeatedoptions);
+        return [$repeated, $repeatedoptions];
     }
 
     protected function add_value_form_last_field($mform, &$repeated, &$repeatedoptions) {
@@ -173,22 +173,22 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
          * the start of the form.
          */
         $repeated[] = $mform->createElement('text', "variant_last",
-                'last variant', '', array('class' => 'last'));
+                'last variant', '', ['class' => 'last']);
         $mform->setType('variant_last', PARAM_TEXT);
     }
 
     protected function get_per_answer_fields($mform, $label, $gradeoptions,
                                              &$repeatedoptions, &$answersoption) {
-        $repeated = array();
-        $answeroptions = array();
+        $repeated = [];
+        $answeroptions = [];
 
         // For this question type we are using a per answer header, a header for all answers won't really work.
         $mform->removeElement('answerhdr');
 
-        $answeroptions[] = $mform->createElement('text', 'answer', '', array('size' => 8));
-        $answeroptions[] = $mform->createElement('text', 'error', get_string('error', 'qtype_varnumericset'), array('size' => 8));
-        $sigfigsoptions = array(0 => get_string('unspecified', 'qtype_varnumericset'),
-                                1 => 1, 2 => 2, 3 => 3, 4 => 4, 5 => 5, 6 => 6);
+        $answeroptions[] = $mform->createElement('text', 'answer', '', ['size' => 8]);
+        $answeroptions[] = $mform->createElement('text', 'error', get_string('error', 'qtype_varnumericset'), ['size' => 8]);
+        $sigfigsoptions = [0 => get_string('unspecified', 'qtype_varnumericset'),
+                                1 => 1, 2 => 2, 3 => 3, 4 => 4, 5 => 5, 6 => 6];
         $answeroptions[] = $mform->createElement('select', 'sigfigs', get_string('sigfigs', 'qtype_varnumericset'),
                                                  $sigfigsoptions);
 
@@ -197,21 +197,21 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
                                             $label, $answeroptions, null, false);
 
         $repeated[] = $mform->createElement('editor', 'feedback',
-                                            get_string('feedback', 'question'), array('rows' => 5), $this->editoroptions);
+                                            get_string('feedback', 'question'), ['rows' => 5], $this->editoroptions);
         $repeated[] = $mform->createElement('static', 'autofirehdr', '',
                                                  get_string('autofirehdr', 'qtype_varnumericset', ''));
-        $autofirerow1 = array();
+        $autofirerow1 = [];
         $autofirerow1[] = $mform->createElement('selectyesno', 'checknumerical',
                                                  get_string('checknumerical',  'qtype_varnumericset'));
-        $checkpowerof10options = array(0 => get_string('no'),
+        $checkpowerof10options = [0 => get_string('no'),
                                        1 => '+/- 1', 2 => '+/- 2', 3 => '+/- 3',
-                                       4 => '+/- 4', 5 => '+/- 5', 6 => '+/- 6');
+                                       4 => '+/- 4', 5 => '+/- 5', 6 => '+/- 6'];
         $autofirerow1[] = $mform->createElement('selectyesno', 'checkscinotation',
                                                  get_string('checkscinotation', 'qtype_varnumericset'));
         $repeated[] = $mform->createElement('group', 'autofirerow1', '',
                                             $autofirerow1, null, false);
 
-        $autofirerow2 = array();
+        $autofirerow2 = [];
         $autofirerow2[] = $mform->createElement('selectyesno', 'checkscinotationformat',
             get_string('checkscinotationformat', 'qtype_varnumericset'));
         $autofirerow2[] = $mform->createElement('select', 'checkpowerof10',
@@ -219,7 +219,7 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
         $repeated[] = $mform->createElement('group', 'autofirerow2', '',
                                             $autofirerow2, null, false);
 
-        $autofirerow3 = array();
+        $autofirerow3 = [];
         $autofirerow3[] = $mform->createElement('selectyesno', 'checkrounding',
             get_string('checkrounding', 'qtype_varnumericset'));
         $autofirerow3[] = $mform->createElement('select', 'syserrorpenalty',
@@ -242,10 +242,10 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
                             parent::get_hint_fields(false, false);
         $repeated[] = $mform->createElement('advcheckbox', 'hintclearwrong',
                             get_string('options', 'qtype_varnumericset'),
-                            get_string('hintoverride', 'qtype_varnumericset'), null, array(0, 1));
+                            get_string('hintoverride', 'qtype_varnumericset'), null, [0, 1]);
         $repeatedoptions['hintclearwrong']['type'] = PARAM_BOOL;
 
-        return array($repeated, $repeatedoptions);
+        return [$repeated, $repeatedoptions];
     }
 
     protected function data_preprocessing($question) {

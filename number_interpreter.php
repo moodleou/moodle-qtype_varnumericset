@@ -70,7 +70,7 @@ abstract class qtype_varnumericset_number_interpreter_part_using_preg_pattern ex
 
     protected function match_pattern($string) {
         $string = $string ?? '';
-        $matches = array();
+        $matches = [];
         if (1 === preg_match($this->pattern(), $string, $matches, PREG_OFFSET_CAPTURE)) {
             $this->prefix = substr($string, 0, $matches[0][1]);
             $this->postfix = substr($string, $matches[0][1] + strlen($matches[0][0]));
@@ -104,7 +104,7 @@ abstract class qtype_varnumericset_number_interpreter_part_using_preg_pattern ex
     }
 
     protected function parts_to_extract() {
-        return array('sign');
+        return ['sign'];
     }
 
     protected $sign;
@@ -140,7 +140,7 @@ class qtype_varnumericset_number_interpreter_number_with_optional_decimal_place 
     }
 
     protected function parts_to_extract() {
-        return array_merge(parent::parts_to_extract(), array('predecpoint', 'postdecpoint'));
+        return array_merge(parent::parts_to_extract(), ['predecpoint', 'postdecpoint']);
     }
 
     protected $predecpoint;
@@ -203,7 +203,7 @@ abstract class qtype_varnumericset_number_interpreter_exponent_following_float_b
     qtype_varnumericset_number_interpreter_part_using_preg_pattern {
 
     protected function parts_to_extract() {
-        return array_merge(parent::parts_to_extract(), array('exp'));
+        return array_merge(parent::parts_to_extract(), ['exp']);
     }
 
     protected $exp;

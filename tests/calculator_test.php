@@ -40,7 +40,7 @@ class calculator_test extends advanced_testcase {
      *
      * @return array[]
      */
-    public function format_number_cases(): array {
+    public static function format_number_cases(): array {
         return [
             ['3.14', 3.14159, '.02f'],
             ['3.1400', 3.14, '.04f'],
@@ -51,7 +51,7 @@ class calculator_test extends advanced_testcase {
     /**
      * Test for {@see \qtype_varnumeric_calculator_base::format_number}.
      *
-     * @dataProvider format_number_cases()
+     * @dataProvider format_number_cases
      * @param string $expected the expected output.
      * @param float $number the number to format.
      * @param string $format the format to apply.

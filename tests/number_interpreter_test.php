@@ -14,6 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace qtype_varnumericset;
+
+use basic_testcase;
+use qtype_varnumericset_number_interpreter_number_with_optional_decimal_place;
+use qtype_varnumericset_number_interpreter_number_with_optional_sci_notation;
+
 /**
  * Unit tests for the number interpreter classes .
  *
@@ -37,7 +43,7 @@ require_once($CFG->dirroot . '/question/type/varnumericset/number_interpreter.ph
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @group qtype_varnumericset
  */
-class qtype_varnumericset_number_interpreter_test extends basic_testcase {
+class number_interpreter_test extends basic_testcase {
     public function test_interpret_number_with_optional_decimal_place() {
         $num = new qtype_varnumericset_number_interpreter_number_with_optional_decimal_place();
 

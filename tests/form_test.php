@@ -16,14 +16,6 @@
 
 namespace qtype_varnumericset;
 
-/**
- * Unit tests for the varnumericset question edit form.
- *
- * @package qtype_varnumericset
- * @copyright 2023 The Open University
- * @license  https://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
 defined('MOODLE_INTERNAL') || die();
 global $CFG;
 
@@ -33,6 +25,7 @@ require_once($CFG->dirroot . '/question/type/varnumericset/question.php');
 /**
  * Unit tests for the qtype_varnumericset question edit form.
  *
+ * @package qtype_varnumericset
  * @copyright 2023 The Open University
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @covers \qtype_varnumeric_edit_form_base
@@ -104,7 +97,7 @@ class form_test extends \advanced_testcase {
      *
      * @return array List of data sets (test cases).
      */
-    public function form_validation_testcases(): array {
+    public static function form_validation_testcases(): array {
         return [
             'All OK' => [
                 [
@@ -145,20 +138,20 @@ class form_test extends \advanced_testcase {
                 ],
                 [
                     'questiontext' => get_string('errorvalidationformatnumber', 'qtype_varnumericset',
-                                            '[[x.e]] - Expression evaluation error: an unexpected error occurred.'),
+                            '[[x.e]] - Expression evaluation error: an unexpected error occurred.'),
                     'generalfeedback' => get_string('errorvalidationformatnumber', 'qtype_varnumericset',
-                                            '[[x.e]] - Expression evaluation error: an unexpected error occurred.'),
+                            '[[x.e]] - Expression evaluation error: an unexpected error occurred.'),
                     'feedback[0]' => get_string('errorvalidationformatnumber', 'qtype_varnumericset',
-                                            "[[x,&nbsp;.e]] - The format specifier must not contain non-breaking space characters."),
+                            "[[x,&nbsp;.e]] - The format specifier must not contain non-breaking space characters."),
                     'feedback[1]' => get_string('errorvalidationformatnumber', 'qtype_varnumericset',
-                                            '[[x,]] - Missing format specifier at end of string.'),
+                            '[[x,]] - Missing format specifier at end of string.'),
                     'hint[0]' => get_string('errorvalidationformatnumber', 'qtype_varnumericset',
-                                            '[[x,i]] - Unknown format specifier &quot;i&quot;.'),
+                            '[[x,i]] - Unknown format specifier &quot;i&quot;.'),
                     'hint[1]' => get_string('errorvalidationformatnumber', 'qtype_varnumericset',
-                                            '[[x,.3\'.09 f]] - Unknown format specifier &quot;&#039;&quot;.'),
+                            '[[x,.3\'.09 f]] - Unknown format specifier &quot;&#039;&quot;.'),
                     'hint[2]' => get_string('errorvalidationformatnumber', 'qtype_varnumericset',
-                                            "<ul>\n<li>[[x,]] - Missing format specifier at end of string.</li>\n" .
-                                            "<li>[[x,i]] - Unknown format specifier &quot;i&quot;.</li>\n</ul>"),
+                            "<ul>\n<li>[[x,]] - Missing format specifier at end of string.</li>\n" .
+                            "<li>[[x,i]] - Unknown format specifier &quot;i&quot;.</li>\n</ul>"),
                 ],
             ],
             [
@@ -172,9 +165,9 @@ class form_test extends \advanced_testcase {
                     'variant1' => [],
                 ],
                 [
-                    'vartype[0]' => 'At least one of the variables must be a predefined variable.'
-                ]
-            ]
+                    'vartype[0]' => 'At least one of the variables must be a predefined variable.',
+                ],
+            ],
         ];
     }
 }

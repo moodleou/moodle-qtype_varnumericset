@@ -23,15 +23,6 @@ use question_pattern_expectation;
 use question_state;
 use test_question_maker;
 
-/**
- * This file contains overall tests of varnumericset questions.
- *
- * @package   qtype_varnumericset
- * @copyright 2011 The Open University
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
-
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
@@ -42,13 +33,14 @@ require_once($CFG->dirroot . '/question/type/varnumericset/tests/helper.php');
 /**
  * Walk through Unit tests for varnumericset questions.
  *
+ * @package   qtype_varnumericset
  * @copyright 2011 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @covers \qtype_varnumeric_question_base
- * @covers \qtype_varnumericset_question
+ * @covers    \qtype_varnumeric_question_base
+ * @covers    \qtype_varnumericset_question
  */
 class walkthrough_test extends qbehaviour_walkthrough_test_base {
-    public function test_validation_and_interactive_with_one_try_for_3_sig_figs() {
+    public function test_validation_and_interactive_with_one_try_for_3_sig_figs(): void {
 
         // Create a varnumericset question.
         $q = test_question_maker::make_question('varnumericset', '3_sig_figs');
@@ -123,7 +115,7 @@ class walkthrough_test extends qbehaviour_walkthrough_test_base {
         $this->assertEquals('12300', $this->quba->get_response_summary($this->slot));
     }
 
-    public function test_validation_and_interactive_with_several_tries_for_3_sig_figs_with_standard_penalty() {
+    public function test_validation_and_interactive_with_several_tries_for_3_sig_figs_with_standard_penalty(): void {
 
         // Create a varnumericset question.
         $q = test_question_maker::make_question('varnumericset', '3_sig_figs');
@@ -186,7 +178,7 @@ class walkthrough_test extends qbehaviour_walkthrough_test_base {
         $this->assertEquals('12300', $this->quba->get_response_summary($this->slot));
     }
 
-    public function test_validation_and_interactive_with_several_tries_for_3_sig_figs_with_autocheck_penalty() {
+    public function test_validation_and_interactive_with_several_tries_for_3_sig_figs_with_autocheck_penalty(): void {
 
         // Create a varnumericset question.
         $q = test_question_maker::make_question('varnumericset', '3_sig_figs');
@@ -277,7 +269,7 @@ class walkthrough_test extends qbehaviour_walkthrough_test_base {
         $this->assertEquals('12300', $this->quba->get_response_summary($this->slot));
     }
 
-    public function test_deferred_feedback_for_3_sig_figs_blank_answer() {
+    public function test_deferred_feedback_for_3_sig_figs_blank_answer(): void {
 
         // Create a varnumericset question.
         $q = test_question_maker::make_question('varnumericset', '3_sig_figs');
@@ -320,7 +312,7 @@ class walkthrough_test extends qbehaviour_walkthrough_test_base {
         $this->assertEquals('', $this->quba->get_response_summary($this->slot));
     }
 
-    public function test_deferred_feedback_for_3_sig_figs_answer_with_thousand_separator() {
+    public function test_deferred_feedback_for_3_sig_figs_answer_with_thousand_separator(): void {
 
         // Create a varnumericset question.
         $q = test_question_maker::make_question('varnumericset', '3_sig_figs');
@@ -360,7 +352,7 @@ class walkthrough_test extends qbehaviour_walkthrough_test_base {
         $this->assertEquals('12,300', $this->quba->get_response_summary($this->slot));
     }
 
-    public function test_deferred_feedback_for_3_sig_figs_answer_point_0() {
+    public function test_deferred_feedback_for_3_sig_figs_answer_point_0(): void {
 
         // Create a varnumericset question.
         $q = test_question_maker::make_question('varnumericset', '3_sig_figs_point_0');
@@ -397,7 +389,7 @@ class walkthrough_test extends qbehaviour_walkthrough_test_base {
         $this->assertEquals('12.0', $this->quba->get_response_summary($this->slot));
     }
 
-    public function test_deferred_feedback_for_3_sig_figs_answer_with_correct_answer() {
+    public function test_deferred_feedback_for_3_sig_figs_answer_with_correct_answer(): void {
 
         // Create a varnumericset question.
         $q = test_question_maker::make_question('varnumericset', '3_sig_figs');
@@ -437,7 +429,7 @@ class walkthrough_test extends qbehaviour_walkthrough_test_base {
         $this->assertEquals('12300', $this->quba->get_response_summary($this->slot));
     }
 
-    public function test_deferred_feedback_custom_rounding_feebdack_should_still_show_with_unit() {
+    public function test_deferred_feedback_custom_rounding_feebdack_should_still_show_with_unit(): void {
 
         // Create a varnumericset question.
         $q = test_question_maker::make_question('varnumericset', 'custom_rounding_feebdack');

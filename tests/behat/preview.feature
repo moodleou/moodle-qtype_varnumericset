@@ -30,7 +30,7 @@ Feature: Preview a Variable numeric set question
       | Marked out of        | 3                               |
       | Question variant     | 1                               |
       | Marks                | Show mark and max               |
-    And I press "Start again with these options"
+    And I press "id_saverestart"
     Then I should see "What is 2 + 8?"
     And the state of "What is 2 + 8?" question is shown as "Tries remaining: 3"
     When I set the field "Answer:" to "2"

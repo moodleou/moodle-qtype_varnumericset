@@ -82,7 +82,7 @@ class calculator_test extends advanced_testcase {
      *
      * @return array List of data sets (test cases).
      */
-    public function evaluate_variables_in_text_provider(): array {
+    public static function evaluate_variables_in_text_provider(): array {
 
         return [
             'The argument is treated as an integer and presented as a binary number' => [

@@ -20,31 +20,22 @@ use basic_testcase;
 use qtype_varnumericset_number_interpreter_number_with_optional_decimal_place;
 use qtype_varnumericset_number_interpreter_number_with_optional_sci_notation;
 
-/**
- * Unit tests for the number interpreter classes .
- *
- * @package   qtype_varnumericset
- * @copyright 2012 The Open University
- * @author    Jamie Pratt me@jamiep.org
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
-
 defined('MOODLE_INTERNAL') || die();
 global $CFG;
 
 require_once($CFG->dirroot . '/question/type/varnumericset/number_interpreter.php');
 
-
 /**
  * Unit tests for the number interpreter classes .
  *
+ * @package   qtype_varnumericset
  * @copyright 2012 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @group qtype_varnumericset
+ * @covers    \qtype_varnumericset_number_interpreter_number_with_optional_decimal_place
+ * @covers    \qtype_varnumericset_number_interpreter_number_with_optional_sci_notation
  */
 class number_interpreter_test extends basic_testcase {
-    public function test_interpret_number_with_optional_decimal_place() {
+    public function test_interpret_number_with_optional_decimal_place(): void {
         $num = new qtype_varnumericset_number_interpreter_number_with_optional_decimal_place();
 
         $this->assertFalse($num->match('newt'));
@@ -91,7 +82,7 @@ class number_interpreter_test extends basic_testcase {
         $this->assertSame('', $num->get_postfix());
     }
 
-    public function test_interpret_number_with_optional_sci_notation_not_accepting_html_exponent() {
+    public function test_interpret_number_with_optional_sci_notation_not_accepting_html_exponent(): void {
         $num = new qtype_varnumericset_number_interpreter_number_with_optional_sci_notation(false);
 
         $this->assertFalse($num->match('newt'));
@@ -155,7 +146,7 @@ class number_interpreter_test extends basic_testcase {
         $this->assertSame('m', $num->get_postfix());
     }
 
-    public function test_interpret_number_with_optional_sci_notation_accepting_html_exponent() {
+    public function test_interpret_number_with_optional_sci_notation_accepting_html_exponent(): void {
         $num = new qtype_varnumericset_number_interpreter_number_with_optional_sci_notation(true);
 
         $this->assertFalse($num->match('newt'));

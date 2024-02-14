@@ -14,14 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Unit tests for the varnumericset question definition class.
- *
- * @package   qtype_varnumericset
- * @copyright 2012 The Open University
- * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
+namespace qtype_varnumericset;
 
+use advanced_testcase;
+use qtype_varnumeric_question_base;
+use qtype_varnumericset_answer;
+use qtype_varnumericset_question;
+use question_attempt_step;
+use test_question_maker;
 
 defined('MOODLE_INTERNAL') || die();
 global $CFG;
@@ -33,10 +33,11 @@ require_once($CFG->dirroot . '/question/engine/tests/helpers.php');
 /**
  * Unit tests for the varnumericset question definition class.
  *
+ * @package   qtype_varnumericset
  * @copyright 2012 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @covers \qtype_varnumeric_question_base
- * @covers \qtype_varnumericset_question
+ * @covers    \qtype_varnumeric_question_base
+ * @covers    \qtype_varnumericset_question
  */
 class question_test extends advanced_testcase {
 
@@ -45,7 +46,7 @@ class question_test extends advanced_testcase {
      *
      * @return array of arrays of arguments for test_num_within_allowed_error
      */
-    public function num_within_allowed_error_cases(): array {
+    public static function num_within_allowed_error_cases(): array {
         return [
             ['1.23000000000001e4', 1.23e4, '', true],
             ['1.23000000000002e4', 1.23e4, '', false],
@@ -83,7 +84,7 @@ class question_test extends advanced_testcase {
     /**
      * @dataProvider num_within_allowed_error_cases
      */
-    public function test_num_within_allowed_error($response, $answer, $allowederror, $shouldmatch) {
+    public function test_num_within_allowed_error($response, $answer, $allowederror, $shouldmatch): void {
         if ($shouldmatch) {
             $this->assertTrue(
                     qtype_varnumeric_question_base::num_within_allowed_error($response, $answer, $allowederror));
@@ -98,7 +99,7 @@ class question_test extends advanced_testcase {
      *
      * @return array of arrays of arguments for test_num_within_allowed_error
      */
-    public function wrong_by_a_factor_of_ten_cases(): array {
+    public static function wrong_by_a_factor_of_ten_cases(): array {
         return [
             ['1.23e4', 1.23e5, '', 1, true],
             ['1.23e4', 1.23e6, '', 1, false],
@@ -112,7 +113,7 @@ class question_test extends advanced_testcase {
     /**
      * @dataProvider wrong_by_a_factor_of_ten_cases
      */
-    public function test_wrong_by_a_factor_of_ten($response, $roundedanswer, $allowederror, $maxfactor, $shouldmatch) {
+    public function test_wrong_by_a_factor_of_ten($response, $roundedanswer, $allowederror, $maxfactor, $shouldmatch): void {
         if ($shouldmatch) {
             $this->assertTrue(
                     qtype_varnumeric_question_base::wrong_by_a_factor_of_ten(
@@ -124,7 +125,7 @@ class question_test extends advanced_testcase {
         }
     }
 
-    public function test_has_number_of_sig_figs() {
+    public function test_has_number_of_sig_figs(): void {
         $this->assertTrue(
             qtype_varnumericset_question::has_number_of_sig_figs('1.23e4', 3));
 
@@ -169,7 +170,7 @@ class question_test extends advanced_testcase {
             qtype_varnumericset_question::has_number_of_sig_figs('15.0', 2));
     }
 
-    public function test_has_too_many_sig_figs() {
+    public function test_has_too_many_sig_figs(): void {
         $this->assertTrue(qtype_varnumericset_question::has_too_many_sig_figs('1.23456e5', 123456, 2));
         $this->assertTrue(qtype_varnumericset_question::has_too_many_sig_figs('1.23456e5', 123456, 3));
         $this->assertTrue(qtype_varnumericset_question::has_too_many_sig_figs('1.23456e5', 123456, 4));
@@ -210,7 +211,7 @@ class question_test extends advanced_testcase {
             qtype_varnumericset_question::has_too_many_sig_figs('-1.23456e-12', -1.2346e-12, 4));
     }
 
-    public function test_rounding_incorrect() {
+    public function test_rounding_incorrect(): void {
         $this->assertTrue(
             qtype_varnumericset_question::rounding_incorrect('1.234', 1.2345, 4));
         $this->assertTrue(
@@ -228,7 +229,7 @@ class question_test extends advanced_testcase {
      *
      * @return array of arrays of arguments for test_num_within_allowed_error
      */
-    public function round_to_cases(): array {
+    public static function round_to_cases(): array {
         return [
             ['0.123', 0.12345, 3, false, false],
             ['0.1235', 0.12345, 4, false, false],
@@ -254,7 +255,7 @@ class question_test extends advanced_testcase {
     /**
      * @dataProvider round_to_cases
      */
-    public function test_round_to($expected, $number, $sigfigs, $scinotation, $floor) {
+    public function test_round_to($expected, $number, $sigfigs, $scinotation, $floor): void {
         $this->assertSame($expected,
                 qtype_varnumeric_question_base::round_to($number, $sigfigs, $scinotation, $floor));
     }
@@ -271,7 +272,7 @@ class question_test extends advanced_testcase {
         return $fraction;
     }
 
-    public function test_compare_response_with_answer() {
+    public function test_compare_response_with_answer(): void {
         /** @var qtype_varnumericset_question $q */
         $q = test_question_maker::make_question('varnumericset'); // Does not matter which one.
 
@@ -318,7 +319,8 @@ class question_test extends advanced_testcase {
         $this->assertNull($answertoreturn);
     }
 
-    public function test_compare_num_as_string_with_answer() {
+    public function test_compare_num_as_string_with_answer(): void {
+        /** @var qtype_varnumericset_question $q */
         $q = test_question_maker::make_question('varnumericset'); // Does not matter which one.
 
         $answer = new qtype_varnumericset_answer(12345, // Id.
@@ -335,7 +337,6 @@ class question_test extends advanced_testcase {
                                                  '0',     // Checkrounding.
                                                  '0');    // Checkscinotationformat.
 
-        /** @var qtype_varnumericset_question $q */
         [$penalty] = $q->compare_num_as_string_with_answer(
                 '-4.20', $answer);
         $this->assertEquals(0, $penalty);
@@ -369,6 +370,7 @@ class question_test extends advanced_testcase {
         $this->assertEquals(1, $penalty);
 
         // Test check scinotation format.
+        /** @var qtype_varnumericset_question $question */
         $question = test_question_maker::make_question('varnumericset', 'sci_notation_formatted');
         $answer = new qtype_varnumericset_answer(12345, // Id.
             '12',     // Answer.
@@ -416,7 +418,8 @@ class question_test extends advanced_testcase {
         $this->assertEquals(0.25, $penalty);
     }
 
-    public function test_compare_num_as_string_with_answer_no_rounding() {
+    public function test_compare_num_as_string_with_answer_no_rounding(): void {
+        /** @var qtype_varnumericset_question $q */
         $q = test_question_maker::make_question('varnumericset'); // Does not matter which one.
 
         $answer = new qtype_varnumericset_answer(12345, // Id.
@@ -433,12 +436,11 @@ class question_test extends advanced_testcase {
                 '0',         // Checkrounding.
                 '0');        // Checkscinotationformat.
 
-        /** @var qtype_varnumericset_question $q */
         [$penalty] = $q->compare_num_as_string_with_answer('123456789', $answer);
         $this->assertEquals(0, $penalty);
     }
 
-    public function test_grade_response() {
+    public function test_grade_response(): void {
         /** @var qtype_varnumericset_question $question */
         $question = test_question_maker::make_question('varnumericset', 'no_accepted_error');
         $this->assertEquals(1, $this->grade($question, '-4.2'));
@@ -529,7 +531,7 @@ class question_test extends advanced_testcase {
         $this->assertEquals(0.75, $this->grade($question, '1.200000 x 10<sup>+    1</sup>'));
     }
 
-    public function test_get_question_summary() {
+    public function test_get_question_summary(): void {
         $question = test_question_maker::make_question('varnumericset', 'with_variables');
         $question->start_attempt(new question_attempt_step(), 1);
         $this->assertEquals('What is 2 + 3?', $question->get_question_summary());

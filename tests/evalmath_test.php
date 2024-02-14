@@ -34,7 +34,7 @@ require_once($CFG->libdir . '/evalmath/evalmath.class.php');
  * @covers    \EvalMath
  */
 class evalmath_test extends basic_testcase {
-    public function test_basic_expressions() {
+    public function test_basic_expressions(): void {
         $ev = new EvalMath(true, true);
 
         $this->assertEquals(2, $ev->evaluate('a=2'));
@@ -46,7 +46,7 @@ class evalmath_test extends basic_testcase {
         $this->assertEquals(2, $ev->evaluate('a'));
 
     }
-    public function test_random_expressions() {
+    public function test_random_expressions(): void {
         $ev = new EvalMath(true, true);
         $results = [];
         for ($i = 0; $i < 500; $i++) {

@@ -21,16 +21,6 @@ use qtype_varnumericset;
 use question_possible_response;
 use stdClass;
 
-/**
- * Unit tests for the varnumericset question type class.
- *
- * @package    qtype
- * @subpackage varnumericset
- * @copyright  2012 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- */
-
-
 defined('MOODLE_INTERNAL') || die();
 global $CFG;
 
@@ -40,6 +30,7 @@ require_once($CFG->dirroot . '/question/type/varnumericset/questiontype.php');
 /**
  * Unit tests for the varnumericset question type class.
  *
+ * @package    qtype_varnumericset
  * @copyright  2012 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @covers     \qtype_varnumericset
@@ -62,20 +53,20 @@ class questiontype_test extends basic_testcase {
         return $q;
     }
 
-    public function test_name() {
+    public function test_name(): void {
         $this->assertEquals('varnumericset', $this->qtype->name());
     }
 
-    public function test_can_analyse_responses() {
+    public function test_can_analyse_responses(): void {
         $this->assertTrue($this->qtype->can_analyse_responses());
     }
 
-    public function test_get_random_guess_score() {
+    public function test_get_random_guess_score(): void {
         $q = $this->get_test_question_data();
         $this->assertEquals(0.1, $this->qtype->get_random_guess_score($q));
     }
 
-    public function test_get_possible_responses() {
+    public function test_get_possible_responses(): void {
         $q = $this->get_test_question_data();
 
         $this->assertEquals([

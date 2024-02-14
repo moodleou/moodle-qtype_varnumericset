@@ -322,12 +322,12 @@ class qtype_varnumericset_test_helper extends question_test_helper {
         $form->fraction = ['0' => '1.0', '1' => '0.0', '2' => '0.0'];
         $form->feedback = [
             '0' => ['format' => FORMAT_HTML, 'text' => 'Well done!'],
-            '1' => ['format' => FORMAT_HTML, 'text' => 'Sorry, no.']
+            '1' => ['format' => FORMAT_HTML, 'text' => 'Sorry, no.'],
         ];
         $form->penalty = '0.3333333';
         $form->hint = [
             ['text' => 'Please try again.', 'format' => FORMAT_HTML],
-            ['text' => 'You may use a calculator if necessary.', 'format' => FORMAT_HTML]
+            ['text' => 'You may use a calculator if necessary.', 'format' => FORMAT_HTML],
         ];
 
         return $form;
@@ -340,19 +340,19 @@ class qtype_varnumericset_test_helper extends question_test_helper {
         $vs = $this->make_varnumericset_question_no_accepted_error();
 
         $vs->answers = [1 => new qtype_varnumericset_answer(
-            '1',        // Id.
-            '12',       // Answer.
-            1.0000000,  // Fraction.
+            '1',         // Id.
+            '12',        // Answer.
+            1.0000000,   // Fraction.
             '<p>Your answer is correct.</p>',  // Feedback.
-            FORMAT_HTML,// Feedbackformat.
-            '0',        // Sigfigs.
-            '',         // Error.
-            '0.25',     // Syserrorpenalty.
-            '0',        // Checknumerical.
-            '1',        // Checkscinotation.
-            '0',        // Checkpowerof10.
-            '0',        // Checkrounding.
-            '1',        // Checkscinotationformat.
+            FORMAT_HTML, // Feedbackformat.
+            '0',         // Sigfigs.
+            '',          // Error.
+            '0.25',      // Syserrorpenalty.
+            '0',         // Checknumerical.
+            '1',         // Checkscinotation.
+            '0',         // Checkpowerof10.
+            '0',         // Checkrounding.
+            '1',         // Checkscinotationformat.
         )];
         $vs->requirescinotation = true;
         $vs->usesupeditor = true;

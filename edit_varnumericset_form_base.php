@@ -308,6 +308,10 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
             $trimmedanswer = trim($answer);
             if ($trimmedanswer !== '') {
                 $answercount++;
+                if (strip_tags($trimmedanswer) !== $trimmedanswer) {
+                    // Check there is not HTML in the answer. (Numbers must be 3.e8, not 3 x 10<sup>8</sup>.)
+                    $errors["answeroptions[$key]"] = get_string('errorvalidationinvalidanswer', 'qtype_varnumericset');
+                }
                 if ($data['fraction'][$key] == 1) {
                     $maxgrade = true;
                 }

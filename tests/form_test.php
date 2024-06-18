@@ -168,6 +168,16 @@ class form_test extends \advanced_testcase {
                     'vartype[0]' => 'At least one of the variables must be a predefined variable.',
                 ],
             ],
+            [
+                'Answer contain HTML tag' => [
+                    'answer' => [
+                        '3 x 10<sup>8</sup>',
+                    ],
+                ],
+                [
+                    'answeroptions[0]' => 'You must not use HTML in the answer formula. Input numbers like 3.e8 or 3.14159.',
+                ],
+            ],
         ];
     }
 }

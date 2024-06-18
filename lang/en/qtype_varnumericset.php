@@ -52,6 +52,7 @@ $string['errorvalidationatleastonepredefinedvariables'] = 'At least one of the v
 $string['errorvalidationformatnumber'] = 'Some number formatting expressions generated errors:<br>{$a}<br>A correct example looks like [[variable,format]] or [[expression,format]], with format in <a href="http://php.net/manual/en/function.sprintf.php">sprintf</a> form. Common formats are<br>[[x,d]] - integer<br>[[x,.03f]] - three decimal places<br>[[x,.03e]] - scientific notation with three digits after the decimal point.';
 $string['errorvalidationformatnumbernonbsp'] = '{$a} - The format specifier must not contain non-breaking space characters.';
 $string['errorvalidationissue'] = '{$a->placeholder} - {$a->message}.';
+$string['errorvalidationinvalidanswer'] = 'You must not use HTML in the answer formula. Input numbers like 3.e8 or 3.14159.';
 $string['expressionmustevaluatetoanumber'] = 'You should enter an expression that evaluates to a number here, not an assignment';
 $string['correctansweris'] = 'The correct answer is: {$a}';
 $string['correctansweriserror'] = '{$a->answer} <sup>+</sup>/<sub>-</sub> {$a->error}';

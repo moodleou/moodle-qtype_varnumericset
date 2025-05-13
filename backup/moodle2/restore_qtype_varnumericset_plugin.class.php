@@ -51,6 +51,37 @@ class restore_qtype_varnumericset_plugin extends restore_qtype_plugin {
         return $paths; // And we return the interesting paths.
     }
 
+    #[\Override]
+    public static function convert_backup_to_questiondata(array $backupdata): \stdClass {
+        $questiondata = parent::convert_backup_to_questiondata($backupdata);
+        $qtype = $questiondata->qtype;
+        if (isset($backupdata["plugin_qtype_{$qtype}_question"]['varnumericset'])) {
+            $questiondata->options = (object) array_merge(
+                (array) $questiondata->options,
+                $backupdata["plugin_qtype_{$qtype}_question"]['varnumericset'][0],
+            );
+        }
+
+        if (isset($backupdata["plugin_qtype_{$qtype}_question"]['varnumericset_answers']['varnumericset_answer'])) {
+            foreach ($backupdata["plugin_qtype_{$qtype}_question"]['varnumericset_answers']['varnumericset_answer']
+                    as $varnumericsetanswer) {
+                foreach ($questiondata->options->answers as &$answer) {
+                    if ($answer->id == $varnumericsetanswer['answerid']) {
+                        $answer->sigfigs = $varnumericsetanswer['sigfigs'];
+                        $answer->error = $varnumericsetanswer['error'];
+                        $answer->syserrorpenalty = $varnumericsetanswer['syserrorpenalty'];
+                        $answer->checknumerical = $varnumericsetanswer['checknumerical'];
+                        $answer->checkscinotation = $varnumericsetanswer['checkscinotation'];
+                        $answer->checkpowerof10 = $varnumericsetanswer['checkpowerof10'];
+                        $answer->checkrounding = $varnumericsetanswer['checkrounding'];
+                        $answer->checkscinotationformat = $varnumericsetanswer['checkscinotationformat'];
+                        continue 2;
+                    }
+                }
+            }
+        }
+        return $questiondata;
+    }
 
     /**
      * Process the qtype/varnumericset element.

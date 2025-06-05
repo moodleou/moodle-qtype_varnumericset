@@ -18,8 +18,10 @@ namespace qtype_varnumericset;
 
 defined('MOODLE_INTERNAL') || die();
 global $CFG;
+use qtype_varnumericset_test_helper;
 
 require_once($CFG->dirroot . '/question/type/varnumericset/question.php');
+require_once($CFG->dirroot . '/question/type/varnumericset/tests/helper.php');
 
 
 /**
@@ -44,10 +46,17 @@ class form_test extends \advanced_testcase {
         $this->setAdminUser();
         $gen = $this->getDataGenerator();
         $course = $gen->create_course();
-        $context = \context_course::instance($course->id);
 
-        $contexts = new \core_question\local\bank\question_edit_contexts($context);
-        $category = question_make_default_categories($contexts->all());
+        if (qtype_varnumericset_test_helper::plugin_is_installed('mod_qbank')) {
+            $qbank = $gen->create_module('qbank', ['course' => $course->id]);
+            $context = \context_module::instance($qbank->cmid);
+            $contexts = qtype_varnumericset_test_helper::question_edit_contexts($context);
+            $category = question_get_default_category($context->id, true);
+        } else {
+            // TODO: remove this once Moodle 5.0 is the lowest supported version.
+            $contexts = qtype_varnumericset_test_helper::question_edit_contexts(\context_course::instance($course->id));
+            $category = question_make_default_categories($contexts->all());
+        }
 
         $question = new \stdClass();
         $question->category = $category->id;
@@ -154,12 +163,9 @@ class form_test extends \advanced_testcase {
                             "<li>[[x,i]] - Unknown format specifier &quot;i&quot;.</li>\n</ul>"),
                 ],
             ],
-            [
-                'Require at least 1 pre-define variable' => [
-                    'varname' => [
-                        'x = 4',
-                        'y = 2',
-                    ],
+            'Require at least 1 pre-define variable' => [
+                [
+                    'varname' => ['x = 4', 'y = 2'],
                     'vartype' => ['0.0', '0.0'],
                     'variant0' => [],
                     'variant1' => [],
@@ -168,8 +174,8 @@ class form_test extends \advanced_testcase {
                     'vartype[0]' => 'At least one of the variables must be a predefined variable.',
                 ],
             ],
-            [
-                'Answer contain HTML tag' => [
+            'Answer contain HTML tag' => [
+                [
                     'answer' => [
                         '3 x 10<sup>8</sup>',
                     ],

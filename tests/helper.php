@@ -23,6 +23,9 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+global $CFG;
+require_once($CFG->dirroot . '/question/engine/tests/helpers.php');
+
 /**
  * Test helper class for the varnumericset question type.
  *
@@ -358,5 +361,34 @@ class qtype_varnumericset_test_helper extends question_test_helper {
         $vs->usesupeditor = true;
 
         return $vs;
+    }
+
+    /**
+     * Checks if given plugin is installed.
+     *
+     * @param string $plugin frankenstyle plugin name, e.g. 'mod_qbank'.
+     * @return bool
+     */
+    public static function plugin_is_installed(string $plugin): bool {
+        $path = core_component::get_component_directory($plugin);
+        if (!is_readable($path . '/version.php')) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Retrieve the context object.
+     * @param \context $context the current context.
+     *
+     * @return question_edit_contexts The context object.
+     */
+    public static function question_edit_contexts(\context $context): object {
+        if (class_exists('\core_question\local\bank\question_edit_contexts')) {
+            $contexts = new \core_question\local\bank\question_edit_contexts($context);
+        } else {
+            $contexts = new \question_edit_contexts($context);
+        }
+        return $contexts;
     }
 }

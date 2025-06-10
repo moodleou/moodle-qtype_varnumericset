@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Provides the information to back up varnumericset questions.
+ *
  * @package   qtype_varnumericset
  * @copyright 2011 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -67,6 +69,11 @@ class backup_qtype_varnumericset_plugin extends backup_qtype_plugin {
         return $plugin;
     }
 
+    /**
+     * Adds the vars for the varnumericset question type.
+     *
+     * @param backup_nested_element $element The parent element to add the vars to.
+     */
     protected function add_question_qtype_varnumericset_vars($element) {
         // Check $element is one nested_backup_element.
         if (! $element instanceof backup_nested_element) {
@@ -90,6 +97,11 @@ class backup_qtype_varnumericset_plugin extends backup_qtype_plugin {
                                                 ['questionid' => backup::VAR_PARENTID]);
     }
 
+    /**
+     * Adds the variants for the varnumericset question type.
+     *
+     * @param backup_nested_element $element The parent element to add the variants to.
+     */
     protected function add_question_qtype_varnumericset_variants($element) {
         // Check $element is one nested_backup_element.
         if (! $element instanceof backup_nested_element) {
@@ -110,6 +122,12 @@ class backup_qtype_varnumericset_plugin extends backup_qtype_plugin {
         $variant->set_source_table('qtype_varnumericset_variants',
                                                 ['varid' => backup::VAR_PARENTID]);
     }
+
+    /**
+     * Adds the answers for the varnumericset question type.
+     *
+     * @param backup_nested_element $element The parent element to add the answers to.
+     */
     protected function add_question_qtype_varnumericset_answers($element) {
         // Check $element is one nested_backup_element.
         if (! $element instanceof backup_nested_element) {

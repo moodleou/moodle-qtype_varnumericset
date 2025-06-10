@@ -35,14 +35,26 @@ require_once($CFG->dirroot . '/question/type/varnumericset/questiontype.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @covers     \qtype_varnumericset
  */
-class questiontype_test extends basic_testcase {
+final class questiontype_test extends basic_testcase {
 
+    /**
+     * The question type instance to test.
+     *
+     * @var qtype_varnumericset
+     */
     protected $qtype;
 
+    /**
+     * Set up the test environment.
+     */
     protected function setUp(): void {
+        parent::setUp();
         $this->qtype = new qtype_varnumericset();
     }
 
+    /**
+     * Returns a test question data object.
+     */
     protected function get_test_question_data(): stdClass {
         $q = new stdClass();
         $q->id = 1;

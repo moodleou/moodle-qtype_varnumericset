@@ -45,14 +45,14 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
     /**
      * Whether to allow use of superscript and expect html input instead of plain text in response.
      *
-     * @var boolean
+     * @var bool
      */
     public $usesupeditor;
 
     /**
      * Whether to require scientific notation.
      *
-     * @var boolean
+     * @var bool
      */
     public $requirescinotation;
 
@@ -65,16 +65,19 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
      */
     public $randomseed;
 
+    #[\Override]
     public function get_expected_data() {
         return ['answer' => PARAM_RAW_TRIMMED];
     }
 
+    #[\Override]
     public function get_question_summary() {
         return trim($this->html_to_text($this->calculator->evaluate_variables_in_text(
                 $this->questiontext), $this->questiontextformat),
                 "\n\r \t");
     }
 
+    #[\Override]
     public function summarise_response(array $response) {
         if (isset($response['answer'])) {
             return $response['answer'];
@@ -83,14 +86,22 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         }
     }
 
+    /**
+     * Check if the response is empty.
+     *
+     * @param array $response the response to check.
+     * @return bool true if the response is empty, false otherwise.
+     */
     public function is_no_response(array $response) {
         return (!array_key_exists('answer', $response)) || ($response['answer'] === '');
     }
 
+    #[\Override]
     public function is_complete_response(array $response) {
         return ('' == $this->get_validation_error($response));
     }
 
+    #[\Override]
     public function get_validation_error(array $response) {
         if ($this->is_no_response($response)) {
             return get_string('pleaseenterananswer', 'qtype_varnumericset');
@@ -116,6 +127,13 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         return '';
     }
 
+    /**
+     * Get the error message for pre- and post-validation.
+     *
+     * @param string $prefix The prefix part of the response.
+     * @param string $postfix The postfix part of the response.
+     * @return string Error message if there are any prefixes or postfixes, otherwise empty.
+     */
     protected function get_pre_post_validation_error($prefix, $postfix) {
         if (!empty($prefix) || !empty($postfix)) {
             return get_string('notvalidnumberprepostfound', 'qtype_varnumericset');
@@ -124,6 +142,12 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         }
     }
 
+    /**
+     * Check if the response is gradable.
+     *
+     * @param array $response the response to check.
+     * @return bool true if the response is gradable, false otherwise.
+     */
     public function is_gradable_response(array $response) {
         if ($this->is_no_response($response)) {
             return false;
@@ -136,15 +160,25 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         return true;
     }
 
+    #[\Override]
     public function is_same_response(array $prevresponse, array $newresponse) {
         return question_utils::arrays_same_at_key_missing_is_blank(
                 $prevresponse, $newresponse, 'answer');
     }
 
+    /**
+     * Get the answers for this question.
+     *
+     * @return array of qtype_varnumericset_answer objects.
+     */
     public function get_answers() {
         return $this->answers;
     }
 
+    /**
+     * Get the answer with the given id.
+     * @param array $response a response.
+     */
     public function get_matching_answer($response) {
         foreach ($this->get_answers() as $aid => $answer) {
             $thisanswer = $this->compare_response_with_answer($response, $answer);
@@ -156,6 +190,7 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         return null;
     }
 
+    #[\Override]
     public function grade_response(array $response) {
         $answer = $this->get_matching_answer($response);
         if (!is_null($answer)) {
@@ -166,6 +201,11 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         }
     }
 
+    /**
+     * Get the correct response for this question.
+     *
+     * @return array the correct response, or an empty array if there is no correct response.
+     */
     public function get_correct_response() {
         $answer = clone($this->get_first_answer_graded_correct());
         if (!$answer) {
@@ -177,6 +217,11 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         return ['answer' => $answer->answer];
     }
 
+    /**
+     * Get the correct answer for this question.
+     *
+     * @return qtype_varnumericset_answer|null the first answer that is graded correct, or null if none.
+     */
     public function get_correct_answer() {
         $answer = clone($this->get_first_answer_graded_correct());
         if (!is_null($answer)) {
@@ -200,6 +245,11 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         }
     }
 
+    /**
+     * Get the first answer that is graded correct.
+     *
+     * @return qtype_varnumericset_answer|null the first answer that is graded correct, or null if none.
+     */
     public function get_first_answer_graded_correct() {
         foreach ($this->get_answers() as $answer) {
             $state = question_state::graded_state_for_fraction($answer->fraction);
@@ -209,6 +259,12 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         }
     }
 
+    /**
+     * Compare a student's response with one of the answers.
+     * @param array $response a response.
+     * @param question_answer $answer an answer.
+     * @return question_answer|null the answer if it matches, null otherwise.
+     */
     public function compare_response_with_answer(array $response, question_answer $answer) {
         if (!isset($response['answer'])) {
             return null;
@@ -329,6 +385,13 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         ];
     }
 
+    /**
+     * Get the feedback for the prefix and postfix parts of the response.
+     *
+     * @param string $prefix The prefix part of the response.
+     * @param string $postfix The postfix part of the response.
+     * @return string Feedback message if there are any prefixes or postfixes, otherwise empty.
+     */
     protected function feedback_for_post_prefix_parts($prefix, $postfix) {
         if ($prefix . $postfix !== '') {
             return get_string('preandpostfixesignored', 'qtype_varnumericset');
@@ -337,6 +400,13 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         }
     }
 
+    /**
+     * Check to see if $string is within the allowed error of $answer.
+     * @param string $string number as a normalized string
+     * @param float $answer the answer to compare against
+     * @param float $allowederror the allowed error
+     * @return boolean Whether the number is within the allowed error.
+     */
     public static function num_within_allowed_error($string, $answer, $allowederror) {
         $errorduetofloatprecision = abs($answer * 1e-14);
         return abs($answer - (float) $string) <= abs((float) $allowederror) + $errorduetofloatprecision;
@@ -381,6 +451,15 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         }
     }
 
+    /**
+     * Round a number to a given number of significant figures.
+     *
+     * @param float $number the number to round.
+     * @param int $sigfigs the number of significant figures to round to.
+     * @param bool $scinotation whether to use scientific notation.
+     * @param bool $floor whether to round down (default false).
+     * @return string the rounded number as a string.
+     */
     public static function round_to($number, $sigfigs, $scinotation, $floor = false) {
         // Do the rounding ourselves so we can get it wrong (round down) if requested.
         if ((int) $sigfigs != 0) {
@@ -456,6 +535,14 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         return false;
     }
 
+    /**
+     * Check to see if $normalizedstring is rounded incorrectly.
+     *
+     * @param string $normalizedstring student response as a normalized string
+     * @param float $answerunrounded
+     * @param integer $sigfigs correct ammount of sigfigs
+     * @return boolean Whether the response is rounded incorrectly.
+     */
     public static function rounding_incorrect($normalizedstring, $answerunrounded, $sigfigs) {
         $scinotation = self::is_sci_notation($normalizedstring);
         $incorrectlyrounded = self::round_to($answerunrounded, $sigfigs, $scinotation, true);
@@ -477,6 +564,7 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         }
     }
 
+    #[\Override]
     public function check_file_access($qa, $options, $component, $filearea, $args, $forcedownload) {
         if ($component == 'question' && $filearea == 'answerfeedback') {
             $currentanswer = $qa->get_last_qt_var('answer');
@@ -493,30 +581,37 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         }
     }
 
+    #[\Override]
     public function get_variants_selection_seed() {
         return $this->calculator->get_random_seed();
     }
 
+    #[\Override]
     public function get_num_variants() {
         return $this->calculator->get_num_variants_in_form();
     }
 
+    #[\Override]
     public function start_attempt(question_attempt_step $step, $variantno) {
         $this->calculator->evaluate_variant($variantno - 1);
         $this->calculator->save_state_as_qt_data($step);
     }
 
+    #[\Override]
     public function apply_attempt_state(question_attempt_step $step) {
         $this->calculator->load_state_from_qt_data($step);
     }
 
     /**
+     * Get the seed used for random number generation.
+     *
      * @return string seed used for random number generation. Used to randomise variant order.
      */
     public function get_random_seed() {
         return $this->calculator->get_random_seed();
     }
 
+    #[\Override]
     public function format_text($text, $format, $qa, $component, $filearea, $itemid,
             $clean = false) {
         $processedtext = $this->calculator->evaluate_variables_in_text($text);
@@ -524,6 +619,13 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
                                      $filearea, $itemid, $clean);
     }
 
+    /**
+     * Get a hint for the question.
+     *
+     * @param int $hintnumber the number of the hint to get.
+     * @param question_attempt $qa the question attempt.
+     * @return question_hint|null the hint, or null if no hint is available.
+     */
     public function get_hint($hintnumber, question_attempt $qa) {
         $question = $qa->get_question();
         $currentanswer = $qa->get_last_qt_var('answer');
@@ -542,6 +644,12 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         }
     }
 
+    /**
+     * Compute the final grade for the question.
+     *
+     * @param array $responses the responses to the question.
+     * @param int $totaltries the total number of tries.
+     */
     public function compute_final_grade($responses, $totaltries) {
         $answers = $this->get_answers();
 
@@ -623,6 +731,11 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         return false;
     }
 
+    /**
+     * Classify the response.
+     *
+     * @param array $response the response to classify.
+     */
     public function classify_response(array $response) {
         if (!$this->is_gradable_response($response)) {
             return [$this->id => question_classified_response::no_response()];
@@ -656,23 +769,78 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_varnumericset_answer extends question_answer {
+
+    /**
+     * The number of significant figures for this answer.
+     *
+     * @var int
+     */
     public $sigfigs;
+
+    /**
+     * The error allowed for this answer.
+     *
+     * @var string
+     */
     public $error;
+
+    /**
+     * The penalty for a system error.
+     *
+     * @var float
+     */
     public $syserrorpenalty;
+
+    /**
+     * Whether to check the response for numerical correctness.
+     *
+     * @var int
+     */
     public $checknumerical;
+
+    /**
+     * Whether to check the response for scientific notation.
+     *
+     * @var int
+     */
     public $checkscinotation;
+
+    /**
+     * Whether to check the response for a factor of 10.
+     *
+     * @var int
+     */
     public $checkpowerof10;
+
+    /**
+     * Whether to check the rounding.
+     *
+     * @var int
+     */
     public $checkrounding;
+
+    /**
+     * Whether to check the scientific notation format.
+     *
+     * @var int
+     */
     public $checkscinotationformat;
 
     /**
      * Constructor.
      * @param int $id the answer.
      * @param string $answer the answer.
-     * @param int $answerformat the format of the answer.
-     * @param number $fraction the fraction this answer is worth.
+     * @param float $fraction the fraction for this answer.
      * @param string $feedback the feedback for this answer.
      * @param int $feedbackformat the format of the feedback.
+     * @param int $sigfigs the number of significant figures for this answer.
+     * @param string $error the error allowed for this answer.
+     * @param float $syserrorpenalty the penalty for a system error.
+     * @param int $checknumerical whether to check the response for numerical correctness.
+     * @param int $checkscinotation whether to check the response for scientific notation.
+     * @param int $checkpowerof10 whether to check the response for a factor of 10.
+     * @param int $checkrounding whether to check the rounding.
+     * @param int $checkscinotationformat whether to check the scientific notation format.
      */
     public function __construct($id, $answer, $fraction, $feedback, $feedbackformat,
                             $sigfigs, $error, $syserrorpenalty, $checknumerical, $checkscinotation,

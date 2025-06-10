@@ -17,15 +17,14 @@
 /**
  * Strings for component 'qtype_varnumericset', language 'en', branch 'MOODLE_20_STABLE'
  *
- * @package    qtype
- * @subpackage varnumericset
+ * @package    qtype_varnumericset
  * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+$string['addmoreanswerblanks'] = 'Blanks for {no} more answers';
 $string['addmorevariants'] = 'Add {$a} more blanks for more variants';
 $string['addmorevars'] = 'Add {no} more blanks for variables';
-$string['addmoreanswerblanks'] = 'Blanks for {no} more answers';
 $string['ae_numericallycorrect'] = 'Your answer is almost correct. You have the correct value and it is rounded correctly.';
 $string['ae_numericallycorrectandwrongformat'] = 'Your answer is almost correct. You have the correct value and it is rounded correctly but it is not in scientific notation.';
 $string['ae_roundingincorrect'] = 'Your answer is almost correct, but it is rounded incorrectly.';
@@ -47,23 +46,23 @@ $string['checkpowerof10'] = 'If power of 10 is off';
 $string['checkrounding'] = 'If rounding is incorrect';
 $string['checkscinotation'] = 'If scientific notation required but not used';
 $string['checkscinotationformat'] = 'If scientific notation is not formatted correctly';
-$string['errorreportedbyexpressionevaluator'] = 'Expression evaluation error: {$a}';
-$string['errorvalidationatleastonepredefinedvariables'] = 'At least one of the variables must be a predefined variable.';
-$string['errorvalidationformatnumber'] = 'Some number formatting expressions generated errors:<br>{$a}<br>A correct example looks like [[variable,format]] or [[expression,format]], with format in <a href="http://php.net/manual/en/function.sprintf.php">sprintf</a> form. Common formats are<br>[[x,d]] - integer<br>[[x,.03f]] - three decimal places<br>[[x,.03e]] - scientific notation with three digits after the decimal point.';
-$string['errorvalidationformatnumbernonbsp'] = '{$a} - The format specifier must not contain non-breaking space characters.';
-$string['errorvalidationissue'] = '{$a->placeholder} - {$a->message}.';
-$string['errorvalidationinvalidanswer'] = 'You must not use HTML in the answer formula. Input numbers like 3.e8 or 3.14159.';
-$string['expressionmustevaluatetoanumber'] = 'You should enter an expression that evaluates to a number here, not an assignment';
 $string['correctansweris'] = 'The correct answer is: {$a}';
 $string['correctansweriserror'] = '{$a->answer} <sup>+</sup>/<sub>-</sub> {$a->error}';
 $string['correctanswerissigfigs'] = '{$a->answer} ({$a->sigfigs} significant figures)';
 $string['correctanswers'] = 'Correct answers';
-$string['error'] = 'Accepted error +/-';
 $string['err_ousupsubnotsupportedonmobile'] = 'This question requires superscripts or subscripts and so does not yet work in this app. Please answer this question in the web browser.';
+$string['error'] = 'Accepted error +/-';
+$string['errorreportedbyexpressionevaluator'] = 'Expression evaluation error: {$a}';
+$string['errorvalidationatleastonepredefinedvariables'] = 'At least one of the variables must be a predefined variable.';
+$string['errorvalidationformatnumber'] = 'Some number formatting expressions generated errors:<br>{$a}<br>A correct example looks like [[variable,format]] or [[expression,format]], with format in <a href="http://php.net/manual/en/function.sprintf.php">sprintf</a> form. Common formats are<br>[[x,d]] - integer<br>[[x,.03f]] - three decimal places<br>[[x,.03e]] - scientific notation with three digits after the decimal point.';
+$string['errorvalidationformatnumbernonbsp'] = '{$a} - The format specifier must not contain non-breaking space characters.';
+$string['errorvalidationinvalidanswer'] = 'You must not use HTML in the answer formula. Input numbers like 3.e8 or 3.14159.';
+$string['errorvalidationissue'] = '{$a->placeholder} - {$a->message}.';
 $string['expectingassignment'] = 'You must use a mathematical expression to assign a value to a \'Calculated variable\'.';
 $string['expectingvariablename'] = 'Expecting a variable name here';
 $string['expressionevaluatesasinfinite'] = 'Result is infinite';
 $string['expressionevaluatesasnan'] = 'Result is not a number';
+$string['expressionmustevaluatetoanumber'] = 'You should enter an expression that evaluates to a number here, not an assignment';
 $string['filloutoneanswer'] = 'You must provide at least one possible answer. Answers left blank will not be used. \'*\' can be used as a wildcard to match any number. The first matching answer will be used to determine the score and feedback.';
 $string['forallanswers'] = 'For all answers';
 $string['hintoverride'] = 'If an auto-check fires, use that penalty instead of the standard penalty, and do not show this hint';
@@ -85,6 +84,7 @@ $string['pluginnameadding'] = 'Adding a Variable numeric set question';
 $string['pluginnameediting'] = 'Editing a Variable numeric set question';
 $string['pluginnamesummary'] = 'Allows a numeric response, question can have several \'variants\', expressions are pre evaluated for each question variant';
 $string['preandpostfixesignored'] = 'Only the numerical part of your answer was graded.';
+$string['privacy:metadata'] = 'The Variable numeric set plugin does not store any personal data.';
 $string['questiontext'] = 'Question text and embedded variables';
 $string['questiontext_help'] = 'You can embed variable names and expressions in question text, general feedback, answer feedback and hints
 
@@ -98,8 +98,8 @@ $string['sigfigs'] = 'Significant figures';
 $string['syserrorpenalty'] = 'For each error deduct';
 $string['unspecified'] = 'Unspecified';
 $string['usesuperscript'] = 'Use superscript entry';
-$string['variables'] = 'Variables';
 $string['varheader'] = 'Variable {no}';
+$string['variables'] = 'Variables';
 $string['variant'] = 'Value for variant {$a}';
 $string['variants'] = 'Value for variants';
 $string['variants_help'] = 'Enter values for \'Predefined variables\' here OR if this is a \'Calculated variable\' you will see calculated values displayed here.
@@ -123,6 +123,5 @@ $string['varnumericset_link'] = 'question/type/varnumericset';
 $string['varnumericsetsummary'] = 'Allows a numeric response, question can have several \'variants\', expressions are pre evaluated for each question variant';
 $string['vartypecalculated'] = 'Calculated variable';
 $string['vartypepredefined'] = 'Predefined variable';
-$string['youmustprovideavalueforatleastonevariant'] = 'You must provide a value here.';
 $string['youmustprovideavalueforallvariants'] = 'Please fill out an equal number of blanks for all predefined variables, ie. a value for each predefined variable for all question variants you require.';
-$string['privacy:metadata'] = 'The Variable numeric set plugin does not store any personal data.';
+$string['youmustprovideavalueforatleastonevariant'] = 'You must provide a value here.';

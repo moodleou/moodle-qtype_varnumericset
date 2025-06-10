@@ -35,6 +35,7 @@ require_once($CFG->dirroot . '/question/type/varnumericset/calculator.php');
  */
 abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
 
+    #[\Override]
     protected function definition_inner($mform) {
         global $DB;
 
@@ -103,7 +104,7 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
     /**
      * Add more variant button.
      *
-     * @param MoodleQuickForm $mform.
+     * @param MoodleQuickForm $mform The form to which the button will be added.
      */
     protected function add_add_more_variant_button(MoodleQuickForm $mform) {
         // Add a button to add more form fields for variants.
@@ -129,6 +130,16 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
             question_bank::fraction_options());
     }
 
+    /**
+     * Add the form fields for the value part of the question.
+     *
+     * This method is used to add the fields for the variants of the variables in the question.
+     * It can be overridden by subclasses to customize the fields added.
+     *
+     * @param MoodleQuickForm $mform The form to which the fields will be added.
+     * @param array $repeated The repeated elements array.
+     * @param array $repeatedoptions The options for the repeated elements.
+     */
     protected function add_value_form_fields($mform, $repeated, $repeatedoptions) {
         global $DB;
         $noofvariants = optional_param('noofvariants', 0, PARAM_INT);
@@ -163,6 +174,16 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
         return [$repeated, $repeatedoptions];
     }
 
+    /**
+     * Add a last field to the value form.
+     *
+     * This is used to add a field that can be styled as the last variant field.
+     * It is not used for any functional purpose.
+     *
+     * @param MoodleQuickForm $mform The form to which the field will be added.
+     * @param array $repeated The repeated elements array.
+     * @param array $repeatedoptions The options for the repeated elements.
+     */
     protected function add_value_form_last_field($mform, &$repeated, &$repeatedoptions) {
         /*
          * Adding a field element so we can style variants properly. Not what we want.
@@ -177,6 +198,7 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
         $mform->setType('variant_last', PARAM_TEXT);
     }
 
+    #[\Override]
     protected function get_per_answer_fields($mform, $label, $gradeoptions,
                                              &$repeatedoptions, &$answersoption) {
         $repeated = [];
@@ -234,7 +256,7 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
         return $repeated;
     }
 
-
+    #[\Override]
     protected function get_hint_fields($withclearwrong = false, $withshownumpartscorrect = false) {
         $mform = $this->_form;
 
@@ -248,6 +270,7 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
         return [$repeated, $repeatedoptions];
     }
 
+    #[\Override]
     protected function data_preprocessing($question) {
         global $DB;
         $question = parent::data_preprocessing($question);
@@ -275,6 +298,7 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
      * Perform the necessary preprocessing for the fields added by
      * {@link add_per_answer_fields()}.
      * @param object $question the data being passed to the form.
+     * @param bool $withanswerfiles whether to include answer files in the preprocessing.
      * @return object $question the modified data.
      */
     protected function data_preprocessing_answers($question, $withanswerfiles = false) {
@@ -297,6 +321,7 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
     }
 
 
+    #[\Override]
     public function validation($data, $files) {
         $qtypeobj = $this->qtype_obj();
         $calculatorname = $qtypeobj->calculator_name();
@@ -309,7 +334,7 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
             if ($trimmedanswer !== '') {
                 $answercount++;
                 if (strip_tags($trimmedanswer) !== $trimmedanswer) {
-                    // Check there is not HTML in the answer. (Numbers must be 3.e8, not 3 x 10<sup>8</sup>.)
+                    // Check there is not HTML in the answer. (Numbers must be 3.e8, not 3 x 10<sup>8</sup>.).
                     $errors["answeroptions[$key]"] = get_string('errorvalidationinvalidanswer', 'qtype_varnumericset');
                 }
                 if ($data['fraction'][$key] == 1) {
@@ -418,10 +443,20 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
         return get_string('addmoreanswerblanks', 'qtype_varnumericset');
     }
 
+    /**
+     * Returns the question type object for this question type.
+     * This is used to access methods and properties specific to the question type.
+     */
     protected function qtype_obj() {
         return question_bank::get_qtype($this->qtype());
     }
 
+    /**
+     * Returns the database table prefix for the question type.
+     *
+     * This is used to ensure that the correct table prefix is used when
+     * accessing the database tables related to this question type.
+     */
     protected function db_table_prefix() {
         return $this->qtype_obj()->db_table_prefix();
     }

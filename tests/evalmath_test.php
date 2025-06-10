@@ -33,14 +33,14 @@ require_once($CFG->libdir . '/evalmath/evalmath.class.php');
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @covers    \EvalMath
  */
-class evalmath_test extends basic_testcase {
+final class evalmath_test extends basic_testcase {
     public function test_basic_expressions(): void {
         $ev = new EvalMath(true, true);
 
         $this->assertEquals(2, $ev->evaluate('a=2'));
 
         set_error_handler(
-            static function ($errno, $errstr) {
+            function ($errno, $errstr) {
                 restore_error_handler();
                 $this->assertStringContainsString('Expected warning message', $errstr);
             },

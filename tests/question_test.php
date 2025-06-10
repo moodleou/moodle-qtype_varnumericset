@@ -39,7 +39,7 @@ require_once($CFG->dirroot . '/question/engine/tests/helpers.php');
  * @covers    \qtype_varnumeric_question_base
  * @covers    \qtype_varnumericset_question
  */
-class question_test extends advanced_testcase {
+final class question_test extends advanced_testcase {
 
     /**
      * Test-cases for test_num_within_allowed_error
@@ -82,7 +82,13 @@ class question_test extends advanced_testcase {
     }
 
     /**
+     * Test the num_within_allowed_error function.
+     *
      * @dataProvider num_within_allowed_error_cases
+     * @param string|float $response The response to check.
+     * @param string|float $answer The answer to check against.
+     * @param string|float $allowederror The allowed error.
+     * @param bool $shouldmatch Whether the response should match the criteria.
      */
     public function test_num_within_allowed_error($response, $answer, $allowederror, $shouldmatch): void {
         if ($shouldmatch) {
@@ -111,7 +117,14 @@ class question_test extends advanced_testcase {
     }
 
     /**
+     * Test the wrong_by_a_factor_of_ten function.
+     *
      * @dataProvider wrong_by_a_factor_of_ten_cases
+     * @param string $response The response to check.
+     * @param string $roundedanswer The rounded answer to check against.
+     * @param string $allowederror The allowed error.
+     * @param int $maxfactor The maximum factor to check.
+     * @param bool $shouldmatch Whether the response should match the criteria.
      */
     public function test_wrong_by_a_factor_of_ten($response, $roundedanswer, $allowederror, $maxfactor, $shouldmatch): void {
         if ($shouldmatch) {
@@ -253,6 +266,13 @@ class question_test extends advanced_testcase {
     }
 
     /**
+     * Test the round_to function.
+     *
+     * @param string $expected The expected result.
+     * @param float $number The number to round.
+     * @param int $sigfigs The number of significant figures to round to.
+     * @param bool $scinotation Whether to use scientific notation.
+     * @param bool $floor Whether to floor the result.
      * @dataProvider round_to_cases
      */
     public function test_round_to($expected, $number, $sigfigs, $scinotation, $floor): void {

@@ -17,10 +17,9 @@
 /**
  * Question type class for the variable numeric set question type.
  *
- * @package    qtype
- * @subpackage varnumericset
- * @copyright  2011 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package qtype_varnumericset
+ * @copyright 2011 The Open University
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 
@@ -40,10 +39,12 @@ require_once($CFG->dirroot . '/question/type/varnumericset/questiontypebase.php'
  */
 class qtype_varnumericset extends qtype_varnumeric_base {
 
+    #[\Override]
     public function recalculate_every_time() {
         return false;
     }
 
+    #[\Override]
     public function db_table_prefix() {
         return 'qtype_varnumericset';
     }

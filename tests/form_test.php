@@ -33,7 +33,7 @@ require_once($CFG->dirroot . '/question/type/varnumericset/tests/helper.php');
  * @covers \qtype_varnumeric_edit_form_base
  * @covers \qtype_varnumericset_edit_form
  */
-class form_test extends \advanced_testcase {
+final class form_test extends \advanced_testcase {
 
     /**
      * Prepare test data.

@@ -39,7 +39,7 @@ require_once($CFG->dirroot . '/question/type/varnumericset/tests/helper.php');
  * @covers    \qtype_varnumeric_question_base
  * @covers    \qtype_varnumericset_question
  */
-class walkthrough_test extends qbehaviour_walkthrough_test_base {
+final class walkthrough_test extends qbehaviour_walkthrough_test_base {
     public function test_validation_and_interactive_with_one_try_for_3_sig_figs(): void {
 
         // Create a varnumericset question.

@@ -15,13 +15,15 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Restore plugin class that provides the necessary information
+ *
  * @package   qtype_varnumericset
  * @copyright 2011 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 /**
- * restore plugin class that provides the necessary information
+ * Restore plugin class that provides the necessary information
  * needed to restore one varnumericset qtype plugin.
  *
  * @copyright 2011 The Open University
@@ -63,8 +65,9 @@ class restore_qtype_varnumericset_plugin extends restore_qtype_plugin {
         }
 
         if (isset($backupdata["plugin_qtype_{$qtype}_question"]['varnumericset_answers']['varnumericset_answer'])) {
-            foreach ($backupdata["plugin_qtype_{$qtype}_question"]['varnumericset_answers']['varnumericset_answer']
-                    as $varnumericsetanswer) {
+            $backupvarnumericsetanswers =
+                $backupdata["plugin_qtype_{$qtype}_question"]['varnumericset_answers']['varnumericset_answer'];
+            foreach ($backupvarnumericsetanswers as $varnumericsetanswer) {
                 foreach ($questiondata->options->answers as &$answer) {
                     if ($answer->id == $varnumericsetanswer['answerid']) {
                         $answer->sigfigs = $varnumericsetanswer['sigfigs'];
@@ -85,6 +88,8 @@ class restore_qtype_varnumericset_plugin extends restore_qtype_plugin {
 
     /**
      * Process the qtype/varnumericset element.
+     *
+     * @param array $data The data to process.
      */
     public function process_qtype_varnumericset($data) {
         global $DB;
@@ -112,6 +117,8 @@ class restore_qtype_varnumericset_plugin extends restore_qtype_plugin {
 
     /**
      * Process the qtype/varnumericset_answer element.
+     *
+     * @param array $data The data to process.
      */
     public function process_qtype_varnumericset_answer($data) {
         global $DB;
@@ -130,6 +137,12 @@ class restore_qtype_varnumericset_plugin extends restore_qtype_plugin {
             $this->set_mapping('qtype_varnumericset_answer', $data->id, $newitemid);
         }
     }
+
+    /**
+     * Process the qtype/varnumericset_var element.
+     *
+     * @param array $data The data to process.
+     */
     public function process_qtype_varnumericset_var($data) {
         global $DB;
 
@@ -148,6 +161,11 @@ class restore_qtype_varnumericset_plugin extends restore_qtype_plugin {
         }
     }
 
+    /**
+     * Process the qtype/varnumericset_variant element.
+     *
+     * @param array $data The data to process.
+     */
     public function process_qtype_varnumericset_variant($data) {
         global $DB;
 

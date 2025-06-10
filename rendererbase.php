@@ -17,8 +17,7 @@
 /**
  * varnumeric question type renderer class.
  *
- * @package    qtype
- * @subpackage varnumericset
+ * @package    qtype_varnumericset
  * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -30,6 +29,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_varnumeric_renderer_base extends qtype_renderer {
+
+    #[\Override]
     public function formulation_and_controls(question_attempt $qa,
             question_display_options $options) {
 
@@ -119,6 +120,7 @@ class qtype_varnumeric_renderer_base extends qtype_renderer {
         return $result;
     }
 
+    #[\Override]
     public function specific_feedback(question_attempt $qa) {
         $question = $qa->get_question();
 
@@ -131,6 +133,7 @@ class qtype_varnumeric_renderer_base extends qtype_renderer {
                 $qa, 'question', 'answerfeedback', $answer->id);
     }
 
+    #[\Override]
     public function correct_response(question_attempt $qa) {
         $question = $qa->get_question();
 

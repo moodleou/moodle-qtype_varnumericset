@@ -17,8 +17,7 @@
 /**
  * variable numeric set question renderer class.
  *
- * @package    qtype
- * @subpackage varnumericset
+ * @package    qtype_varnumericset
  * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

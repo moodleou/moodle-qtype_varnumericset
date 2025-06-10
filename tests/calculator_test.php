@@ -34,7 +34,7 @@ require_once($CFG->dirroot . '/question/type/varnumericset/calculator.php');
  * @covers    \qtype_varnumericset_calculator
  * @covers    \qtype_varnumeric_calculator_base
  */
-class calculator_test extends advanced_testcase {
+final class calculator_test extends advanced_testcase {
     /**
      * Test cases for {@see test_format_number}.
      *

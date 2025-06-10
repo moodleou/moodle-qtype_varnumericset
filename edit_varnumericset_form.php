@@ -17,8 +17,7 @@
 /**
  * Defines the editing form for the varnumericset question type.
  *
- * @package    qtype
- * @subpackage varnumericset
+ * @package    qtype_varnumericset
  * @copyright  2011 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -35,10 +34,13 @@ require_once($CFG->dirroot . '/question/type/varnumericset/edit_varnumericset_fo
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_varnumericset_edit_form extends qtype_varnumeric_edit_form_base {
+
+    #[\Override]
     public function qtype() {
         return 'varnumericset';
     }
 
+    #[\Override]
     protected function definition_inner($mform) {
         parent::definition_inner($mform);
         $this->add_add_more_variant_button($mform);

@@ -17,10 +17,9 @@
 /**
  * Question type base class for the variable numeric question types.
  *
- * @package    qtype
- * @subpackage varnumericset
- * @copyright  2011 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package qtype_varnumericset
+ * @copyright 2011 The Open University
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 
@@ -41,45 +40,60 @@ abstract class qtype_varnumeric_base extends question_type {
 
     /**
      *
-     * @return boolean whether or not expressions are evaluated on the fly or only during
+     * @return boolean whether expressions are evaluated on the fly or only during
      * question editing.
      */
     abstract public function recalculate_every_time();
 
+    /**
+     * Returns the prefix for the database tables used by this question type.
+     *
+     * @return string the prefix for the database tables used by this question type.
+     */
     abstract public function db_table_prefix();
 
+    /**
+     * Returns the name of the calculator class used by this question type.
+     *
+     * @return string the name of the calculator class used by this question type.
+     */
     public function calculator_name() {
         return $this->db_table_prefix().'_calculator';
     }
 
+    #[\Override]
     public function extra_question_fields() {
         return [$this->db_table_prefix(), 'randomseed', 'requirescinotation'];
     }
 
+    #[\Override]
     public function extra_answer_fields() {
         return [$this->db_table_prefix().'_answers',
-                        'sigfigs',
-                        'error',
-                        'syserrorpenalty',
-                        'checknumerical',
-                        'checkscinotation',
-                        'checkpowerof10',
-                        'checkrounding',
-                        'checkscinotationformat'];
+            'sigfigs',
+            'error',
+            'syserrorpenalty',
+            'checknumerical',
+            'checkscinotation',
+            'checkpowerof10',
+            'checkrounding',
+            'checkscinotationformat'];
     }
 
+    #[\Override]
     public function move_files($questionid, $oldcontextid, $newcontextid) {
         parent::move_files($questionid, $oldcontextid, $newcontextid);
         $this->move_files_in_answers($questionid, $oldcontextid, $newcontextid);
         $this->move_files_in_hints($questionid, $oldcontextid, $newcontextid);
     }
 
+    #[\Override]
     protected function delete_files($questionid, $contextid) {
         parent::delete_files($questionid, $contextid);
         $this->delete_files_in_answers($questionid, $contextid);
         $this->delete_files_in_hints($questionid, $contextid);
     }
 
+    #[\Override]
     public function delete_question($questionid, $contextid) {
         global $DB;
         $prefix = $this->db_table_prefix();
@@ -101,6 +115,7 @@ abstract class qtype_varnumeric_base extends question_type {
         parent::delete_question($questionid, $contextid);
     }
 
+    #[\Override]
     public function save_question_options($form) {
         global $DB;
         $result = new stdClass();
@@ -108,13 +123,13 @@ abstract class qtype_varnumeric_base extends question_type {
         $context = $form->context;
 
         $oldanswers = $DB->get_records('question_answers',
-                ['question' => $form->id], 'id ASC');
+            ['question' => $form->id], 'id ASC');
 
         if (!empty($oldanswers)) {
             $oldanswerids = array_keys($oldanswers);
             list($oldansweridsql, $oldansweridparams) = $DB->get_in_or_equal($oldanswerids);
             $DB->delete_records_select($this->db_table_prefix().'_answers',
-                                                "answerid $oldansweridsql", $oldansweridparams);
+                "answerid $oldansweridsql", $oldansweridparams);
         } else {
             $oldanswers = [];
         }
@@ -126,7 +141,7 @@ abstract class qtype_varnumeric_base extends question_type {
         foreach ($form->answer as $key => $answerdata) {
             // Check for, and ignore, completely blank answer from the form.
             if (trim($answerdata) == '' && $form->fraction[$key] == 0 &&
-                    html_is_blank($form->feedback[$key]['text'])) {
+                html_is_blank($form->feedback[$key]['text'])) {
                 continue;
             }
 
@@ -143,7 +158,7 @@ abstract class qtype_varnumeric_base extends question_type {
             $answer->answer   = trim($answerdata);
             $answer->fraction = $form->fraction[$key];
             $answer->feedback = $this->import_or_save_files($form->feedback[$key],
-                    $context, 'question', 'answerfeedback', $answer->id);
+                $context, 'question', 'answerfeedback', $answer->id);
             $answer->feedbackformat = $form->feedback[$key]['format'];
             $DB->update_record('question_answers', $answer);
 
@@ -179,7 +194,7 @@ abstract class qtype_varnumeric_base extends question_type {
             // Remove any old variants in the db that are calculated.
             list($varidsql, $varids) = $DB->get_in_or_equal($assignments);
             $DB->delete_records_select($this->db_table_prefix().'_variants',
-                                                                    'varid '.$varidsql, $varids);
+                'varid '.$varidsql, $varids);
         }
         $definedvariantschanged = $this->save_variants($predefined, $variants, $varnotovarid);
 
@@ -187,7 +202,7 @@ abstract class qtype_varnumeric_base extends question_type {
         // is selected but if it is not recalculate whenever there is a change of predefined variants
         // r any variable or when recalculate button is pressed.
         if ((!$this->recalculate_every_time()) && // The recalculate every time option.
-                ((!empty($form->recalculatenow)) // The recalculate now option.
+            ((!empty($form->recalculatenow)) // The recalculate now option.
                 || $definedvariantschanged || $varschanged)) {
             // Precalculate variant values.
             $calculatorname = $this->calculator_name();
@@ -228,10 +243,9 @@ abstract class qtype_varnumeric_base extends question_type {
 
     /**
      * Save variant values.
-     * @param array varidstoprocess only save variants for variables with these ids
-     * @param integer questionid
-     * @param array variants data from form
-     * @param array varnotovarid index is varno and values are qtype_varnumericset_vars.id
+     * @param array $varidstoprocess only save variants for variables with these ids
+     * @param array $variants data from form
+     * @param array $varnotovarid index is varno and values are qtype_varnumericset_vars.id
      */
     protected function save_variants($varidstoprocess, $variants, $varnotovarid) {
         global $DB;
@@ -241,7 +255,7 @@ abstract class qtype_varnumeric_base extends question_type {
         $changed = false;
         list($varidsql, $varids) = $DB->get_in_or_equal($varidstoprocess);
         $oldvariants = $DB->get_records_select($this->db_table_prefix().'_variants',
-                                                                    'varid '.$varidsql, $varids);
+            'varid '.$varidsql, $varids);
         // Variants are indexed by variantno and then var no.
         foreach ($variants as $variantno => $variant) {
             foreach ($variant as $varno => $value) {
@@ -251,7 +265,7 @@ abstract class qtype_varnumeric_base extends question_type {
                 $foundold = false;
                 foreach ($oldvariants as $oldvariantid => $oldvariant) {
                     if ($oldvariant->varid == $varnotovarid[$varno]
-                             && $oldvariant->variantno == $variantno) {
+                        && $oldvariant->variantno == $variantno) {
                         $foundold = true;
                         $variantrec = $oldvariant;
                         unset($oldvariants[$oldvariantid]);
@@ -264,7 +278,7 @@ abstract class qtype_varnumeric_base extends question_type {
                     $variantrec->variantno = $variantno;
                     $variantrec->value = $value;
                     $variantrec->id =
-                            $DB->insert_record($this->db_table_prefix().'_variants', $variantrec);
+                        $DB->insert_record($this->db_table_prefix().'_variants', $variantrec);
                     $changed = true;
                 } else {
                     if ($variantrec->value != $value) {
@@ -279,10 +293,10 @@ abstract class qtype_varnumeric_base extends question_type {
         if (!empty($oldvariants)) {
             $changed = true;
             list($oldvariantsidsql, $oldvariantsids) =
-                                                $DB->get_in_or_equal(array_keys($oldvariants));
+                $DB->get_in_or_equal(array_keys($oldvariants));
             $DB->delete_records_select($this->db_table_prefix().'_variants',
-                                            'id '.$oldvariantsidsql,
-                                            $oldvariantsids);
+                'id '.$oldvariantsidsql,
+                $oldvariantsids);
         }
         return $changed;
 
@@ -290,15 +304,16 @@ abstract class qtype_varnumeric_base extends question_type {
 
     /**
      * Save variables.
-     * @param integer questionid
-     * @param array varnames
+     *
+     * @param integer $questionid questionid the question id.
+     * @param array $varnames the names of the variables to save.
      */
     protected function save_vars($questionid, $varnames) {
         global $DB;
         $changed = false;
         $oldvars = $DB->get_records($this->db_table_prefix().'_vars',
-                                       ['questionid' => $questionid],
-                                       'id ASC');
+            ['questionid' => $questionid],
+            'id ASC');
         $varnotovarid = [];
         $predefined = [];
         $assignments = [];
@@ -351,13 +366,14 @@ abstract class qtype_varnumeric_base extends question_type {
             }
             list($oldvaridsql, $oldvaridslist) = $DB->get_in_or_equal($oldvarids);
             $DB->delete_records_select($this->db_table_prefix().'_vars',
-                                        'id '.$oldvaridsql,
-                                        $oldvaridslist);
+                'id '.$oldvaridsql,
+                $oldvaridslist);
             $changed = true;
         }
         return [$changed, $varnotovarid, $assignments, $predefined];
     }
 
+    #[\Override]
     public function finished_edit_wizard($fromform) {
         // Keep browser from moving onto next page after saving question and
         // recalculating variable values.
@@ -367,21 +383,31 @@ abstract class qtype_varnumeric_base extends question_type {
             return true;
         }
     }
+
+    #[\Override]
     protected function initialise_question_instance(question_definition $question, $questiondata) {
         parent::initialise_question_instance($question, $questiondata);
         $this->initialise_question_vars_and_variants($question, $questiondata);
         $this->initialise_varnumeric_answers($question, $questiondata);
         $question->requirescinotation = $question->usesupeditor = (bool) $questiondata->options->requirescinotation;
     }
+
+    /**
+     * Load variables and variants from the database.
+     *
+     * @param integer $questionid the question id.
+     * @return array [$vars, $variants] where $vars is an array of qtype_varnumericset_vars
+     * records and $variants is an array of qtype_varnumericset_variants records.
+     */
     public function load_var_and_variants_from_db($questionid) {
         global $DB;
         $vars = $DB->get_records($this->db_table_prefix().'_vars',
-                                        ['questionid' => $questionid],
-                                        'id ASC', 'id, nameorassignment, varno');
+            ['questionid' => $questionid],
+            'id ASC', 'id, nameorassignment, varno');
         if ($vars) {
             list($varidsql, $varids) = $DB->get_in_or_equal(array_keys($vars));
             $variants = $DB->get_records_select($this->db_table_prefix().'_variants',
-                                                    'varid '.$varidsql, $varids);
+                'varid '.$varidsql, $varids);
             if (!$variants) {
                 $variants = [];
             }
@@ -391,13 +417,19 @@ abstract class qtype_varnumeric_base extends question_type {
         }
         return [$vars, $variants];
     }
+
+    /**
+     * Initialise question_definition::calculator and load variables and variants from the database.
+     * @param question_definition $question the question_definition we are creating.
+     * @param object $questiondata the question data loaded from the database.
+     */
     protected function initialise_question_vars_and_variants(question_definition $question,
                                                                                 $questiondata) {
         global $DB;
         $calculatorname = $this->calculator_name();
         $question->calculator = new $calculatorname();
         $question->calculator->set_random_seed($questiondata->options->randomseed,
-                                                $questiondata->stamp);
+            $questiondata->stamp);
         $question->calculator->set_recalculate_rand($this->recalculate_every_time());
 
         list($vars, $variants) = $this->load_var_and_variants_from_db($question->id);
@@ -415,11 +447,13 @@ abstract class qtype_varnumeric_base extends question_type {
         }
         foreach ($questiondata->options->answers as $a) {
             $question->answers[$a->id] = new qtype_varnumericset_answer($a->id, $a->answer,
-                    $a->fraction, $a->feedback, $a->feedbackformat, $a->sigfigs, $a->error,
-                    $a->syserrorpenalty, $a->checknumerical, $a->checkscinotation,
-                    $a->checkpowerof10, $a->checkrounding, $a->checkscinotationformat);
+                $a->fraction, $a->feedback, $a->feedbackformat, $a->sigfigs, $a->error,
+                $a->syserrorpenalty, $a->checknumerical, $a->checkscinotation,
+                $a->checkpowerof10, $a->checkrounding, $a->checkscinotationformat);
         }
     }
+
+    #[\Override]
     public function get_random_guess_score($questiondata) {
         foreach ($questiondata->options->answers as $aid => $answer) {
             if ('*' == trim($answer->answer)) {
@@ -429,13 +463,14 @@ abstract class qtype_varnumeric_base extends question_type {
         return 0;
     }
 
+    #[\Override]
     public function get_possible_responses($questiondata) {
         $responses = [];
 
         $starfound = false;
         foreach ($questiondata->options->answers as $aid => $answer) {
             $responses[$aid] = new question_possible_response($answer->answer,
-                    $answer->fraction);
+                $answer->fraction);
             if ($answer->answer === '*') {
                 $starfound = true;
             }
@@ -451,6 +486,7 @@ abstract class qtype_varnumeric_base extends question_type {
         return [$questiondata->id => $responses];
     }
 
+    #[\Override]
     protected function make_hint($hint) {
         return question_hint_with_parts::load_from_record($hint);
     }
@@ -459,9 +495,13 @@ abstract class qtype_varnumeric_base extends question_type {
 
     /**
      * Imports question from the Moodle XML format.
-     *
      * Imports question using information from extra_question_fields function
      * If some of you fields contains id's you'll need to reimplement this.
+     *
+     * @param array $data the question data in Moodle XML format.
+     * @param question_definition $question the question to import into.
+     * @param qformat_xml $format the format to import from.
+     * @param mixed $extra any extra data needed for the import.
      */
     public function import_from_xml($data, $question, qformat_xml $format, $extra=null) {
         $qo = parent::import_from_xml($data, $question, $format, $extra);
@@ -488,7 +528,7 @@ abstract class qtype_varnumeric_base extends question_type {
                         $variantno = $format->getpath($variant, ['#', 'variantno', 0, '#'], false);
                         $variantpropname = 'variant'.$variantno;
                         $qo->{$variantpropname}[$varno] =
-                                        $format->getpath($variant, ['#', 'value', 0, '#'], false);
+                            $format->getpath($variant, ['#', 'value', 0, '#'], false);
                         $qo->noofvariants = max($qo->noofvariants, $variantno + 1);
                     }
                 }
@@ -498,7 +538,7 @@ abstract class qtype_varnumeric_base extends question_type {
             $qo->vartype = [];
         }
         $format->import_hints($qo, $data, true, false,
-                                                $format->get_format($qo->questiontextformat));
+            $format->get_format($qo->questiontextformat));
         return $qo;
     }
 
@@ -507,6 +547,10 @@ abstract class qtype_varnumeric_base extends question_type {
      *
      * Export question using information from extra_question_fields function.
      * If some of you fields contains id's you'll need to reimplement this.
+     *
+     * @param question_definition $question the question to export.
+     * @param qformat_xml $format the format to export to.
+     * @param mixed $extra any extra data needed for the export.
      */
     public function export_to_xml($question, qformat_xml $format, $extra=null) {
         $expout = parent::export_to_xml($question, $format, $extra);

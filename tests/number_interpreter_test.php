@@ -34,7 +34,7 @@ require_once($CFG->dirroot . '/question/type/varnumericset/number_interpreter.ph
  * @covers    \qtype_varnumericset_number_interpreter_number_with_optional_decimal_place
  * @covers    \qtype_varnumericset_number_interpreter_number_with_optional_sci_notation
  */
-class number_interpreter_test extends basic_testcase {
+final class number_interpreter_test extends basic_testcase {
     public function test_interpret_number_with_optional_decimal_place(): void {
         $num = new qtype_varnumericset_number_interpreter_number_with_optional_decimal_place();
 

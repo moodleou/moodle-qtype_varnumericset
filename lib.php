@@ -17,15 +17,22 @@
 /**
  * Serve question type files
  *
- * @since      2.0
- * @package    qtype
- * @subpackage varnumericset
- * @copyright  2011 The Open University
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @since 2.0
+ * @package qtype_varnumericset
+ * @copyright 2011 The Open University
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 /**
  * Checks file access for varnumeric set questions.
+ *
+ * @param stdClass $course The course object.
+ * @param stdClass $cm The course module object.
+ * @param context $context The context object.
+ * @param string $filearea The file area being accessed.
+ * @param array $args The file arguments.
+ * @param bool $forcedownload Whether to force download the file.
+ * @param array $options Additional options for file serving.
  */
 function qtype_varnumericset_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options= []) {
     global $DB, $CFG;

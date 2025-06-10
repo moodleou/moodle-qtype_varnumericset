@@ -25,6 +25,11 @@ namespace qtype_varnumericset\output;
  */
 class mobile {
 
+    /**
+     * Returns the data required to render the varnumericset question type in the mobile app.
+     *
+     * @return array An array containing the templates and JavaScript required for rendering.
+     */
     public static function varnumset_view() {
         global $CFG;
         // General notes:

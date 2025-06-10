@@ -25,11 +25,10 @@ require_once($CFG->libdir . '/evalmath/evalmath.class.php');
  * @copyright 2011 The Open University
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 abstract class qtype_varnumeric_calculator_base {
 
     /**
-     * @var boolean whether assignments to variables should be evaluated on each
+     * @var bool whether assignments to variables should be evaluated on each
      * question load.
      */
     protected $recalculateeverytime = false;
@@ -61,18 +60,45 @@ abstract class qtype_varnumeric_calculator_base {
     /** @var array one dimensional array first key is varno. **/
     protected $vartypes = [];
 
+    /**
+     * @var int the number of variants in the form.
+     */
     protected $noofvariants = 0;
 
+    /**
+     * @var array An associative array of answers, where the keys are answer numbers.
+     */
     protected $answers = [];
 
+    /**
+     * @var array An associative array of texts with embedded variables.
+     */
     protected $textswithembeddedvars = [];
 
+    /**
+     * @var array An associative array of errors encountered during evaluation.
+     */
     protected $errors = [];
 
+    /**
+     * Add a variable to the calculator.
+     *
+     * @param int $varno the variable number.
+     * @param string $variablenameorassignment the name of the variable or an assignment to it.
+     */
     public function add_variable($varno, $variablenameorassignment) {
         $this->variables[$varno] = $variablenameorassignment;
     }
 
+    /**
+     * Add a predefined variant to the calculator.
+     *
+     * This is used to store the predefined values for each variable in each question variant.
+     *
+     * @param int $varno the variable number.
+     * @param int $variantno the variant number.
+     * @param string $value the value of the variable in this variant.
+     */
     public function add_defined_variant($varno, $variantno, $value) {
         $this->noofvariants = max($this->noofvariants, $variantno + 1);
         if (!isset($this->predefinedvariants[$variantno])) {
@@ -81,6 +107,15 @@ abstract class qtype_varnumeric_calculator_base {
         $this->predefinedvariants[$variantno][$varno] = $value;
     }
 
+    /**
+     * Add an answer to the calculator.
+     *
+     * This is used to store the answers for the question variants.
+     *
+     * @param int $answerno the answer number.
+     * @param string $answer the answer text.
+     * @param string $error any error message associated with the answer.
+     */
     public function add_answer($answerno, $answer, $error) {
         $answerobj = new stdClass();
         $answerobj->answer = $answer;
@@ -88,6 +123,15 @@ abstract class qtype_varnumeric_calculator_base {
         $this->answers[$answerno] = $answerobj;
     }
 
+    /**
+     * Add a text with embedded variables to the calculator.
+     *
+     * This is used for question text, general feedback, and other texts that may contain
+     * variables that need to be evaluated.
+     *
+     * @param array $form the form data containing the text.
+     * @param array $keys the keys to traverse in the form data to find the text.
+     */
     public function add_text_with_embedded_variables($form, $keys) {
         $value = $form;
         $fromformfield = '';
@@ -112,6 +156,13 @@ abstract class qtype_varnumeric_calculator_base {
         $this->textswithembeddedvars[$fromformfield] = $value;
     }
 
+    /**
+     * Get the number of variants in the form.
+     *
+     * This is used to determine how many variants to show in the question creation form.
+     *
+     * @return int the number of variants in the form.
+     */
     public function get_num_variants_in_form() {
         if ($this->noofvariants == 0) {
             // If there are no predefined variables at all then have a set
@@ -121,14 +172,31 @@ abstract class qtype_varnumeric_calculator_base {
         return $this->noofvariants;
     }
 
+    /**
+     * Get the errors that have been encountered during evaluation.
+     *
+     * @return array An associative array of errors, where the keys are the error.
+     */
     public function get_errors() {
         return $this->errors;
     }
 
+    /**
+     * Get the calculated variants for the form.
+     *
+     * @return array An array of calculated variants, indexed by variant number.
+     */
     public function get_calculated_variants() {
         return $this->calculatedvariants;
     }
 
+    /**
+     * Get the number of variants in the form.
+     *
+     * @param int $varno the variable number.
+     * @param int $variantno the variant number.
+     * @return int the number of variants in the form.
+     */
     protected function get_defined_variant($varno, $variantno) {
         if (!isset($this->predefinedvariants[$variantno][$varno])) {
             throw new coding_exception(
@@ -167,6 +235,13 @@ abstract class qtype_varnumeric_calculator_base {
         }
     }
 
+    /**
+     * Evaluate an expression or variable assignment.
+     *
+     * @param string $item the expression or variable assignment to evaluate.
+     * @param string|null $placetoputanyerror where to put the error message, if any.
+     * @return float|int|false the evaluated result, or false if there was an error.
+     */
     public function evaluate($item, $placetoputanyerror = null) {
         $result = $this->ev->evaluate($item);
         $error = '';
@@ -189,7 +264,7 @@ abstract class qtype_varnumeric_calculator_base {
     /**
      * Load all variable assignments for a given variant.
      *
-     * @param integer $variantno
+     * @param int $variantno
      * @param boolean $forcerecalculate force recalculate calculated values
      *                        or load calculated values as predefined values?
      */
@@ -214,6 +289,12 @@ abstract class qtype_varnumeric_calculator_base {
         }
     }
 
+    /**
+     * Calculate the values of all calculated variants for a given variant.
+     *
+     * @param int $variantno
+     * @return array An array of calculated variant values, indexed by variable number.
+     */
     protected function calculate_calculated_variant_values($variantno) {
         $calculatedvariants = [];
         foreach ($this->variables as $varno => $variablenameorassignment) {
@@ -229,8 +310,7 @@ abstract class qtype_varnumeric_calculator_base {
     /**
      * Save internal state of calculator as question type step data.
      *
-     * @param question_attempt_step $step
-     * @param integer $variantno
+     * @param question_attempt_step $step The question attempt step to save the state to.
      */
     public function save_state_as_qt_data($step) {
         foreach ($this->variables as $varno => $variablenameorassignment) {
@@ -240,7 +320,12 @@ abstract class qtype_varnumeric_calculator_base {
         }
     }
 
-    public function load_state_from_qt_data ($step) {
+    /**
+     * Load internal state of calculator from question type step data.
+     *
+     * @param question_attempt_step $step
+     */
+    public function load_state_from_qt_data($step) {
         $this->ev = new EvalMath(true, true);
         foreach ($this->variables as $varno => $variablenameorassignment) {
             $varname = self::var_in_assignment($variablenameorassignment);
@@ -248,6 +333,11 @@ abstract class qtype_varnumeric_calculator_base {
         }
     }
 
+    /**
+     * Load data from the form.
+     *
+     * @param array $formdata the data from the question creation form.
+     */
     public function load_data_from_form($formdata) {
         if (isset($formdata['varname'])) {
             foreach ($formdata['varname'] as $varno => $varname) {
@@ -310,10 +400,21 @@ abstract class qtype_varnumeric_calculator_base {
         return $this->randomseed;
     }
 
+    /**
+     * Set whether to recalculate the values of variables every time the question is loaded.
+     *
+     * @param boolean $recalculateeverytime whether to recalculate the values of variables every time question loaded.
+     */
     public function set_recalculate_rand($recalculateeverytime) {
         $this->recalculateeverytime = $recalculateeverytime;
     }
 
+    /**
+     * Load data from the database.
+     *
+     * @param array $vars the variables loaded from the database.
+     * @param array $variants the variants loaded from the database.
+     */
     public function load_data_from_database($vars, $variants) {
         // Declare and load data whether or not we will use calculator.
         $varidtovarno = [];
@@ -332,6 +433,12 @@ abstract class qtype_varnumeric_calculator_base {
         }
     }
 
+    /**
+     * Get the data for the form to create or edit a question.
+     *
+     * @param stdClass $dataforform the data object to fill in.
+     * @return stdClass the filled in data object.
+     */
     public function get_data_for_form($dataforform) {
         if ($this->recalculateeverytime) {
             $this->evaluate_all(true);
@@ -352,18 +459,39 @@ abstract class qtype_varnumeric_calculator_base {
         return $dataforform;
     }
 
+    /**
+     * Get the variable types.
+     *
+     * @return array one-dimensional array of variable types, 0 for calculated, 1 for predefined.
+     */
     public function get_var_types() {
         return $this->vartypes;
     }
 
+    /**
+     * Get the variable names.
+     *
+     * @return array one-dimensional array of variable names.
+     */
     public function get_var_names() {
         return $this->variables;
     }
 
+    /**
+     * Get the predefined variants.
+     *
+     * @return array two-dimensional array first key is variant no, second is varno, contents is value of variant.
+     */
     public function get_defined_variants() {
         return $this->predefinedvariants;
     }
 
+    /**
+     * Check if a string is an assignment to a variable.
+     *
+     * @param string $string the string to check, e.g. 'x = 5'.
+     * @return boolean true if it is an assignment, false otherwise.
+     */
     public static function is_assignment($string) {
         $parts = explode('=', $string);
         if (count($parts) != 2) {
@@ -372,11 +500,24 @@ abstract class qtype_varnumeric_calculator_base {
         return EvalMath::is_valid_var_or_func_name(trim($parts[0]));
     }
 
+    /**
+     * Get the variable name from an assignment string.
+     *
+     * @param string $assignment the assignment string, e.g. 'x = 5'.
+     * @return string the variable name, e.g. 'x'.
+     */
     public static function var_in_assignment($assignment) {
         $parts = explode('=', $assignment);
         return trim($parts[0]);
     }
 
+    /**
+     * Evaluate all variables in a text, replacing them with their values.
+     *
+     * @param string $text the text to evaluate.
+     * @param string|null $wheretoputerror where to put errors, if any.
+     * @return string the text with variables replaced by their values.
+     */
     public function evaluate_variables_in_text($text, $wheretoputerror = null) {
         $done = [];
         $errors = [];
@@ -445,7 +586,7 @@ abstract class qtype_varnumeric_calculator_base {
     /**
      * Format a number using a sprintf code.
      *
-     * @param $number a number
+     * @param float|int $number the number to format.
      * @param string $sprintfcode a printf code, without the leading '%'.
      * @return string the formatted number.
      */

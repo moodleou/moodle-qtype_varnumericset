@@ -17,7 +17,7 @@
 /**
  * Mobile plugin.
  *
- * @package qtype_varnumeric
+ * @package qtype_varnumericset
  * @copyright 2019 The Open University
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

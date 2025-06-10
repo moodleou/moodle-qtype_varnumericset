@@ -17,12 +17,12 @@
 /**
  * Test helpers for the varnumericset question type.
  *
- * @package    qtype
- * @subpackage varnumericset
+ * @package    qtype_varnumericset
  * @copyright  2012 The Open University
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->dirroot . '/question/engine/tests/helpers.php');
 
@@ -33,6 +33,12 @@ require_once($CFG->dirroot . '/question/engine/tests/helpers.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class qtype_varnumericset_test_helper extends question_test_helper {
+
+    /**
+     * Returns a list of test questions.
+     *
+     * @return array
+     */
     public function get_test_questions() {
         return ['no_accepted_error', 'numeric_accepted_error', '3_sig_figs', '3_sig_figs_2',
                         '3_sig_figs_trailing_zero', '3_sig_figs_trailing_zero_negative_answer',
@@ -41,6 +47,8 @@ class qtype_varnumericset_test_helper extends question_test_helper {
     }
 
     /**
+     * Makes a varnumericset question with no accepted error.
+     *
      * @return qtype_varnumericset_question
      */
     public function make_varnumericset_question_no_accepted_error() {
@@ -88,6 +96,8 @@ class qtype_varnumericset_test_helper extends question_test_helper {
     }
 
     /**
+     * Makes a varnumericset question with numeric accepted error.
+     *
      * @return qtype_varnumericset_question
      */
     public function make_varnumericset_question_numeric_accepted_error() {
@@ -99,6 +109,8 @@ class qtype_varnumericset_test_helper extends question_test_helper {
     }
 
     /**
+     * Makes a varnumericset question with no accepted error.
+     *
      * @return qtype_varnumericset_question
      */
     public function make_varnumericset_question_3_sig_figs() {
@@ -111,6 +123,9 @@ class qtype_varnumericset_test_helper extends question_test_helper {
         return $vs;
     }
 
+    /**
+     * Makes a varnumericset question with 3 sig figs.
+     */
     public function make_varnumericset_question_3_sig_figs_2() {
         $vs = $this->make_varnumericset_question_no_accepted_error();
 
@@ -122,6 +137,8 @@ class qtype_varnumericset_test_helper extends question_test_helper {
     }
 
     /**
+     * Makes a varnumericset question with 3 sig figs and trailing zero.
+     *
      * @return qtype_varnumericset_question
      */
     public function make_varnumericset_question_3_sig_figs_trailing_zero() {
@@ -135,6 +152,8 @@ class qtype_varnumericset_test_helper extends question_test_helper {
     }
 
     /**
+     * Makes a varnumericset question with 3 sig figs, trailing zero and negative answer.
+     *
      * @return qtype_varnumericset_question
      */
     public function make_varnumericset_question_3_sig_figs_trailing_zero_negative_answer() {
@@ -148,6 +167,8 @@ class qtype_varnumericset_test_helper extends question_test_helper {
     }
 
     /**
+     * Makes a varnumericset question with 1 sig fig.
+     *
      * @return qtype_varnumericset_question
      */
     public function make_varnumericset_question_1_sig_fig() {
@@ -164,6 +185,9 @@ class qtype_varnumericset_test_helper extends question_test_helper {
         return $vs;
     }
 
+    /**
+     * Makes a varnumericset question with 3 sig figs and point 0.
+     */
     public function make_varnumericset_question_3_sig_figs_point_0() {
         $vs = $this->make_varnumericset_question_no_accepted_error();
 
@@ -174,6 +198,9 @@ class qtype_varnumericset_test_helper extends question_test_helper {
         return $vs;
     }
 
+    /**
+     * Makes a varnumericset question with variables.
+     */
     public function make_varnumericset_question_with_variables() {
         $vs = $this->make_varnumericset_question_no_accepted_error();
 
@@ -193,6 +220,10 @@ class qtype_varnumericset_test_helper extends question_test_helper {
 
         return $vs;
     }
+
+    /**
+     * Get a varnumericset question form data with variables.
+     */
     public function get_varnumericset_question_form_data_with_variables() {
         $form = new stdClass();
         $form->name = 'Pi to two d.p.';
@@ -238,6 +269,9 @@ class qtype_varnumericset_test_helper extends question_test_helper {
         return $form;
     }
 
+    /**
+     * Makes a varnumericset question with custom rounding feedback.
+     */
     public function make_varnumericset_question_custom_rounding_feebdack() {
         $vs = $this->make_varnumericset_question_no_accepted_error();
 

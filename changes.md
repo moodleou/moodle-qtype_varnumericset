@@ -1,5 +1,18 @@
 # Change log for the Variable numeric sets question type
 
+## Changes in 2.2
+
+* This version is compatible with Moodle 5.0.
+* Improved display of scientific notation.
+* Added more validations for the question editing form, which includes:
+    Better handling of numbers formatting.
+    Checks for empty variables to prevent save errors.
+    Added new validation for answer format verification.
+* Fix Behat and PHPUnit tests.
+* Defined excluded hash fields and implemented conversion of legacy backup data
+  to align with new question data format (per MDL-83541).
+
+
 ## Changes in 2.1
 
 * This version works with Moodle 4.0.

@@ -142,12 +142,7 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         }
     }
 
-    /**
-     * Check if the response is gradable.
-     *
-     * @param array $response the response to check.
-     * @return bool true if the response is gradable, false otherwise.
-     */
+    #[\Override]
     public function is_gradable_response(array $response) {
         if ($this->is_no_response($response)) {
             return false;
@@ -201,11 +196,7 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         }
     }
 
-    /**
-     * Get the correct response for this question.
-     *
-     * @return array the correct response, or an empty array if there is no correct response.
-     */
+    #[\Override]
     public function get_correct_response() {
         $answer = clone($this->get_first_answer_graded_correct());
         if (!$answer) {
@@ -619,13 +610,7 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
                                      $filearea, $itemid, $clean);
     }
 
-    /**
-     * Get a hint for the question.
-     *
-     * @param int $hintnumber the number of the hint to get.
-     * @param question_attempt $qa the question attempt.
-     * @return question_hint|null the hint, or null if no hint is available.
-     */
+    #[\Override]
     public function get_hint($hintnumber, question_attempt $qa) {
         $question = $qa->get_question();
         $currentanswer = $qa->get_last_qt_var('answer');
@@ -644,12 +629,7 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         }
     }
 
-    /**
-     * Compute the final grade for the question.
-     *
-     * @param array $responses the responses to the question.
-     * @param int $totaltries the total number of tries.
-     */
+    #[\Override]
     public function compute_final_grade($responses, $totaltries) {
         $answers = $this->get_answers();
 
@@ -731,11 +711,7 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         return false;
     }
 
-    /**
-     * Classify the response.
-     *
-     * @param array $response the response to classify.
-     */
+    #[\Override]
     public function classify_response(array $response) {
         if (!$this->is_gradable_response($response)) {
             return [$this->id => question_classified_response::no_response()];

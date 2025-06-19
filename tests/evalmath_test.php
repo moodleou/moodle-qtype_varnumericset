@@ -42,17 +42,17 @@ final class evalmath_test extends basic_testcase {
         set_error_handler(
             function ($errno, $errstr) {
                 restore_error_handler();
-                $this->assertStringContainsString('Expected warning message', $errstr);
+                $this->assertStringContainsString(get_string('operatorlacksoperand', 'mathslib', '+'), $errstr);
             },
-            E_WARNING
+            E_USER_WARNING
         );
         $this->assertFalse($ev->evaluate('b=2+'));
         $this->assertEquals(get_string('operatorlacksoperand', 'mathslib', '+'), $ev->last_error);
 
         $this->assertEquals(2, $ev->evaluate('a'));
         restore_error_handler();
-
     }
+
     public function test_random_expressions(): void {
         $ev = new EvalMath(true, true);
         $results = [];

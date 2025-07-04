@@ -137,10 +137,10 @@ abstract class qtype_varnumeric_calculator_base {
         $fromformfield = '';
         do {
             $key = array_shift($keys);
-            if ($fromformfield == '') {
+            if ($fromformfield === '') {
                 $fromformfield = $key;
             } else {
-                $fromformfield .= '[' . $key . ']';
+                $fromformfield .= "[$key]";
             }
             if (isset($value[$key])) {
                 $value = $value[$key];
@@ -217,15 +217,15 @@ abstract class qtype_varnumeric_calculator_base {
                             = $this->calculate_calculated_variant_values($variantno);
             foreach ($this->answers as $answerno => $answer) {
                 foreach (['answer', 'error'] as $prop) {
-                    if ($prop == 'error' && $answer->{$prop} == '') {
+                    if ($prop === 'error' && $answer->{$prop} === '') {
                         continue; // No error messages for blank allowed error fields in answer.
                     }
                     if (self::is_assignment($answer->{$prop})) {
                         // This is an assignment not legal here.
-                        $this->errors[$prop . '[' . $answerno . ']'] =
+                        $this->errors["{$prop}[{$answerno}]"] =
                             get_string('expressionmustevaluatetoanumber', 'qtype_varnumericset');
                     } else {
-                        $this->evaluate($answer->{$prop}, $prop . '[' . $answerno . ']');
+                        $this->evaluate($answer->{$prop}, "{$prop}[{$answerno}]");
                     }
                 }
             }
@@ -280,11 +280,11 @@ abstract class qtype_varnumeric_calculator_base {
             if (!$recalculatecalculated || !self::is_assignment($variablenameorassignment)) {
                 $varname = self::var_in_assignment($variablenameorassignment);
                 $this->evaluate($varname.'='.$this->get_defined_variant($varno, $variantno),
-                        'variant' . $variantno . '[' . $varno . ']');
+                        "variant{$variantno}[{$varno}]");
             } else {
                 $varname = self::var_in_assignment($variablenameorassignment);
                 EvalMathFuncs::set_random_seed($this->randomseed.$variantno.$varname);
-                $this->evaluate($variablenameorassignment, 'varname[' . $varno . ']');
+                $this->evaluate($variablenameorassignment, "varname[$varno]");
             }
         }
     }
@@ -301,7 +301,7 @@ abstract class qtype_varnumeric_calculator_base {
             if (self::is_assignment($variablenameorassignment)) {
                 $varname = self::var_in_assignment($variablenameorassignment);
                 $calculatedvariants[$varno]
-                            = $this->evaluate($varname, 'variant' . $variantno . '[' . $varno . ']');
+                            = $this->evaluate($varname, "variant$variantno[$varno]");
             }
         }
         return $calculatedvariants;
@@ -329,7 +329,7 @@ abstract class qtype_varnumeric_calculator_base {
         $this->ev = new EvalMath(true, true);
         foreach ($this->variables as $varno => $variablenameorassignment) {
             $varname = self::var_in_assignment($variablenameorassignment);
-            $this->evaluate($varname . '=' . $step->get_qt_var('_var' . $varname));
+            $this->evaluate("{$varname}=" . $step->get_qt_var("_var{$varname}"));
         }
     }
 
@@ -348,8 +348,9 @@ abstract class qtype_varnumeric_calculator_base {
         }
 
         for ($variantno = 0; $variantno < $formdata['noofvariants']; $variantno++) {
-            if (isset($formdata['variant'.$variantno])) {
-                $variants = $formdata['variant'.$variantno];
+            $key = 'variant' . $variantno;
+            if (isset($formdata[$key])) {
+                $variants = $formdata[$key];
                 foreach ($variants as $varno => $value) {
                     if ($formdata['vartype'][$varno] == 1) {
                         if ($value !== '') {
@@ -361,7 +362,7 @@ abstract class qtype_varnumeric_calculator_base {
         }
 
         foreach ($formdata['answer'] as $answerno => $answer) {
-            if (!empty($answer) && '*' != $answer) {
+            if (!empty($answer) && '*' !== $answer) {
                 $this->add_answer($answerno, $answer, $formdata['error'][$answerno]);
             }
         }

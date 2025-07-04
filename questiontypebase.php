@@ -68,7 +68,8 @@ abstract class qtype_varnumeric_base extends question_type {
 
     #[\Override]
     public function extra_answer_fields() {
-        return [$this->db_table_prefix().'_answers',
+        return [
+            $this->db_table_prefix().'_answers',
             'sigfigs',
             'error',
             'syserrorpenalty',
@@ -298,8 +299,8 @@ abstract class qtype_varnumeric_base extends question_type {
                 'id '.$oldvariantsidsql,
                 $oldvariantsids);
         }
-        return $changed;
 
+        return $changed;
     }
 
     /**
@@ -379,9 +380,9 @@ abstract class qtype_varnumeric_base extends question_type {
         // recalculating variable values.
         if (!empty($fromform->recalculatenow)) {
             return false;
-        } else {
-            return true;
         }
+
+        return true;
     }
 
     #[\Override]

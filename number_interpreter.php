@@ -117,10 +117,11 @@ abstract class qtype_varnumericset_number_interpreter_part_using_preg_pattern ex
                 $this->postfix = '';
             }
             $this->extract_parts($matches);
+
             return true;
-        } else {
-            return false;
         }
+
+        return false;
     }
 
     /**
@@ -169,9 +170,9 @@ abstract class qtype_varnumericset_number_interpreter_part_using_preg_pattern ex
     protected function get_normalised_sign() {
         if ($this->sign === '-') {
             return '-';
-        } else {
-            return '';
         }
+
+        return '';
     }
 
     #[\Override]
@@ -424,9 +425,9 @@ class qtype_varnumericset_number_interpreter_number_with_optional_sci_notation e
             }
             $this->prefix = $num->get_prefix();
             return true;
-        } else {
-            return false;
         }
+
+        return false;
     }
 
     /**

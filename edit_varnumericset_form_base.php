@@ -46,8 +46,10 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
 
         $answersoption = '';
 
-        $typemenu = [0 => get_string('vartypecalculated', 'qtype_varnumericset'),
-                            1 => get_string('vartypepredefined', 'qtype_varnumericset')];
+        $typemenu = [
+            0 => get_string('vartypecalculated', 'qtype_varnumericset'),
+            1 => get_string('vartypepredefined', 'qtype_varnumericset')
+        ];
 
         $repeated = [];
         $repeatedoptions = [];
@@ -160,7 +162,7 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
             $repeated[] = $mform->createElement('text', "variant$i",
                 get_string('variant', 'qtype_varnumericset', $i + 1), ['size' => 40]);
             $repeatedoptions["variant$i"]['disabledif'] = ['vartype', 'eq', 0];
-            if ($i == 0) {
+            if ($i === 0) {
                 $repeatedoptions["variant$i"]['helpbutton']
                     = ['variants', 'qtype_varnumericset'];
             }
@@ -193,8 +195,7 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
          * Need an element with an id to work with. Hidden fields have no id and are inserted at
          * the start of the form.
          */
-        $repeated[] = $mform->createElement('text', "variant_last",
-                'last variant', '', ['class' => 'last']);
+        $repeated[] = $mform->createElement('text', "variant_last", 'last variant', '', ['class' => 'last']);
         $mform->setType('variant_last', PARAM_TEXT);
     }
 
@@ -340,7 +341,7 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
                 if ($data['fraction'][$key] == 1) {
                     $maxgrade = true;
                 }
-                if ($trimmedanswer == '*') {
+                if ($trimmedanswer === '*') {
                     if ($data['error'][$key] !== '') {
                         $errors["answeroptions[$key]"] = get_string('notolerancehere', 'qtype_varnumericset');
                     }
@@ -397,7 +398,7 @@ abstract class qtype_varnumeric_edit_form_base extends question_edit_form {
                 }
             }
         }
-        if (empty($errors)) {
+        if (count($errors) === 0) {
             $calculator = new $calculatorname();
             // Don't need to bother setting the random seed here as the
             // results of the evaluation are not important, we are just seeing

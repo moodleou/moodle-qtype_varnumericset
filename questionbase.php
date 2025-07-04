@@ -137,9 +137,9 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
     protected function get_pre_post_validation_error($prefix, $postfix) {
         if (!empty($prefix) || !empty($postfix)) {
             return get_string('notvalidnumberprepostfound', 'qtype_varnumericset');
-        } else {
-            return '';
         }
+
+        return '';
     }
 
     #[\Override]
@@ -191,9 +191,9 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         if (!is_null($answer)) {
             return [$answer->fraction,
                     question_state::graded_state_for_fraction($answer->fraction)];
-        } else {
-            return [0, question_state::$gradedwrong];
         }
+
+        return [0, question_state::$gradedwrong];
     }
 
     #[\Override]
@@ -221,7 +221,7 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
                     $this->round_to($evaluated, $answer->sigfigs, $this->requirescinotation);
             $calculatorname = $this->qtype->calculator_name();
             $answer->answer = $calculatorname::htmlize_exponent($answer->answer);
-            if ($answer->error != '') {
+            if ($answer->error !== '') {
                 $answer->error = $this->calculator->evaluate($answer->error);
                 $answer->answer =
                             get_string('correctansweriserror', 'qtype_varnumericset', $answer);
@@ -231,9 +231,9 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
                             get_string('correctanswerissigfigs', 'qtype_varnumericset', $answer);
             }
             return $answer;
-        } else {
-            return null;
         }
+
+        return null;
     }
 
     /**
@@ -248,6 +248,8 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
                 return $answer;
             }
         }
+
+        return null;
     }
 
     /**
@@ -272,11 +274,11 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         }
         $answertoreturn->feedback .= $warning;
         $state = question_state::graded_state_for_fraction($answertoreturn->fraction);
-        if ($penalty == 1 && $feedback == '') {
+        if ($penalty === 1 && $feedback === '') {
             return null;
-        } else {
-            return $answertoreturn;
         }
+
+        return $answertoreturn;
     }
 
     /**
@@ -295,7 +297,7 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         // Evaluate the answer.
         $evaluated = $this->calculator->evaluate($answer->answer);
         $rounded = (float)self::round_to($evaluated, $answer->sigfigs, false);
-        if ($answer->error == '') {
+        if ($answer->error === '') {
             $allowederror = 0;
         } else {
             $allowederror = $this->calculator->evaluate($answer->error);
@@ -386,9 +388,9 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
     protected function feedback_for_post_prefix_parts($prefix, $postfix) {
         if ($prefix . $postfix !== '') {
             return get_string('preandpostfixesignored', 'qtype_varnumericset');
-        } else {
-            return '';
         }
+
+        return '';
     }
 
     /**
@@ -435,11 +437,8 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
      */
     public static function has_number_of_sig_figs($normalizedstring, $sigfigs) {
         $scinotation = self::is_sci_notation($normalizedstring);
-        if (self::round_to($normalizedstring, $sigfigs, $scinotation) === $normalizedstring) {
-            return true;
-        } else {
-            return false;
-        }
+
+        return self::round_to($normalizedstring, $sigfigs, $scinotation) === $normalizedstring;
     }
 
     /**
@@ -548,28 +547,24 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
      * @return boolean
      */
     public static function is_sci_notation($normalizedstring) {
-        if (strpos($normalizedstring ?? '', 'e') !== false) {
-            return true;
-        } else {
-            return false;
-        }
+
+        return strpos($normalizedstring, 'e') !== false;
     }
 
     #[\Override]
     public function check_file_access($qa, $options, $component, $filearea, $args, $forcedownload) {
-        if ($component == 'question' && $filearea == 'answerfeedback') {
+        if ($component === 'question' && $filearea === 'answerfeedback') {
             $currentanswer = $qa->get_last_qt_var('answer');
             $answer = $qa->get_question()->get_matching_answer(['answer' => $currentanswer]);
             $answerid = reset($args); // The itemid is answer id.
+
             return $options->feedback && $answerid == $answer->id;
-
-        } else if ($component == 'question' && $filearea == 'hint') {
-            return $this->check_hint_file_access($qa, $options, $args);
-
-        } else {
-            return parent::check_file_access($qa, $options, $component, $filearea,
-                    $args, $forcedownload);
         }
+        if ($component === 'question' && $filearea === 'hint') {
+            return $this->check_hint_file_access($qa, $options, $args);
+        }
+
+        return parent::check_file_access($qa, $options, $component, $filearea, $args, $forcedownload);
     }
 
     #[\Override]
@@ -624,9 +619,9 @@ class qtype_varnumeric_question_base extends question_graded_automatically_with_
         $hint = parent::get_hint($hintnumber, $qa);
         if ($state != question_state::$gradedpartial || !$hint->clearwrong) {
             return $hint;
-        } else {
-            return null;
         }
+
+        return null;
     }
 
     #[\Override]
